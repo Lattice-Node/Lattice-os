@@ -1,19 +1,10 @@
-import Link from "next/link";
+﻿import Link from "next/link";
+import Nav from "@/components/Nav";
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#020817] text-white">
-      {/* NAV */}
-      <nav className="border-b border-white/10 px-8 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-sm">L</div>
-          <span className="font-semibold text-lg">Lattice OS</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <Link href="/marketplace" className="text-sm text-gray-400 hover:text-white transition">Marketplace</Link>
-          <Link href="/publish" className="text-sm bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg transition">Agent を公開する</Link>
-        </div>
-      </nav>
+      <Nav />
 
       {/* HERO */}
       <div className="flex flex-col items-center justify-center text-center px-6 py-32">
@@ -23,9 +14,9 @@ export default function Home() {
         </div>
 
         <h1 className="text-6xl font-bold tracking-tight mb-6 leading-tight">
-          AIチームを、<br />
+          AIチームを<br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
-            買って動かす。
+            買って動かす
           </span>
         </h1>
 

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -30,14 +30,18 @@ export default function AgentDetailPage() {
         setAgent(data.agent);
         setLoading(false);
       });
+
+    // すでにインストール済みか確認
+    const existing = JSON.parse(localStorage.getItem("installedAgents") || "[]");
+    setInstalled(existing.some((a: Agent) => a.id === id));
   }, [id]);
 
   function install() {
     if (!agent) return;
-    const existing = JSON.parse(localStorage.getItem("installed_agents") || "[]");
+    const existing = JSON.parse(localStorage.getItem("installedAgents") || "[]");
     const already = existing.find((a: Agent) => a.id === agent.id);
     if (!already) {
-      localStorage.setItem("installed_agents", JSON.stringify([...existing, agent]));
+      localStorage.setItem("installedAgents", JSON.stringify([...existing, agent]));
     }
     setInstalled(true);
   }
@@ -98,19 +102,27 @@ export default function AgentDetailPage() {
                 {agent.price === 0 ? "無料" : `$${agent.price} / 回`}
               </div>
               <div className="text-sm text-gray-400">
-                {agent.price === 0 ? "誰でも無料で使えます" : "使用するたびに課金されます"}
+                {agent.price === 0 ? "今すぐ無料で使えます" : "使用するたびに課金されます"}
               </div>
             </div>
-            <button
-              onClick={install}
-              className={`px-8 py-3 rounded-xl font-medium transition text-lg ${
-                installed
-                  ? "bg-green-600 cursor-default"
-                  : "bg-blue-600 hover:bg-blue-500"
-              }`}
-            >
-              {installed ? "✓ インストール済み" : "インストール"}
-            </button>
+            <div className="flex flex-col items-end gap-3">
+              <button
+                onClick={install}
+                disabled={installed}
+                className={`px-8 py-3 rounded-xl font-medium transition text-lg ${
+                  installed
+                    ? "bg-green-600 cursor-default"
+                    : "bg-blue-600 hover:bg-blue-500"
+                }`}
+              >
+                {installed ? "✓ インストール済み" : "インストール"}
+              </button>
+              {installed && (
+                <Link href="/workspace" className="text-sm text-blue-400 hover:text-blue-300 transition">
+                  Workspaceで使う →
+                </Link>
+              )}
+            </div>
           </div>
         </div>
 
