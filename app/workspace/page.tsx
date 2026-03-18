@@ -1,5 +1,7 @@
 ﻿"use client";
 
+import { Suspense } from "react";
+
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSession, signIn } from "next-auth/react";
@@ -39,7 +41,7 @@ function categoryColor(cat: string): string {
   return CATEGORY_COLORS[cat.toLowerCase()] ?? CATEGORY_COLORS.other;
 }
 
-export default function WorkspacePage() {
+function WorkspaceInner() {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const [agents, setAgents] = useState<InstalledAgent[]>([]);
@@ -392,5 +394,15 @@ export default function WorkspacePage() {
         @media (max-width: 640px) { .sidebar { display: none; } .main-panel { padding: 24px 20px; } }
       `}</style>
     </div>
+  );
+}
+
+
+
+export default function WorkspacePage() {
+  return (
+    <Suspense fallback={<div style={{background:"#0a0b0f",height:"100vh"}}/>}>
+      <WorkspaceInner />
+    </Suspense>
   );
 }
