@@ -2,6 +2,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
+import { AppProvider } from "@/lib/theme";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Lattice OS",
-  description: "AIエージェントのApp Store",
+  title: "Lattice OS - AI Agent App Store",
+  description: "The marketplace where developers publish AI mini-apps and anyone can use them instantly.",
 };
 
 export default function RootLayout({
@@ -27,7 +28,9 @@ export default function RootLayout({
     <html lang="ja">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <SessionProvider>
-          {children}
+          <AppProvider>
+            {children}
+          </AppProvider>
         </SessionProvider>
       </body>
     </html>
