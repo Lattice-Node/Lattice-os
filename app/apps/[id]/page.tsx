@@ -54,6 +54,11 @@ export default function AppPage() {
   const [running, setRunning] = useState(false);
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showSchedule, setShowSchedule] = useState(false);
+  const [frequency, setFrequency] = useState("weekly");
+  const [scheduleEmail, setScheduleEmail] = useState("");
+  const [scheduleLoading, setScheduleLoading] = useState(false);
+  const [scheduleSuccess, setScheduleSuccess] = useState(false);
   const fileRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   useEffect(() => {
@@ -70,7 +75,11 @@ export default function AppPage() {
         } catch { setFields([]); }
         setLoading(false);
       });
-  }, [id]);
+
+    if (session?.user?.email) {
+      setScheduleEmail(session.user.email);
+    }
+  }, [id, session]);
 
   const handleFileChange = async (fieldId: string, file: File | null) => {
     if (!file) return;
@@ -82,6 +91,36 @@ export default function AppPage() {
       setStatus(null);
     } catch {
       setStatus("❌ ファイルの読み込みに失敗しました");
+    }
+  };
+
+  const handleSchedule = async () => {
+    if (!session) { signIn("github"); return; }
+    if (!scheduleEmail) { setStatus("❌ メールアドレスを入力してください"); return; }
+
+    setScheduleLoading(true);
+    try {
+      const res = await fetch("/api/subscriptions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          agentId: agent?.id,
+          frequency,
+          inputValues: values,
+          userEmail: scheduleEmail,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setScheduleSuccess(true);
+        setShowSchedule(false);
+      } else {
+        setStatus("❌ " + data.error);
+      }
+    } catch {
+      setStatus("❌ 定期実行の設定に失敗しました");
+    } finally {
+      setScheduleLoading(false);
     }
   };
 
@@ -132,9 +171,7 @@ export default function AppPage() {
 
     const fieldSummary = fields.map((f) => {
       const val = values[f.id];
-      if (f.type === "file" && val) {
-        return `${f.label}（ファイル内容）:\n${val.slice(0, 8000)}`;
-      }
+      if (f.type === "file" && val) return `${f.label}（ファイル内容）:\n${val.slice(0, 8000)}`;
       return `${f.label}: ${val}`;
     }).join("\n\n");
 
@@ -144,12 +181,7 @@ export default function AppPage() {
       const res = await fetch("/api/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          agentId: agent.id,
-          agentPrompt: agent.prompt,
-          agentName: agent.name,
-          task,
-        }),
+        body: JSON.stringify({ agentId: agent.id, agentPrompt: agent.prompt, agentName: agent.name, task }),
       });
 
       if (!res.ok || !res.body) { setStatus("❌ 実行エラー"); setRunning(false); return; }
@@ -203,6 +235,7 @@ export default function AppPage() {
       </nav>
 
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "48px 24px" }}>
+        {/* AGENT HEADER */}
         <div style={{ marginBottom: 40 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
             <div style={{ width: 56, height: 56, background: "#1a1e2e", border: "1px solid #2a3050", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>🤖</div>
@@ -222,7 +255,19 @@ export default function AppPage() {
           <p style={{ fontSize: 12, color: "#3a3d52", marginTop: 8 }}>by {agent.authorName}</p>
         </div>
 
-        <div style={{ background: "#0f1017", border: "1px solid #1e2030", borderRadius: 16, padding: "28px", marginBottom: 24 }}>
+        {/* SUCCESS MESSAGE */}
+        {scheduleSuccess && (
+          <div style={{ background: "#1a2e1a", border: "1px solid #4caf5044", borderRadius: 12, padding: "16px 20px", marginBottom: 24, display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 20 }}>✅</span>
+            <div>
+              <div style={{ fontWeight: 700, color: "#4caf50", fontSize: 14 }}>定期実行を設定しました</div>
+              <div style={{ fontSize: 13, color: "#6a7090", marginTop: 2 }}>結果は{scheduleEmail}にメールで送信されます</div>
+            </div>
+          </div>
+        )}
+
+        {/* INPUT FORM */}
+        <div style={{ background: "#0f1017", border: "1px solid #1e2030", borderRadius: 16, padding: "28px", marginBottom: 16 }}>
           <div style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#4a5068", marginBottom: 20 }}>情報を入力</div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
@@ -232,16 +277,10 @@ export default function AppPage() {
                   {field.label}
                   {field.required && <span style={{ color: "#ff6b6b", marginLeft: 4 }}>*</span>}
                 </label>
-
                 {field.type === "file" ? (
                   <div
                     onClick={() => fileRefs.current[field.id]?.click()}
-                    style={{
-                      background: "#151722", border: "2px dashed #1e2030", borderRadius: 8,
-                      padding: "24px", textAlign: "center", cursor: "pointer", transition: "border-color 0.15s",
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#4d9fff44")}
-                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#1e2030")}
+                    style={{ background: "#151722", border: "2px dashed #1e2030", borderRadius: 8, padding: "24px", textAlign: "center", cursor: "pointer" }}
                   >
                     <input
                       type="file"
@@ -296,23 +335,100 @@ export default function AppPage() {
             ))}
           </div>
 
-          <button
-            onClick={handleRun}
-            disabled={running}
-            style={{
-              width: "100%", marginTop: 24,
-              background: running ? "#1e2030" : "#4d9fff",
-              color: "#fff", border: "none", borderRadius: 10, padding: "14px",
-              fontSize: 16, fontWeight: 700, cursor: running ? "not-allowed" : "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-            }}
-          >
-            {running ? (
-              <><span style={{ width: 14, height: 14, border: "2px solid #ffffff44", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} />処理中...</>
-            ) : !session ? "🔑 ログインして実行" : agent.price > 0 ? `💳 $${agent.price} で実行` : "▶ 実行する"}
-          </button>
+          {/* BUTTONS */}
+          <div style={{ display: "flex", gap: 10, marginTop: 24 }}>
+            <button
+              onClick={handleRun}
+              disabled={running}
+              style={{
+                flex: 1, background: running ? "#1e2030" : "#4d9fff",
+                color: "#fff", border: "none", borderRadius: 10, padding: "14px",
+                fontSize: 15, fontWeight: 700, cursor: running ? "not-allowed" : "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              }}
+            >
+              {running ? (
+                <><span style={{ width: 14, height: 14, border: "2px solid #ffffff44", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} />処理中...</>
+              ) : !session ? "🔑 ログインして実行" : agent.price > 0 ? `💳 $${agent.price} で実行` : "▶ 今すぐ実行"}
+            </button>
+
+            <button
+              onClick={() => setShowSchedule(!showSchedule)}
+              style={{
+                background: showSchedule ? "#1a2e1a" : "#0f1017",
+                color: showSchedule ? "#4caf50" : "#6a7090",
+                border: `1px solid ${showSchedule ? "#4caf5044" : "#1e2030"}`,
+                borderRadius: 10, padding: "14px 18px",
+                fontSize: 13, fontWeight: 700, cursor: "pointer",
+                transition: "all 0.15s",
+              }}
+            >
+              🔁 定期実行
+            </button>
+          </div>
         </div>
 
+        {/* SCHEDULE PANEL */}
+        {showSchedule && (
+          <div style={{ background: "#0f1017", border: "1px solid #1e2a1a", borderRadius: 16, padding: "24px", marginBottom: 16 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#4caf50", marginBottom: 16 }}>🔁 定期実行を設定</div>
+            <p style={{ fontSize: 13, color: "#6a7090", marginBottom: 20, lineHeight: 1.6 }}>
+              設定した頻度で自動実行して、結果をメールでお届けします。
+            </p>
+
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#c8cad8", marginBottom: 8 }}>実行頻度</label>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                {[
+                  { value: "daily", label: "毎日" },
+                  { value: "weekly", label: "毎週" },
+                  { value: "monthly", label: "毎月" },
+                ].map((f) => (
+                  <button
+                    key={f.value}
+                    onClick={() => setFrequency(f.value)}
+                    style={{
+                      padding: "10px",
+                      borderRadius: 8,
+                      border: `1px solid ${frequency === f.value ? "#4caf50" : "#1e2030"}`,
+                      background: frequency === f.value ? "#1a2e1a" : "transparent",
+                      color: frequency === f.value ? "#4caf50" : "#6a7090",
+                      fontSize: 13, fontWeight: 700, cursor: "pointer",
+                    }}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#c8cad8", marginBottom: 8 }}>結果の送信先メール</label>
+              <input
+                type="email"
+                value={scheduleEmail}
+                onChange={(e) => setScheduleEmail(e.target.value)}
+                placeholder="your@email.com"
+                style={{ width: "100%", background: "#151722", border: "1px solid #1e2030", borderRadius: 8, padding: "10px 14px", color: "#e8e9ef", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+              />
+            </div>
+
+            <button
+              onClick={handleSchedule}
+              disabled={scheduleLoading}
+              style={{
+                width: "100%", background: "#4caf50", color: "#fff",
+                border: "none", borderRadius: 10, padding: "12px",
+                fontSize: 14, fontWeight: 700, cursor: scheduleLoading ? "not-allowed" : "pointer",
+                opacity: scheduleLoading ? 0.6 : 1,
+              }}
+            >
+              {scheduleLoading ? "設定中..." : "定期実行を開始する"}
+            </button>
+          </div>
+        )}
+
+        {/* OUTPUT */}
         {(status || output) && (
           <div style={{ background: "#0f1017", border: "1px solid #1e2030", borderRadius: 16, overflow: "hidden" }}>
             <div style={{ padding: "12px 20px", borderBottom: "1px solid #1e2030", background: "#0c0d14", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
