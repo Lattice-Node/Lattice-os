@@ -17,6 +17,38 @@ type Agent = {
 
 const CATEGORIES = ["すべて", "Research", "Writing", "Code", "Business", "Medical", "Legal", "Finance", "Custom"];
 
+const CATEGORY_ICONS: Record<string, string> = {
+  Research: "🔍",
+  Writing: "✍️",
+  Code: "💻",
+  Business: "📊",
+  Medical: "🏥",
+  Legal: "⚖️",
+  Finance: "💰",
+  Custom: "⚡",
+  default: "🧩",
+};
+
+function getCategoryIcon(category: string): string {
+  return CATEGORY_ICONS[category] ?? CATEGORY_ICONS.default;
+}
+
+const CATEGORY_COLORS: Record<string, string> = {
+  Research: "#4FC3F7",
+  Writing: "#81C784",
+  Code: "#FF8A65",
+  Business: "#CE93D8",
+  Medical: "#F06292",
+  Legal: "#FFD54F",
+  Finance: "#4DB6AC",
+  Custom: "#FF8A65",
+  default: "#90A4AE",
+};
+
+function getCategoryColor(category: string): string {
+  return CATEGORY_COLORS[category] ?? CATEGORY_COLORS.default;
+}
+
 export default function MarketplacePage() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [filtered, setFiltered] = useState<Agent[]>([]);
@@ -59,7 +91,6 @@ export default function MarketplacePage() {
           <p style={{ color: "#6a7090", fontSize: 15 }}>AIミニアプリを探して、ボタン一つで使おう</p>
         </div>
 
-        {/* SEARCH */}
         <input
           type="text"
           placeholder="Agentを検索..."
@@ -68,7 +99,6 @@ export default function MarketplacePage() {
           style={{ width: "100%", background: "#0f1017", border: "1px solid #1e2030", borderRadius: 10, padding: "12px 16px", color: "#e8e9ef", fontSize: 14, outline: "none", marginBottom: 20, boxSizing: "border-box" }}
         />
 
-        {/* CATEGORIES */}
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 32 }}>
           {CATEGORIES.map((cat) => (
             <button
@@ -85,17 +115,16 @@ export default function MarketplacePage() {
                 transition: "all 0.15s",
               }}
             >
-              {cat}
+              {cat === "すべて" ? cat : `${getCategoryIcon(cat)} ${cat}`}
             </button>
           ))}
         </div>
 
-        {/* AGENTS */}
         {loading ? (
           <div style={{ textAlign: "center", color: "#4a5068", padding: "80px 0" }}>読み込み中...</div>
         ) : filtered.length === 0 ? (
           <div style={{ textAlign: "center", padding: "80px 0" }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>🤖</div>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>🧩</div>
             <div style={{ color: "#4a5068", fontSize: 16, marginBottom: 12 }}>まだAgentがいません</div>
             <Link href="/publish" style={{ color: "#4d9fff", textDecoration: "none", fontSize: 14 }}>
               最初のAgentを公開する →
@@ -103,48 +132,85 @@ export default function MarketplacePage() {
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 16 }}>
-            {filtered.map((agent) => (
-              <Link key={agent.id} href={`/apps/${agent.id}`} style={{ textDecoration: "none" }}>
-                <div style={{
-                  background: "#0f1017",
-                  border: "1px solid #1e2030",
-                  borderRadius: 16,
-                  padding: "24px",
-                  cursor: "pointer",
-                  transition: "border-color 0.15s, transform 0.15s",
-                  height: "100%",
-                  boxSizing: "border-box",
-                }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.borderColor = "#4d9fff44";
-                    (e.currentTarget as HTMLDivElement).style.transform = "translateY(-2px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.borderColor = "#1e2030";
-                    (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 14 }}>
-                    <div style={{ width: 44, height: 44, background: "#1a1e2e", border: "1px solid #2a3050", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>🤖</div>
-                    <span style={{ fontSize: 11, background: "#1a1e2e", color: "#6a7090", padding: "3px 8px", borderRadius: 100 }}>{agent.category}</span>
-                  </div>
-                  <h3 style={{ fontWeight: 700, fontSize: 16, color: "#e8e9ef", marginBottom: 8 }}>{agent.name}</h3>
-                  <p style={{ color: "#6a7090", fontSize: 13, lineHeight: 1.6, marginBottom: 16, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{agent.description}</p>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 14, borderTop: "1px solid #1e2030" }}>
-                    <span style={{ fontSize: 12, color: "#4a5068" }}>by {agent.authorName}</span>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <span style={{ fontSize: 12, color: "#4a5068" }}>{agent.useCount}回使用</span>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: agent.price === 0 ? "#4caf50" : "#4d9fff" }}>
-                        {agent.price === 0 ? "無料" : `$${agent.price}`}
+            {filtered.map((agent) => {
+              const color = getCategoryColor(agent.category);
+              const icon = getCategoryIcon(agent.category);
+              return (
+                <Link key={agent.id} href={`/apps/${agent.id}`} style={{ textDecoration: "none" }}>
+                  <div
+                    style={{
+                      background: "#0f1017",
+                      border: "1px solid #1e2030",
+                      borderRadius: 16,
+                      padding: "24px",
+                      cursor: "pointer",
+                      transition: "border-color 0.15s, transform 0.15s",
+                      height: "100%",
+                      boxSizing: "border-box",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLDivElement).style.borderColor = color + "66";
+                      (e.currentTarget as HTMLDivElement).style.transform = "translateY(-2px)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLDivElement).style.borderColor = "#1e2030";
+                      (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 16 }}>
+                      <div style={{
+                        width: 48, height: 48,
+                        background: color + "18",
+                        border: `1px solid ${color}33`,
+                        borderRadius: 14,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 22,
+                      }}>
+                        {icon}
+                      </div>
+                      <span style={{
+                        fontSize: 11,
+                        background: color + "18",
+                        color: color,
+                        padding: "3px 10px",
+                        borderRadius: 100,
+                        fontWeight: 700,
+                        border: `1px solid ${color}33`,
+                      }}>
+                        {agent.category}
                       </span>
                     </div>
+
+                    <h3 style={{ fontWeight: 700, fontSize: 16, color: "#e8e9ef", marginBottom: 8 }}>{agent.name}</h3>
+                    <p style={{
+                      color: "#6a7090", fontSize: 13, lineHeight: 1.6, marginBottom: 16,
+                      display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden"
+                    }}>{agent.description}</p>
+
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 14, borderTop: `1px solid #1e2030` }}>
+                      <span style={{ fontSize: 12, color: "#4a5068" }}>by {agent.authorName}</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <span style={{ fontSize: 12, color: "#4a5068" }}>{agent.useCount}回</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: agent.price === 0 ? "#4caf50" : "#4d9fff" }}>
+                          {agent.price === 0 ? "無料" : `$${agent.price}`}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div style={{
+                      marginTop: 14,
+                      background: color + "18",
+                      border: `1px solid ${color}33`,
+                      borderRadius: 8, padding: "8px",
+                      textAlign: "center", fontSize: 13, fontWeight: 700,
+                      color: color,
+                    }}>
+                      使ってみる →
+                    </div>
                   </div>
-                  <div style={{ marginTop: 14, background: "#4d9fff", borderRadius: 8, padding: "8px", textAlign: "center", fontSize: 13, fontWeight: 700, color: "#fff" }}>
-                    使ってみる →
-                  </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
