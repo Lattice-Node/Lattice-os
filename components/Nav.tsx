@@ -15,7 +15,8 @@ export default function Nav() {
       <div className="flex items-center gap-6">
         <Link href="/marketplace" className="text-sm text-gray-400 hover:text-white transition">Marketplace</Link>
         <Link href="/workspace" className="text-sm text-gray-400 hover:text-white transition">Workspace</Link>
-        <Link href="/publish" className="text-sm text-gray-400 hover:text-white transition">Agentを公開する</Link>
+        <Link href="/dashboard" className="text-sm text-gray-400 hover:text-white transition">ダッシュボード</Link>
+          <Link href="/publish" className="text-sm text-gray-400 hover:text-white transition">Agentを公開する</Link>
         {session ? (
           <div className="flex items-center gap-3">
             <img src={session.user?.image ?? ""} className="w-7 h-7 rounded-full" alt="avatar" />
@@ -42,3 +43,4 @@ export default function Nav() {
     </nav>
   );
 }
+

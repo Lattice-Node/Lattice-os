@@ -14,6 +14,7 @@ model Agent {
   category    String
   prompt      String
   authorName  String   @default("anonymous")
+  authorId    String   @default("")
   price       Float    @default(0)
   useCount    Int      @default(0)
   createdAt   DateTime @default(now())

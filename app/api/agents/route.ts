@@ -1,10 +1,16 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const mine = searchParams.get("mine");
+    const session = await auth();
+
     const agents = await prisma.agent.findMany({
       orderBy: { createdAt: "desc" },
+      where: mine && session?.user?.id ? { authorId: session.user.id } : undefined,
     });
     return NextResponse.json({ success: true, agents });
   } catch (error) {
@@ -17,6 +23,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const session = await auth();
     const body = await req.json();
     const { name, description, category, prompt, authorName, price } = body;
 
@@ -33,11 +40,11 @@ export async function POST(req: Request) {
         description,
         category,
         prompt,
-        authorName: authorName || "anonymous",
+        authorName: authorName || session?.user?.name || "anonymous",
+        authorId: session?.user?.id || "",
         price: price || 0,
       },
     });
-
     return NextResponse.json({ success: true, agent });
   } catch (error) {
     return NextResponse.json(
