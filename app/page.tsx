@@ -1,7 +1,27 @@
 ﻿import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 import Nav from "@/components/Nav";
 
-export default function Home() {
+export const revalidate = 60; // 60秒キャッシュ
+
+async function getStats() {
+  const [agentCount, purchaseCount] = await Promise.all([
+    prisma.agent.count(),
+    prisma.purchase.count(),
+  ]);
+  const useCountResult = await prisma.agent.aggregate({
+    _sum: { useCount: true },
+  });
+  return {
+    agentCount,
+    purchaseCount,
+    totalUseCount: useCountResult._sum.useCount ?? 0,
+  };
+}
+
+export default async function Home() {
+  const { agentCount, purchaseCount, totalUseCount } = await getStats();
+
   return (
     <main className="min-h-screen bg-[#020817] text-white">
       <Nav />
@@ -38,12 +58,12 @@ export default function Home() {
       {/* STATS */}
       <div className="max-w-4xl mx-auto px-6 pb-20 grid grid-cols-3 gap-6">
         {[
-          { label: "登録Agent数", value: "0" },
-          { label: "開発者数", value: "0" },
-          { label: "累計実行回数", value: "0" },
+          { label: "登録Agent数", value: agentCount },
+          { label: "開発者数", value: purchaseCount },
+          { label: "累計実行回数", value: totalUseCount },
         ].map((stat) => (
           <div key={stat.label} className="bg-white/5 border border-white/10 rounded-2xl p-6 text-center">
-            <div className="text-4xl font-bold text-white mb-2">{stat.value}</div>
+            <div className="text-4xl font-bold text-white mb-2">{stat.value.toLocaleString()}</div>
             <div className="text-gray-400 text-sm">{stat.label}</div>
           </div>
         ))}
