@@ -1,9 +1,10 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import { useSession, signIn } from "next-auth/react";
 import Link from "next/link";
+import { parseFile } from "@/lib/fileParser";
 
 type Field = {
   id: string;
@@ -47,11 +48,13 @@ export default function AppPage() {
   const [agent, setAgent] = useState<Agent | null>(null);
   const [fields, setFields] = useState<Field[]>([]);
   const [values, setValues] = useState<Record<string, string>>({});
+  const [fileNames, setFileNames] = useState<Record<string, string>>({});
   const [output, setOutput] = useState("");
   const [status, setStatus] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(true);
+  const fileRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   useEffect(() => {
     fetch(`/api/agents/${id}`)
@@ -64,12 +67,23 @@ export default function AppPage() {
           const initial: Record<string, string> = {};
           f.forEach((field: Field) => { initial[field.id] = ""; });
           setValues(initial);
-        } catch {
-          setFields([]);
-        }
+        } catch { setFields([]); }
         setLoading(false);
       });
   }, [id]);
+
+  const handleFileChange = async (fieldId: string, file: File | null) => {
+    if (!file) return;
+    setFileNames((prev) => ({ ...prev, [fieldId]: file.name }));
+    setStatus("📄 ファイルを読み込み中...");
+    try {
+      const text = await parseFile(file);
+      setValues((prev) => ({ ...prev, [fieldId]: text }));
+      setStatus(null);
+    } catch {
+      setStatus("❌ ファイルの読み込みに失敗しました");
+    }
+  };
 
   const handleRun = async () => {
     if (!agent || running) return;
@@ -116,8 +130,14 @@ export default function AppPage() {
       return;
     }
 
-    // Prompt Agent
-    const fieldSummary = fields.map((f) => `${f.label}: ${values[f.id]}`).join("\n");
+    const fieldSummary = fields.map((f) => {
+      const val = values[f.id];
+      if (f.type === "file" && val) {
+        return `${f.label}（ファイル内容）:\n${val.slice(0, 8000)}`;
+      }
+      return `${f.label}: ${val}`;
+    }).join("\n\n");
+
     const task = `以下の情報をもとに処理してください:\n\n${fieldSummary}`;
 
     try {
@@ -132,11 +152,7 @@ export default function AppPage() {
         }),
       });
 
-      if (!res.ok || !res.body) {
-        setStatus("❌ 実行エラー");
-        setRunning(false);
-        return;
-      }
+      if (!res.ok || !res.body) { setStatus("❌ 実行エラー"); setRunning(false); return; }
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -166,42 +182,27 @@ export default function AppPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div style={{ minHeight: "100vh", background: "#020817", display: "flex", alignItems: "center", justifyContent: "center", color: "#4a5068", fontFamily: "sans-serif" }}>
-        読み込み中...
-      </div>
-    );
-  }
-
-  if (!agent) {
-    return (
-      <div style={{ minHeight: "100vh", background: "#020817", display: "flex", alignItems: "center", justifyContent: "center", color: "#4a5068", fontFamily: "sans-serif" }}>
-        Agentが見つかりません
-      </div>
-    );
-  }
+  if (loading) return <div style={{ minHeight: "100vh", background: "#020817", display: "flex", alignItems: "center", justifyContent: "center", color: "#4a5068" }}>読み込み中...</div>;
+  if (!agent) return <div style={{ minHeight: "100vh", background: "#020817", display: "flex", alignItems: "center", justifyContent: "center", color: "#4a5068" }}>Agentが見つかりません</div>;
 
   return (
     <div style={{ minHeight: "100vh", background: "#020817", color: "#e8e9ef", fontFamily: "'DM Sans', 'Hiragino Sans', sans-serif" }}>
-      {/* NAV */}
       <nav style={{ borderBottom: "1px solid #1e2030", padding: "14px 32px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", color: "#e8e9ef" }}>
           <span style={{ fontSize: 18, color: "#4d9fff" }}>◈</span>
-          <span style={{ fontWeight: 700, fontSize: 16 }}>Lattice OS</span>
+          <span style={{ fontWeight: 700, fontSize: 16 }}>Lattice</span>
         </Link>
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
           <Link href="/marketplace" style={{ fontSize: 13, color: "#6a7090", textDecoration: "none" }}>Marketplace</Link>
           {session ? (
             <img src={session.user?.image ?? ""} style={{ width: 28, height: 28, borderRadius: "50%" }} alt="avatar" />
           ) : (
-            <button onClick={() => signIn("github")} style={{ background: "#fff", color: "#000", border: "none", borderRadius: 8, padding: "6px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>ログイン</button>
+            <button onClick={() => signIn("github")} style={{ background: "#4d9fff", color: "#fff", border: "none", borderRadius: 8, padding: "6px 14px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>ログイン</button>
           )}
         </div>
       </nav>
 
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "48px 24px" }}>
-        {/* APP HEADER */}
         <div style={{ marginBottom: 40 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
             <div style={{ width: 56, height: 56, background: "#1a1e2e", border: "1px solid #2a3050", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>🤖</div>
@@ -221,7 +222,6 @@ export default function AppPage() {
           <p style={{ fontSize: 12, color: "#3a3d52", marginTop: 8 }}>by {agent.authorName}</p>
         </div>
 
-        {/* INPUT FORM */}
         <div style={{ background: "#0f1017", border: "1px solid #1e2030", borderRadius: 16, padding: "28px", marginBottom: 24 }}>
           <div style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#4a5068", marginBottom: 20 }}>情報を入力</div>
 
@@ -232,7 +232,39 @@ export default function AppPage() {
                   {field.label}
                   {field.required && <span style={{ color: "#ff6b6b", marginLeft: 4 }}>*</span>}
                 </label>
-                {field.type === "textarea" ? (
+
+                {field.type === "file" ? (
+                  <div
+                    onClick={() => fileRefs.current[field.id]?.click()}
+                    style={{
+                      background: "#151722", border: "2px dashed #1e2030", borderRadius: 8,
+                      padding: "24px", textAlign: "center", cursor: "pointer", transition: "border-color 0.15s",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#4d9fff44")}
+                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#1e2030")}
+                  >
+                    <input
+                      type="file"
+                      accept=".xlsx,.xls,.csv,.pdf,.txt"
+                      ref={(el) => { fileRefs.current[field.id] = el; }}
+                      onChange={(e) => handleFileChange(field.id, e.target.files?.[0] ?? null)}
+                      style={{ display: "none" }}
+                    />
+                    {fileNames[field.id] ? (
+                      <div>
+                        <div style={{ fontSize: 20, marginBottom: 6 }}>📄</div>
+                        <div style={{ fontSize: 13, color: "#4d9fff", fontWeight: 600 }}>{fileNames[field.id]}</div>
+                        <div style={{ fontSize: 11, color: "#4a5068", marginTop: 4 }}>クリックして変更</div>
+                      </div>
+                    ) : (
+                      <div>
+                        <div style={{ fontSize: 24, marginBottom: 8 }}>📁</div>
+                        <div style={{ fontSize: 13, color: "#6a7090" }}>クリックしてファイルを選択</div>
+                        <div style={{ fontSize: 11, color: "#4a5068", marginTop: 4 }}>Excel・CSV・PDF・TXTに対応</div>
+                      </div>
+                    )}
+                  </div>
+                ) : field.type === "textarea" ? (
                   <textarea
                     placeholder={field.placeholder}
                     value={values[field.id] || ""}
@@ -268,61 +300,34 @@ export default function AppPage() {
             onClick={handleRun}
             disabled={running}
             style={{
-              width: "100%",
-              marginTop: 24,
+              width: "100%", marginTop: 24,
               background: running ? "#1e2030" : "#4d9fff",
-              color: "#fff",
-              border: "none",
-              borderRadius: 10,
-              padding: "14px",
-              fontSize: 16,
-              fontWeight: 700,
-              cursor: running ? "not-allowed" : "pointer",
-              transition: "background 0.15s",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
+              color: "#fff", border: "none", borderRadius: 10, padding: "14px",
+              fontSize: 16, fontWeight: 700, cursor: running ? "not-allowed" : "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             }}
           >
             {running ? (
-              <>
-                <span style={{ width: 14, height: 14, border: "2px solid #ffffff44", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} />
-                処理中...
-              </>
+              <><span style={{ width: 14, height: 14, border: "2px solid #ffffff44", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.7s linear infinite" }} />処理中...</>
             ) : !session ? "🔑 ログインして実行" : agent.price > 0 ? `💳 $${agent.price} で実行` : "▶ 実行する"}
           </button>
         </div>
 
-        {/* OUTPUT */}
         {(status || output) && (
           <div style={{ background: "#0f1017", border: "1px solid #1e2030", borderRadius: 16, overflow: "hidden" }}>
             <div style={{ padding: "12px 20px", borderBottom: "1px solid #1e2030", background: "#0c0d14", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <span style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#4a5068" }}>
                 {running ? "⚡ 処理中..." : done ? "✅ 完了" : "出力"}
               </span>
-              {output && (
-                <button onClick={() => navigator.clipboard.writeText(output)} style={{ background: "none", border: "1px solid #1e2030", color: "#4a5068", borderRadius: 6, fontSize: 11, padding: "4px 10px", cursor: "pointer" }}>
-                  コピー
-                </button>
-              )}
+              {output && <button onClick={() => navigator.clipboard.writeText(output)} style={{ background: "none", border: "1px solid #1e2030", color: "#4a5068", borderRadius: 6, fontSize: 11, padding: "4px 10px", cursor: "pointer" }}>コピー</button>}
             </div>
-            {status && (
-              <div style={{ padding: "10px 20px", fontSize: 13, color: "#4d9fff", borderBottom: "1px solid #1e2030", background: "#0d1220" }}>
-                {status}
-              </div>
-            )}
-            {output && (
-              <div
-                style={{ padding: "20px", fontSize: 14, lineHeight: 1.8, color: "#c8cad8", maxHeight: 600, overflowY: "auto" }}
-                dangerouslySetInnerHTML={{ __html: renderMarkdown(output) }}
-              />
-            )}
+            {status && <div style={{ padding: "10px 20px", fontSize: 13, color: "#4d9fff", borderBottom: "1px solid #1e2030", background: "#0d1220" }}>{status}</div>}
+            {output && <div style={{ padding: "20px", fontSize: 14, lineHeight: 1.8, color: "#c8cad8", maxHeight: 600, overflowY: "auto" }} dangerouslySetInnerHTML={{ __html: renderMarkdown(output) }} />}
           </div>
         )}
 
         <div style={{ marginTop: 24, textAlign: "center" }}>
-          <Link href={`/marketplace/${agent.id}`} style={{ fontSize: 13, color: "#4a5068", textDecoration: "none" }}>詳細ページを見る →</Link>
+          <Link href="/marketplace" style={{ fontSize: 13, color: "#4a5068", textDecoration: "none" }}>← Marketplaceに戻る</Link>
         </div>
       </div>
 

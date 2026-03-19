@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSession, signIn } from "next-auth/react";
 
 const CATEGORIES = ["Research", "Writing", "Code", "Business", "Medical", "Legal", "Finance", "Custom"];
-const FIELD_TYPES = ["text", "textarea", "number", "select", "url", "email"];
+const FIELD_TYPES = ["text", "textarea", "number", "select", "url", "email", "file"];
 
 type Field = {
   id: string;
@@ -332,3 +332,4 @@ export default function PublishPage() {
     </main>
   );
 }
+
