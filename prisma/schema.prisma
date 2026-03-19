@@ -12,7 +12,10 @@ model Agent {
   name        String
   description String
   category    String
-  prompt      String
+  prompt      String   @default("")
+  agentType   String   @default("prompt")
+  webhookUrl  String   @default("")
+  fields      String   @default("[]")
   authorName  String   @default("anonymous")
   authorId    String   @default("")
   price       Float    @default(0)
