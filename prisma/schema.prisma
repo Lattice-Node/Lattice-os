@@ -29,3 +29,16 @@ model Purchase {
   userId    String
   createdAt DateTime @default(now())
 }
+
+model Subscription {
+  id           String   @id @default(cuid())
+  userId       String
+  userEmail    String
+  agentId      String
+  frequency    String
+  inputValues  String
+  active       Boolean  @default(true)
+  lastRunAt    DateTime?
+  nextRunAt    DateTime
+  createdAt    DateTime @default(now())
+}
