@@ -7,17 +7,13 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const mine = searchParams.get("mine");
     const session = await auth();
-
     const agents = await prisma.agent.findMany({
       orderBy: { createdAt: "desc" },
       where: mine && session?.user?.id ? { authorId: session.user.id } : undefined,
     });
     return NextResponse.json({ success: true, agents });
   } catch (error) {
-    return NextResponse.json(
-      { success: false, error: "Failed to fetch agents" },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: "Failed to fetch agents" }, { status: 500 });
   }
 }
 
@@ -25,13 +21,10 @@ export async function POST(req: Request) {
   try {
     const session = await auth();
     const body = await req.json();
-    const { name, description, category, prompt, authorName, price } = body;
+    const { name, description, category, prompt, authorName, price, agentType, webhookUrl, fields } = body;
 
-    if (!name || !description || !category || !prompt) {
-      return NextResponse.json(
-        { success: false, error: "必須項目が不足しています" },
-        { status: 400 }
-      );
+    if (!name || !description || !category) {
+      return NextResponse.json({ success: false, error: "必須項目が不足しています" }, { status: 400 });
     }
 
     const agent = await prisma.agent.create({
@@ -39,7 +32,10 @@ export async function POST(req: Request) {
         name,
         description,
         category,
-        prompt,
+        prompt: prompt || "",
+        agentType: agentType || "prompt",
+        webhookUrl: webhookUrl || "",
+        fields: fields || "[]",
         authorName: authorName || session?.user?.name || "anonymous",
         authorId: session?.user?.id || "",
         price: price || 0,
@@ -47,9 +43,6 @@ export async function POST(req: Request) {
     });
     return NextResponse.json({ success: true, agent });
   } catch (error) {
-    return NextResponse.json(
-      { success: false, error: "Failed to create agent" },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: "Failed to create agent" }, { status: 500 });
   }
 }
