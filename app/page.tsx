@@ -42,11 +42,19 @@ export default async function Home() {
 
   return (
     <main style={{ minHeight: "100vh", background: "#080b14", color: "#e8eaf0", fontFamily: "'DM Sans', 'Hiragino Sans', 'Noto Sans JP', sans-serif", overflowX: "hidden" }}>
+      <style>{`
+        .prompt-card { transition: border-color 0.15s; }
+        .prompt-card:hover { border-color: #3b82f655 !important; }
+        .btn-primary { transition: opacity 0.15s; }
+        .btn-primary:hover { opacity: 0.85; }
+        .btn-secondary { transition: border-color 0.15s; }
+        .btn-secondary:hover { border-color: #4a5278 !important; }
+        .link-blue:hover { opacity: 0.75; }
+      `}</style>
       <Nav />
 
-      {/* ── HERO ── */}
+      {/* HERO */}
       <section style={{ position: "relative", textAlign: "center", padding: "96px 24px 80px", maxWidth: 860, margin: "0 auto" }}>
-        {/* 背景グロー */}
         <div style={{ position: "absolute", top: 40, left: "50%", transform: "translateX(-50%)", width: 600, height: 300, background: "radial-gradient(ellipse, #2563eb22 0%, transparent 70%)", pointerEvents: "none" }} />
 
         <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#2563eb14", border: "1px solid #2563eb30", borderRadius: 100, padding: "5px 14px", fontSize: 12, color: "#60a5fa", marginBottom: 28, letterSpacing: "0.04em", fontWeight: 600, textTransform: "uppercase" }}>
@@ -65,16 +73,15 @@ export default async function Home() {
         </p>
 
         <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-          <Link href="/marketplace" style={{ background: "#2563eb", color: "#fff", textDecoration: "none", padding: "13px 28px", borderRadius: 10, fontSize: 15, fontWeight: 700, display: "inline-block" }}>
+          <Link href="/marketplace" className="btn-primary" style={{ background: "#2563eb", color: "#fff", textDecoration: "none", padding: "13px 28px", borderRadius: 10, fontSize: 15, fontWeight: 700, display: "inline-block" }}>
             プロンプトを探す →
           </Link>
-          <Link href="/publish" style={{ background: "transparent", color: "#e8eaf0", textDecoration: "none", padding: "13px 28px", borderRadius: 10, fontSize: 15, fontWeight: 700, border: "1px solid #2a2f42", display: "inline-block" }}>
+          <Link href="/publish" className="btn-secondary" style={{ background: "transparent", color: "#e8eaf0", textDecoration: "none", padding: "13px 28px", borderRadius: 10, fontSize: 15, fontWeight: 700, border: "1px solid #2a2f42", display: "inline-block" }}>
             プロンプトを販売する
           </Link>
         </div>
 
-        {/* STATS */}
-        <div style={{ display: "flex", gap: 32, justifyContent: "center", marginTop: 56, color: "#8b92a9", fontSize: 14 }}>
+        <div style={{ display: "flex", gap: 32, justifyContent: "center", marginTop: 56, color: "#8b92a9", fontSize: 14, flexWrap: "wrap" }}>
           <div><span style={{ color: "#e8eaf0", fontWeight: 800, fontSize: 22 }}>{agentCount.toLocaleString()}</span> 件のプロンプト</div>
           <div style={{ borderLeft: "1px solid #2a2f42" }} />
           <div><span style={{ color: "#e8eaf0", fontWeight: 800, fontSize: 22 }}>{totalUseCount.toLocaleString()}</span> 回実行済み</div>
@@ -83,14 +90,14 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── 人気プロンプト ── */}
+      {/* 人気プロンプト */}
       <section style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px 80px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
           <div>
             <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.02em", marginBottom: 4 }}>人気のプロンプト</h2>
             <p style={{ color: "#8b92a9", fontSize: 13 }}>もっとも使われているプロンプト</p>
           </div>
-          <Link href="/marketplace" style={{ color: "#3b82f6", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+          <Link href="/marketplace" className="link-blue" style={{ color: "#3b82f6", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
             すべて見る →
           </Link>
         </div>
@@ -101,10 +108,7 @@ export default async function Home() {
             const icon = CATEGORY_ICONS[agent.category] ?? CATEGORY_ICONS.default;
             return (
               <Link key={agent.id} href={`/apps/${agent.id}`} style={{ textDecoration: "none" }}>
-                <div style={{ background: "#0d1120", border: "1px solid #1c2136", borderRadius: 14, padding: "20px", transition: "border-color 0.15s", cursor: "pointer" }}
-                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = color + "55"}
-                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderColor = "#1c2136"}
-                >
+                <div className="prompt-card" style={{ background: "#0d1120", border: "1px solid #1c2136", borderRadius: 14, padding: "20px", cursor: "pointer" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
                     <div style={{ width: 40, height: 40, background: color + "18", border: `1px solid ${color}30`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>
                       {icon}
@@ -127,7 +131,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── 使い方 ── */}
+      {/* 使い方 */}
       <section style={{ background: "#0d1120", borderTop: "1px solid #1c2136", borderBottom: "1px solid #1c2136", padding: "64px 24px" }}>
         <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
           <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.02em", marginBottom: 48 }}>3ステップで始められる</h2>
@@ -147,11 +151,11 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ── CTA ── */}
+      {/* CTA */}
       <section style={{ textAlign: "center", padding: "80px 24px" }}>
         <h2 style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-0.03em", marginBottom: 12 }}>プロンプトで稼ぐ、一番シンプルな方法</h2>
         <p style={{ color: "#8b92a9", fontSize: 14, marginBottom: 32 }}>今すぐ無料で始めて、あなたのプロンプトをマーケットに出そう</p>
-        <Link href="/publish" style={{ background: "#2563eb", color: "#fff", textDecoration: "none", padding: "14px 32px", borderRadius: 10, fontSize: 15, fontWeight: 700, display: "inline-block" }}>
+        <Link href="/publish" className="btn-primary" style={{ background: "#2563eb", color: "#fff", textDecoration: "none", padding: "14px 32px", borderRadius: 10, fontSize: 15, fontWeight: 700, display: "inline-block" }}>
           無料で出品する →
         </Link>
       </section>
