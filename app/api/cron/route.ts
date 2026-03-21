@@ -5,7 +5,10 @@ import { sendResultEmail } from "@/lib/mailer";
 export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
-  // auth disabled for test
+  const authHeader = req.headers.get("authorization");
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const now = new Date();
   const subscriptions = await prisma.subscription.findMany({
@@ -73,4 +76,3 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({ success: true, processed: subscriptions.length });
 }
-
