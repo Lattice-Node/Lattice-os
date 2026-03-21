@@ -8,15 +8,32 @@ const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
-
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Lattice OS - AI Agent App Store",
-  description: "The marketplace where developers publish AI mini-apps and anyone can use them instantly.",
+  title: "Lattice - 日本最大のAIプロンプトマーケット",
+  description: "AIプロンプトを売り買いできる日本最大のマーケットプレイス。ChatGPT・Claude対応のプロンプトをコピーして使うか、そのままLatticeで実行。収益の80%を受け取れる。",
+  keywords: ["AIプロンプト", "プロンプトマーケット", "ChatGPT", "Claude", "プロンプト販売", "Promptbase 日本語"],
+  openGraph: {
+    title: "Lattice - 日本最大のAIプロンプトマーケット",
+    description: "AIプロンプトを売り買いできる日本最大のマーケットプレイス。コピーして使うか、そのまま実行するか。",
+    url: "https://lattice-protocol.com",
+    siteName: "Lattice",
+    locale: "ja_JP",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Lattice - 日本最大のAIプロンプトマーケット",
+    description: "AIプロンプトを売り買いできる日本最大のマーケットプレイス。",
+    site: "@Lattice_Node",
+  },
+  alternates: {
+    canonical: "https://lattice-protocol.com",
+  },
 };
 
 export default function RootLayout({
