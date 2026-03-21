@@ -11,6 +11,6 @@ jobs:
     steps:
       - name: Run cron job
         run: |
-          response=$(curl -s -X GET "${{ secrets.NEXT_PUBLIC_APP_URL }}/api/cron" \
+          response=$(curl -s -L -X GET "${{ secrets.NEXT_PUBLIC_APP_URL }}/api/cron" \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}")
           echo "Response: $response"
