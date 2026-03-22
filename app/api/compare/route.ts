@@ -7,7 +7,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY!)
 
 async function askGPT(prompt: string): Promise<string> {
   const res = await openai.chat.completions.create({
-    model: 'gpt-4o',
+    model: 'gpt-4o-mini',
     messages: [{ role: 'user', content: prompt }],
     max_tokens: 1000,
   })
@@ -15,7 +15,7 @@ async function askGPT(prompt: string): Promise<string> {
 }
 
 async function askGemini(prompt: string): Promise<string> {
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
+  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
   const res = await model.generateContent(prompt)
   return res.response.text()
 }
@@ -28,7 +28,7 @@ async function askGrok(prompt: string): Promise<string> {
       'Authorization': `Bearer ${process.env.GROK_API_KEY}`,
     },
     body: JSON.stringify({
-      model: 'grok-2-latest',
+      model: 'grok-beta',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 1000,
     }),
