@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     where: { price: 0 },
     orderBy: { useCount: 'desc' },
     take: 20,
-    select: { id: true, name: true, description: true, category: true, prompt: true, price: true },
+    select: { id: true, name: true, description: true, category: true, price: true },
   })
 
   if (!session?.user?.id && !session?.user?.email) {
@@ -17,21 +17,17 @@ export async function GET(req: NextRequest) {
   }
 
   const userId = session.user.id ?? session.user.email ?? ''
-
   const purchases = await prisma.purchase.findMany({
     where: { userId },
     select: { agentId: true },
   })
-
   const purchasedIds = purchases.map(p => p.agentId)
-
   const purchasedAgents = purchasedIds.length > 0 ? await prisma.agent.findMany({
     where: { id: { in: purchasedIds }, price: { gt: 0 } },
-    select: { id: true, name: true, description: true, category: true, prompt: true, price: true },
+    select: { id: true, name: true, description: true, category: true, price: true },
   }) : []
 
   const all = [...purchasedAgents, ...freeAgents]
   const unique = all.filter((a, i, arr) => arr.findIndex(x => x.id === a.id) === i)
-
   return NextResponse.json({ agents: unique })
 }
