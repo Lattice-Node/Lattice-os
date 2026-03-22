@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import Link from "next/link";
 import { useSession, signIn, signOut } from "next-auth/react";
 
@@ -24,6 +24,7 @@ export default function Nav() {
 
       <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
         <Link href="/marketplace" style={{ fontSize: 13, color: "#8b92a9", textDecoration: "none" }}>プロンプト一覧</Link>
+        <Link href="/blog" style={{ fontSize: 13, color: "#8b92a9", textDecoration: "none" }}>ブログ</Link>
         <Link href="/publish" style={{ fontSize: 13, color: "#8b92a9", textDecoration: "none" }}>出品する</Link>
         {session ? (
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
