@@ -17,38 +17,38 @@ export default function AdminPostList({ posts: initial }: { posts: Post[] }) {
 
   if (posts.length === 0) {
     return (
-      <p className="text-gray-400">
+      <p style={{ color: '#4a5068' }}>
         記事がまだありません。
-        <a href="/admin/new" className="text-purple-400 underline ml-1">最初の記事を作成</a>
+        <a href="/admin/new" style={{ color: '#a78bfa', marginLeft: 4 }}>最初の記事を作成</a>
       </p>
     )
   }
 
   return (
-    <div className="space-y-3">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       {posts.map(post => (
-        <div key={post.id} className="bg-gray-900 border border-gray-800 rounded-lg px-5 py-4 flex items-center justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${post.published ? 'bg-green-900 text-green-300' : 'bg-gray-700 text-gray-400'}`}>
+        <div key={post.id} style={{ background: '#0d1120', border: '1px solid #1c2136', borderRadius: 10, padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <span style={{ fontSize: 11, padding: '2px 8px', borderRadius: 99, fontWeight: 600, background: post.published ? '#14532d' : '#1f2937', color: post.published ? '#86efac' : '#6b7280' }}>
                 {post.published ? '公開中' : '下書き'}
               </span>
-              <span className="text-xs text-gray-500">{new Date(post.createdAt).toLocaleDateString('ja-JP')}</span>
+              <span style={{ fontSize: 11, color: '#4a5068' }}>{new Date(post.createdAt).toLocaleDateString('ja-JP')}</span>
             </div>
-            <p className="font-medium truncate">{post.title}</p>
-            <p className="text-xs text-gray-500">/blog/{post.slug}</p>
+            <p style={{ fontWeight: 600, marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{post.title}</p>
+            <p style={{ fontSize: 11, color: '#4a5068' }}>/blog/{post.slug}</p>
           </div>
-          <div className="flex gap-2 shrink-0">
-            <a href={`/blog/${post.slug}`} target="_blank" className="text-xs px-3 py-1.5 rounded border border-gray-700 text-gray-400 hover:text-white">
+          <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
+            <a href={`/blog/${post.slug}`} target="_blank" style={{ fontSize: 12, padding: '5px 12px', borderRadius: 6, border: '1px solid #1c2136', color: '#8b92a9', textDecoration: 'none' }}>
               プレビュー
             </a>
-            <a href={`/admin/edit/${post.id}`} className="text-xs px-3 py-1.5 rounded border border-purple-700 text-purple-400 hover:bg-purple-900">
+            <a href={`/admin/edit/${post.id}`} style={{ fontSize: 12, padding: '5px 12px', borderRadius: 6, border: '1px solid #4c1d95', color: '#a78bfa', textDecoration: 'none' }}>
               編集
             </a>
             <button
               onClick={() => handleDelete(post.id, post.title)}
               disabled={deleting === post.id}
-              className="text-xs px-3 py-1.5 rounded border border-red-900 text-red-400 hover:bg-red-950 disabled:opacity-50"
+              style={{ fontSize: 12, padding: '5px 12px', borderRadius: 6, border: '1px solid #450a0a', color: '#f87171', background: 'transparent', cursor: 'pointer' }}
             >
               {deleting === post.id ? '削除中…' : '削除'}
             </button>

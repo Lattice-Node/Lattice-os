@@ -8,7 +8,7 @@ export default async function EditPostPage({ params }: { params: { id: string } 
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">記事を編集</h1>
+      <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 24 }}>記事を編集</h1>
       <BlogEditor
         mode="edit"
         initialData={{

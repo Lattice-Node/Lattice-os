@@ -8,7 +8,7 @@ export default async function AdminPage() {
   })
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">ブログ記事管理</h1>
+      <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 24 }}>ブログ記事管理</h1>
       <AdminPostList posts={posts} />
     </div>
   )

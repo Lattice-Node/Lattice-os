@@ -15,12 +15,7 @@ type Props = {
 }
 
 function slugify(text: string) {
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim()
+  return text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim()
 }
 
 function renderMarkdown(md: string): string {
@@ -77,7 +72,7 @@ export default function BlogEditor({ mode, initialData }: Props) {
     }
   }
 
-  const inputStyle = {
+  const inputStyle: React.CSSProperties = {
     width: '100%',
     background: '#0d1120',
     border: '1px solid #1c2136',
@@ -86,66 +81,43 @@ export default function BlogEditor({ mode, initialData }: Props) {
     color: '#e8eaf0',
     fontSize: 14,
     outline: 'none',
+    boxSizing: 'border-box',
   }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div>
         <label style={{ display: 'block', fontSize: 12, color: '#8b92a9', marginBottom: 6 }}>タイトル *</label>
-        <input
-          value={title}
-          onChange={e => handleTitleChange(e.target.value)}
-          placeholder="記事タイトル"
-          style={{ ...inputStyle, fontSize: 18, fontWeight: 700 }}
-        />
+        <input value={title} onChange={e => handleTitleChange(e.target.value)} placeholder="記事タイトル" style={{ ...inputStyle, fontSize: 18, fontWeight: 700 }} />
       </div>
 
       <div>
         <label style={{ display: 'block', fontSize: 12, color: '#8b92a9', marginBottom: 6 }}>スラッグ（URL） *</label>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ color: '#4a5068', fontSize: 13 }}>/blog/</span>
-          <input
-            value={slug}
-            onChange={e => setSlug(e.target.value)}
-            placeholder="my-article-slug"
-            style={{ ...inputStyle, fontFamily: 'monospace' }}
-          />
+          <span style={{ color: '#4a5068', fontSize: 13, whiteSpace: 'nowrap' }}>/blog/</span>
+          <input value={slug} onChange={e => setSlug(e.target.value)} placeholder="my-article-slug" style={{ ...inputStyle, fontFamily: 'monospace' }} />
         </div>
       </div>
 
       <div>
         <label style={{ display: 'block', fontSize: 12, color: '#8b92a9', marginBottom: 6 }}>説明文（SEO用）</label>
-        <input
-          value={description}
-          onChange={e => setDescription(e.target.value)}
-          placeholder="この記事の要約（150文字程度）"
-          style={inputStyle}
-        />
+        <input value={description} onChange={e => setDescription(e.target.value)} placeholder="この記事の要約（150文字程度）" style={inputStyle} />
       </div>
 
       <div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
           <label style={{ fontSize: 12, color: '#8b92a9' }}>本文（Markdown） *</label>
-          <button
-            onClick={() => setPreview(p => !p)}
-            style={{ fontSize: 12, padding: '4px 12px', borderRadius: 6, border: '1px solid #1c2136', background: 'transparent', color: '#8b92a9', cursor: 'pointer' }}
-          >
+          <button onClick={() => setPreview(p => !p)} style={{ fontSize: 12, padding: '4px 12px', borderRadius: 6, border: '1px solid #1c2136', background: 'transparent', color: '#8b92a9', cursor: 'pointer' }}>
             {preview ? '✏️ 編集' : '👁 プレビュー'}
           </button>
         </div>
         {preview ? (
-          <div
-            style={{ minHeight: 400, background: '#0d1120', border: '1px solid #1c2136', borderRadius: 8, padding: '20px 24px', fontSize: 14, lineHeight: 1.8, color: '#e8eaf0' }}
-            dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }}
-          />
+          <div style={{ minHeight: 400, background: '#0d1120', border: '1px solid #1c2136', borderRadius: 8, padding: '20px 24px', fontSize: 14, lineHeight: 1.8, color: '#e8eaf0' }}
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }} />
         ) : (
-          <textarea
-            value={content}
-            onChange={e => setContent(e.target.value)}
+          <textarea value={content} onChange={e => setContent(e.target.value)}
             placeholder={'# 見出し\n\n本文をMarkdownで書いてください。\n\n## 小見出し\n\n- リスト\n- アイテム\n\n**太字** や *イタリック* も使えます。'}
-            rows={22}
-            style={{ ...inputStyle, fontFamily: 'monospace', lineHeight: 1.7, resize: 'vertical' }}
-          />
+            rows={22} style={{ ...inputStyle, fontFamily: 'monospace', lineHeight: 1.7, resize: 'vertical' }} />
         )}
       </div>
 
@@ -154,18 +126,12 @@ export default function BlogEditor({ mode, initialData }: Props) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 16, borderTop: '1px solid #1c2136' }}>
         <a href="/admin" style={{ fontSize: 13, color: '#4a5068', textDecoration: 'none' }}>← キャンセル</a>
         <div style={{ display: 'flex', gap: 12 }}>
-          <button
-            onClick={() => handleSave(false)}
-            disabled={saving}
-            style={{ padding: '8px 20px', borderRadius: 8, border: '1px solid #1c2136', background: 'transparent', color: '#8b92a9', cursor: 'pointer', fontSize: 13 }}
-          >
+          <button onClick={() => handleSave(false)} disabled={saving}
+            style={{ padding: '8px 20px', borderRadius: 8, border: '1px solid #1c2136', background: 'transparent', color: '#8b92a9', cursor: 'pointer', fontSize: 13 }}>
             {saving ? '保存中…' : '下書き保存'}
           </button>
-          <button
-            onClick={() => handleSave(true)}
-            disabled={saving}
-            style={{ padding: '8px 20px', borderRadius: 8, border: 'none', background: '#7c3aed', color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}
-          >
+          <button onClick={() => handleSave(true)} disabled={saving}
+            style={{ padding: '8px 20px', borderRadius: 8, border: 'none', background: '#7c3aed', color: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
             {saving ? '保存中…' : '公開する'}
           </button>
         </div>
