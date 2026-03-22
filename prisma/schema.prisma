@@ -39,3 +39,13 @@ model Subscription {
   nextRunAt    DateTime
   createdAt    DateTime  @default(now())
 }
+model Post {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String
+  content     String
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
