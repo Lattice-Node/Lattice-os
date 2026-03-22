@@ -11,7 +11,7 @@ const EXAMPLES = [
 ]
 
 type Results = { gpt: string; gemini: string; claude: string }
-type Agent = { id: string; name: string; description: string; category: string; prompt: string; price: number }
+type Agent = { id: string; name: string; description: string; category: string; price: number }
 
 const MODELS: { key: keyof Results; label: string; sub: string; color: string; icon: string }[] = [
   { key: 'gpt', label: 'ChatGPT', sub: 'GPT-4o mini', color: '#10a37f', icon: '🤖' },
@@ -26,13 +26,15 @@ const CATEGORY_COLORS: Record<string, string> = {
 }
 
 export default function ComparePage() {
-  const [prompt, setPrompt] = useState('')
+  const [userInput, setUserInput] = useState('')
+  const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null)
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<Results | null>(null)
   const [elapsed, setElapsed] = useState<number | null>(null)
   const [error, setError] = useState('')
   const [agents, setAgents] = useState<Agent[]>([])
   const [showPrompts, setShowPrompts] = useState(false)
+  const [boosted, setBoosted] = useState(false)
 
   useEffect(() => {
     fetch('/api/compare/prompts')
@@ -42,7 +44,7 @@ export default function ComparePage() {
   }, [])
 
   async function handleCompare() {
-    if (!prompt.trim()) return
+    if (!userInput.trim()) return
     setLoading(true)
     setError('')
     setResults(null)
@@ -51,7 +53,10 @@ export default function ComparePage() {
       const res = await fetch('/api/compare', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({
+          prompt: userInput,
+          agentId: selectedAgent?.id ?? null,
+        }),
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error ?? 'エラーが発生しました'); return }
@@ -66,17 +71,39 @@ export default function ComparePage() {
   }
 
   function handleShare() {
-    const text = `「${prompt}」をAI3社で比較してみた👇\nChatGPT vs Gemini vs Claude\n\nLatticeで無料比較 →\nhttps://www.lattice-protocol.com/compare\n\n#Lattice #AI比較 #ChatGPT #Gemini #Claude`
+    const text = `「${userInput}」をAI3社で比較してみた👇\nChatGPT vs Gemini vs Claude\n\nLatticeで無料比較 →\nhttps://www.lattice-protocol.com/compare\n\n#Lattice #AI比較 #ChatGPT #Gemini #Claude`
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank')
   }
 
-  function applyPrompt(agent: Agent) {
-    setPrompt(agent.prompt)
+  function applyAgent(agent: Agent) {
+    setSelectedAgent(agent)
     setShowPrompts(false)
+    setBoosted(true)
+    setTimeout(() => setBoosted(false), 2000)
+  }
+
+  function clearAgent() {
+    setSelectedAgent(null)
   }
 
   return (
     <main style={{ minHeight: '100vh', background: '#080b14', color: '#e8eaf0', fontFamily: "'DM Sans', 'Hiragino Sans', sans-serif" }}>
+      <style>{`
+        @keyframes boostIn {
+          0% { transform: scale(0.95); opacity: 0; }
+          60% { transform: scale(1.02); }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+        @keyframes shimmer {
+          0% { background-position: -200% center; }
+          100% { background-position: 200% center; }
+        }
+        .prompt-row:hover { background: #111827 !important; }
+      `}</style>
       <Nav />
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '48px 24px' }}>
 
@@ -93,32 +120,40 @@ export default function ComparePage() {
         </div>
 
         <div style={{ maxWidth: 720, margin: '0 auto 48px' }}>
-          <textarea
-            value={prompt}
-            onChange={e => setPrompt(e.target.value)}
-            placeholder="質問を入力するか、下のプロンプトを適用してください"
-            rows={4}
-            style={{ width: '100%', background: '#0d1120', border: '1px solid #1c2136', borderRadius: 12, padding: '16px 18px', color: '#e8eaf0', fontSize: 15, outline: 'none', resize: 'none', boxSizing: 'border-box', lineHeight: 1.6 }}
-          />
 
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 10, marginBottom: 12 }}>
-            {EXAMPLES.map(ex => (
-              <button key={ex} onClick={() => setPrompt(ex)}
-                style={{ fontSize: 12, padding: '5px 12px', borderRadius: 99, border: '1px solid #1c2136', background: 'transparent', color: '#8b92a9', cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                {ex}
-              </button>
-            ))}
+          {/* ヒントテキスト */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14, padding: '10px 14px', background: '#0d1120', border: '1px solid #1c2136', borderRadius: 8 }}>
+            <span style={{ fontSize: 16 }}>💡</span>
+            <span style={{ fontSize: 13, color: '#8b92a9' }}>
+              プロンプトを使用することで、よりAIの精度を高めることができます
+            </span>
           </div>
 
           {/* プロンプト適用ボタン */}
           <div style={{ marginBottom: 12 }}>
             <button
               onClick={() => setShowPrompts(p => !p)}
-              style={{ width: '100%', padding: '12px', borderRadius: 10, border: '1px solid #a78bfa40', background: '#a78bfa0a', color: '#a78bfa', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+              style={{
+                width: '100%', padding: '12px 16px', borderRadius: 10,
+                border: selectedAgent ? '1px solid #a78bfa60' : '1px solid #a78bfa30',
+                background: selectedAgent ? '#1a1040' : '#a78bfa08',
+                color: '#a78bfa', fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 10,
+                transition: 'all 0.2s',
+              }}
             >
-              <span>📦</span>
-              <span>プロンプトマーケットから適用</span>
-              <span style={{ marginLeft: 'auto', fontSize: 12 }}>{showPrompts ? '▲' : '▼'}</span>
+              <span style={{ fontSize: 18 }}>📦</span>
+              <span style={{ flex: 1, textAlign: 'left' }}>
+                {selectedAgent ? `「${selectedAgent.name}」を適用中` : 'プロンプトマーケットから適用'}
+              </span>
+              {selectedAgent && (
+                <span style={{
+                  fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 99,
+                  background: '#7c3aed', color: '#fff', letterSpacing: '0.05em',
+                  animation: boosted ? 'pulse 0.5s ease 3' : 'none',
+                }}>BOOST</span>
+              )}
+              <span style={{ fontSize: 12, color: '#6b7280' }}>{showPrompts ? '▲' : '▼'}</span>
             </button>
 
             {showPrompts && (
@@ -131,17 +166,27 @@ export default function ComparePage() {
                 ) : (
                   agents.map(agent => {
                     const color = CATEGORY_COLORS[agent.category] ?? CATEGORY_COLORS.default
+                    const isSelected = selectedAgent?.id === agent.id
                     return (
                       <div key={agent.id}
-                        onClick={() => applyPrompt(agent)}
-                        style={{ padding: '14px 18px', borderBottom: '1px solid #1c2136', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12 }}
+                        className="prompt-row"
+                        onClick={() => applyAgent(agent)}
+                        style={{
+                          padding: '14px 18px', borderBottom: '1px solid #1c2136',
+                          cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12,
+                          background: isSelected ? '#1a1040' : 'transparent',
+                          transition: 'background 0.15s',
+                        }}
                       >
                         <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <p style={{ fontSize: 13, fontWeight: 600, color: '#e8eaf0', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{agent.name}</p>
+                          <p style={{ fontSize: 13, fontWeight: 600, color: isSelected ? '#c4b5fd' : '#e8eaf0', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{agent.name}</p>
                           <p style={{ fontSize: 11, color: '#4a5068', margin: 0 }}>{agent.category} · {agent.price === 0 ? '無料' : `¥${agent.price}`}</p>
+                          <p style={{ fontSize: 11, color: '#6b7280', margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{agent.description}</p>
                         </div>
-                        <span style={{ fontSize: 12, color: '#a78bfa', flexShrink: 0 }}>適用 →</span>
+                        <span style={{ fontSize: 12, color: isSelected ? '#a78bfa' : '#4a5068', flexShrink: 0, fontWeight: isSelected ? 700 : 400 }}>
+                          {isSelected ? '✓ 適用中' : '適用 →'}
+                        </span>
                       </div>
                     )
                   })
@@ -150,9 +195,62 @@ export default function ComparePage() {
             )}
           </div>
 
-          <button onClick={handleCompare} disabled={loading || !prompt.trim()}
-            style={{ width: '100%', padding: '14px', borderRadius: 10, border: 'none', background: loading ? '#1c2136' : '#7c3aed', color: loading ? '#4a5068' : '#fff', fontSize: 16, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer' }}>
-            {loading ? '⏳ 3つのAIに聞いています...' : '⚡ 3つのAIに同時に聞く'}
+          {/* 適用中バナー */}
+          {selectedAgent && (
+            <div style={{
+              marginBottom: 12, padding: '12px 16px',
+              background: 'linear-gradient(135deg, #1a1040 0%, #0f1a30 100%)',
+              border: '1px solid #7c3aed50',
+              borderRadius: 10,
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              animation: boosted ? 'boostIn 0.4s ease' : 'none',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: '#7c3aed20', border: '1px solid #7c3aed40', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>
+                  ⚡
+                </div>
+                <div>
+                  <p style={{ fontSize: 12, color: '#a78bfa', fontWeight: 700, margin: 0, letterSpacing: '0.05em' }}>AI BOOST 有効</p>
+                  <p style={{ fontSize: 13, color: '#e8eaf0', margin: 0 }}>{selectedAgent.name}</p>
+                </div>
+              </div>
+              <button onClick={clearAgent} style={{ background: 'none', border: '1px solid #2a2040', borderRadius: 6, color: '#6b7280', cursor: 'pointer', fontSize: 12, padding: '4px 10px' }}>解除</button>
+            </div>
+          )}
+
+          <textarea
+            value={userInput}
+            onChange={e => setUserInput(e.target.value)}
+            placeholder={selectedAgent ? `「${selectedAgent.name}」のプロンプトで強化して比較します。質問を入力してください。` : '質問を入力してください（例：最強のビジネスアイデアを教えて）'}
+            rows={4}
+            style={{
+              width: '100%',
+              background: selectedAgent ? '#0d1120' : '#0d1120',
+              border: selectedAgent ? '1px solid #7c3aed40' : '1px solid #1c2136',
+              borderRadius: 12, padding: '16px 18px', color: '#e8eaf0',
+              fontSize: 15, outline: 'none', resize: 'none',
+              boxSizing: 'border-box', lineHeight: 1.6,
+              transition: 'border-color 0.2s',
+            }}
+          />
+
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 10, marginBottom: 16 }}>
+            {EXAMPLES.map(ex => (
+              <button key={ex} onClick={() => setUserInput(ex)}
+                style={{ fontSize: 12, padding: '5px 12px', borderRadius: 99, border: '1px solid #1c2136', background: 'transparent', color: '#8b92a9', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                {ex}
+              </button>
+            ))}
+          </div>
+
+          <button onClick={handleCompare} disabled={loading || !userInput.trim()}
+            style={{
+              width: '100%', padding: '14px', borderRadius: 10, border: 'none',
+              background: loading ? '#1c2136' : selectedAgent ? '#7c3aed' : '#7c3aed',
+              color: loading ? '#4a5068' : '#fff', fontSize: 16, fontWeight: 700,
+              cursor: loading ? 'not-allowed' : 'pointer',
+            }}>
+            {loading ? '⏳ 3つのAIに聞いています...' : selectedAgent ? `⚡ 「${selectedAgent.name}」で強化して比較する` : '⚡ 3つのAIに同時に聞く'}
           </button>
           {error && <p style={{ color: '#f87171', fontSize: 13, marginTop: 12 }}>{error}</p>}
         </div>
@@ -160,7 +258,10 @@ export default function ComparePage() {
         {results && (
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', maxWidth: 720, margin: '0 auto 24px' }}>
-              <p style={{ color: '#8b92a9', fontSize: 13 }}>⏱ {elapsed ? `${(elapsed / 1000).toFixed(1)}秒で取得` : ''}</p>
+              <p style={{ color: '#8b92a9', fontSize: 13 }}>
+                ⏱ {elapsed ? `${(elapsed / 1000).toFixed(1)}秒で取得` : ''}
+                {selectedAgent && <span style={{ color: '#a78bfa', marginLeft: 8 }}>· ⚡ {selectedAgent.name} 適用</span>}
+              </p>
               <button onClick={handleShare}
                 style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, border: '1px solid #1c2136', background: 'transparent', color: '#e8eaf0', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                 𝕏 結果をシェア
