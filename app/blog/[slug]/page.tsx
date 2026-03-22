@@ -6,8 +6,9 @@ import type { Metadata } from "next";
 
 export const revalidate = 3600;
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const post = await prisma.post.findUnique({ where: { slug: params.slug } });
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await prisma.post.findUnique({ where: { slug } });
   if (!post) return { title: "Lattice" };
   return {
     title: `${post.title} | Lattice`,
@@ -35,8 +36,9 @@ function renderMarkdown(text: string): string {
     .replace(/^(?!<[h|u|p])(.+)$/gm, "<p style=\"margin-bottom:16px;line-height:1.8;color:#c8cad8\">$1</p>");
 }
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  const post = await prisma.post.findUnique({ where: { slug: params.slug } });
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = await prisma.post.findUnique({ where: { slug } });
   if (!post) notFound();
 
   return (
