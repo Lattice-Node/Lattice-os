@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Lattice - AIを使うなら、全部ここで。| AI比較・プロンプト・ツール",
-  description: "ChatGPT・Gemini・Claudeをリアルタイム比較、AIプロンプトの売買、AI活用情報まで。Latticeは日本のAI情報基地。",
+  title: "Lattice - AIを使うなら、全部ここで。",
+  description: "ChatGPT・Gemini・Claudeをリアルタイム比較。AIプロンプトの売買。AI活用情報。日本のAI情報基地。",
   keywords: ["AI比較", "ChatGPT", "Claude", "Gemini", "AIプロンプト", "プロンプトマーケット", "AI tools", "Lattice"],
   icons: {
     icon: "/favicon.svg",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://www.lattice-protocol.com/api/og",
+        url: "https://www.lattice-protocol.com/og.png",
         width: 1200,
         height: 630,
         alt: "Lattice - AIを使うなら、全部ここで。",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     title: "Lattice - AIを使うなら、全部ここで。",
     description: "ChatGPT・Gemini・Claudeをリアルタイム比較。AIプロンプトの売買。AI活用情報。日本のAI情報基地。",
     site: "@Lattice_Node",
-    images: ["https://www.lattice-protocol.com/api/og"],
+    images: ["https://www.lattice-protocol.com/og.png"],
   },
   alternates: {
     canonical: "https://www.lattice-protocol.com",
@@ -61,6 +61,8 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <head>
+        <meta property="og:image" content="https://www.lattice-protocol.com/og.png"/>
+        <meta name="twitter:image" content="https://www.lattice-protocol.com/og.png"/>
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-WE3KKYTWFJ"></script>
         <script dangerouslySetInnerHTML={{ __html: `
           window.dataLayer = window.dataLayer || [];
