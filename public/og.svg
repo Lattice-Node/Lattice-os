@@ -1,0 +1,11 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#080b14"/>
+  <rect x="80" y="76" width="88" height="88" rx="16" fill="#1a2340"/>
+  <path d="M124 93 L160 120 L160 152 L124 179 L88 152 L88 120 Z" fill="none" stroke="#3b82f6" stroke-width="5"/>
+  <path d="M124 118 L142 136 L124 154 L106 136 Z" fill="#3b82f6"/>
+  <text x="184" y="136" font-family="sans-serif" font-weight="800" font-size="36" fill="white">Lattice</text>
+  <text x="80" y="310" font-family="sans-serif" font-weight="900" font-size="68" fill="white">日本最大の</text>
+  <text x="80" y="395" font-family="sans-serif" font-weight="900" font-size="68" fill="#3b82f6">AIプロンプトマーケット</text>
+  <text x="80" y="460" font-family="sans-serif" font-weight="400" font-size="26" fill="#8b92a9">コピーして使う・そのまま実行・収益の80%を受け取る</text>
+  <text x="80" y="550" font-family="sans-serif" font-weight="400" font-size="20" fill="#4a5068">lattice-protocol.com</text>
+</svg>
