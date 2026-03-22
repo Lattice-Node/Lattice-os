@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { GoogleGenAI } from '@google/genai'
+import Anthropic from '@anthropic-ai/sdk'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 const genAI = new GoogleGenAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY! })
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 async function askGPT(prompt: string): Promise<string> {
   const res = await openai.chat.completions.create({
@@ -22,25 +24,13 @@ async function askGemini(prompt: string): Promise<string> {
   return res.text ?? ''
 }
 
-async function askGrok(prompt: string): Promise<string> {
-  const res = await fetch('https://api.x.ai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${process.env.GROK_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: 'grok-beta',
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: 1000,
-    }),
+async function askClaude(prompt: string): Promise<string> {
+  const res = await anthropic.messages.create({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 1000,
+    messages: [{ role: 'user', content: prompt }],
   })
-  if (!res.ok) {
-    const err = await res.text()
-    throw new Error(`Grok API error: ${err}`)
-  }
-  const data = await res.json()
-  return data.choices?.[0]?.message?.content ?? 'エラーが発生しました'
+  return res.content[0].type === 'text' ? res.content[0].text : ''
 }
 
 export async function POST(req: NextRequest) {
@@ -49,10 +39,10 @@ export async function POST(req: NextRequest) {
 
   const start = Date.now()
 
-  const [gpt, gemini, grok] = await Promise.allSettled([
+  const [gpt, gemini, claude] = await Promise.allSettled([
     askGPT(prompt),
     askGemini(prompt),
-    askGrok(prompt),
+    askClaude(prompt),
   ])
 
   const elapsed = Date.now() - start
@@ -62,7 +52,7 @@ export async function POST(req: NextRequest) {
     results: {
       gpt: gpt.status === 'fulfilled' ? gpt.value : 'エラー: ' + (gpt.reason?.message ?? '不明'),
       gemini: gemini.status === 'fulfilled' ? gemini.value : 'エラー: ' + (gemini.reason?.message ?? '不明'),
-      grok: grok.status === 'fulfilled' ? grok.value : 'エラー: ' + (grok.reason?.message ?? '不明'),
+      claude: claude.status === 'fulfilled' ? claude.value : 'エラー: ' + (claude.reason?.message ?? '不明'),
     }
   })
 }
