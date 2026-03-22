@@ -15,7 +15,7 @@ async function askGPT(prompt: string): Promise<string> {
 }
 
 async function askGemini(prompt: string): Promise<string> {
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' })
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
   const res = await model.generateContent(prompt)
   return res.response.text()
 }
@@ -33,6 +33,10 @@ async function askGrok(prompt: string): Promise<string> {
       max_tokens: 1000,
     }),
   })
+  if (!res.ok) {
+    const err = await res.text()
+    throw new Error(`Grok API error: ${err}`)
+  }
   const data = await res.json()
   return data.choices?.[0]?.message?.content ?? 'エラーが発生しました'
 }
