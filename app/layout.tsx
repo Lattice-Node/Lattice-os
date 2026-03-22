@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { AppProvider } from "@/lib/theme";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -68,6 +69,14 @@ export default function RootLayout({
         <SessionProvider>
           <AppProvider>
             {children}
+            <footer style={{ borderTop: "1px solid #1c2136", padding: "24px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12, background: "#080b14" }}>
+              <div style={{ fontSize: 13, color: "#4a5068" }}>© 2026 Lattice. All rights reserved.</div>
+              <div style={{ display: "flex", gap: 24 }}>
+                <Link href="/privacy" style={{ fontSize: 13, color: "#4a5068", textDecoration: "none" }}>プライバシーポリシー</Link>
+                <Link href="/terms" style={{ fontSize: 13, color: "#4a5068", textDecoration: "none" }}>利用規約</Link>
+                <a href="https://x.com/Lattice_Node" target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: "#4a5068", textDecoration: "none" }}>X (Twitter)</a>
+              </div>
+            </footer>
           </AppProvider>
         </SessionProvider>
       </body>
