@@ -16,11 +16,11 @@ type Results = {
   claude: string
 }
 
-const MODELS = [
+const MODELS: { key: keyof Results; label: string; sub: string; color: string; icon: string }[] = [
   { key: 'gpt', label: 'ChatGPT', sub: 'GPT-4o mini', color: '#10a37f', icon: '🤖' },
   { key: 'gemini', label: 'Gemini', sub: '2.0 Flash Lite', color: '#4285f4', icon: '✨' },
   { key: 'claude', label: 'Claude', sub: 'Haiku', color: '#d97706', icon: '🔶' },
-] as const
+]
 
 export default function ComparePage() {
   const [prompt, setPrompt] = useState('')
@@ -43,6 +43,7 @@ export default function ComparePage() {
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error ?? 'エラーが発生しました'); return }
+      if (!data.results) { setError('結果が取得できませんでした'); return }
       setResults(data.results)
       setElapsed(data.elapsed)
     } catch {
@@ -53,7 +54,7 @@ export default function ComparePage() {
   }
 
   function handleShare() {
-    const text = `「${prompt}」をAI3社で比較してみた👇\nChatGPT vs Gemini vs Claude\n\nLatticeで無料比較 →\nhttps://lattice-os.vercel.app/compare\n\n#Lattice #AI比較 #ChatGPT #Gemini #Claude`
+    const text = `「${prompt}」をAI3社で比較してみた👇\nChatGPT vs Gemini vs Claude\n\nLatticeで無料比較 →\nhttps://www.lattice-protocol.com/compare\n\n#Lattice #AI比較 #ChatGPT #Gemini #Claude`
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank')
   }
 
@@ -107,25 +108,28 @@ export default function ComparePage() {
               </button>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 16 }}>
-              {MODELS.map(model => (
-                <div key={model.key} style={{ background: '#0d1120', border: `1px solid ${model.color}30`, borderRadius: 14, padding: '24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div style={{ width: 40, height: 40, background: model.color + '18', border: `1px solid ${model.color}40`, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
-                      {model.icon}
+              {MODELS.map(model => {
+                const text = results[model.key] ?? ''
+                return (
+                  <div key={model.key} style={{ background: '#0d1120', border: `1px solid ${model.color}30`, borderRadius: 14, padding: '24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <div style={{ width: 40, height: 40, background: model.color + '18', border: `1px solid ${model.color}40`, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>
+                        {model.icon}
+                      </div>
+                      <div>
+                        <p style={{ fontWeight: 700, fontSize: 15, color: '#e8eaf0', margin: 0 }}>{model.label}</p>
+                        <p style={{ fontSize: 11, color: '#4a5068', margin: 0 }}>{model.sub}</p>
+                      </div>
+                      <div style={{ marginLeft: 'auto', fontSize: 11, color: '#4a5068' }}>
+                        {text.length}文字
+                      </div>
                     </div>
-                    <div>
-                      <p style={{ fontWeight: 700, fontSize: 15, color: '#e8eaf0', margin: 0 }}>{model.label}</p>
-                      <p style={{ fontSize: 11, color: '#4a5068', margin: 0 }}>{model.sub}</p>
-                    </div>
-                    <div style={{ marginLeft: 'auto', fontSize: 11, color: '#4a5068' }}>
-                      {results[model.key].length}文字
+                    <div style={{ fontSize: 14, color: '#c8cad4', lineHeight: 1.8, whiteSpace: 'pre-wrap', borderTop: '1px solid #1c2136', paddingTop: 16 }}>
+                      {text}
                     </div>
                   </div>
-                  <div style={{ fontSize: 14, color: '#c8cad4', lineHeight: 1.8, whiteSpace: 'pre-wrap', borderTop: '1px solid #1c2136', paddingTop: 16 }}>
-                    {results[model.key]}
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
             <div style={{ maxWidth: 720, margin: '48px auto 0', background: '#0d1120', border: '1px solid #2563eb30', borderRadius: 14, padding: '24px', textAlign: 'center' }}>
               <p style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>💡 AIをもっと使いこなしたい？</p>
