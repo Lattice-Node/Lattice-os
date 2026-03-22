@@ -1,44 +1,41 @@
-generator client {
+﻿generator client {
   provider = "prisma-client-js"
 }
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
 model Agent {
-  id          String   @id @default(cuid())
-  name        String
-  description String
-  category    String
-  prompt      String   @default("")
-  agentType   String   @default("prompt")
-  webhookUrl  String   @default("")
-  fields      String   @default("[]")
-  authorName  String   @default("anonymous")
-  authorId    String   @default("")
-  price       Float    @default(0)
-  useCount    Int      @default(0)
-  createdAt   DateTime @default(now())
+  id              String   @id @default(cuid())
+  name            String
+  description     String
+  category        String
+  prompt          String   @default("")
+  agentType       String   @default("prompt")
+  webhookUrl      String   @default("")
+  fields          String   @default("[]")
+  authorName      String   @default("anonymous")
+  authorId        String   @default("")
+  stripeAccountId String   @default("")
+  price           Float    @default(0)
+  useCount        Int      @default(0)
+  createdAt       DateTime @default(now())
 }
-
 model Purchase {
   id        String   @id @default(cuid())
   agentId   String
   userId    String
   createdAt DateTime @default(now())
 }
-
 model Subscription {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   userId       String
   userEmail    String
   agentId      String
   frequency    String
   inputValues  String
-  active       Boolean  @default(true)
+  active       Boolean   @default(true)
   lastRunAt    DateTime?
   nextRunAt    DateTime
-  createdAt    DateTime @default(now())
+  createdAt    DateTime  @default(now())
 }
