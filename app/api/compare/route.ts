@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import { GoogleGenAI } from '@google/genai'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY!)
+const genAI = new GoogleGenAI({ apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY! })
 
 async function askGPT(prompt: string): Promise<string> {
   const res = await openai.chat.completions.create({
@@ -15,9 +15,11 @@ async function askGPT(prompt: string): Promise<string> {
 }
 
 async function askGemini(prompt: string): Promise<string> {
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
-  const res = await model.generateContent(prompt)
-  return res.response.text()
+  const res = await genAI.models.generateContent({
+    model: 'gemini-2.0-flash-lite',
+    contents: prompt,
+  })
+  return res.text ?? ''
 }
 
 async function askGrok(prompt: string): Promise<string> {
