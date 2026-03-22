@@ -66,10 +66,9 @@ export default function MarketplacePage() {
   return (
     <main style={{ minHeight: "100vh", background: "#080b14", color: "#e8eaf0", fontFamily: "'DM Sans', 'Hiragino Sans', sans-serif" }}>
       <style>{`
-        .agent-card { transition: border-color 0.15s, transform 0.15s; }
-        .agent-card:hover { transform: translateY(-2px); }
+        .agent-card { transition: border-color 0.15s, transform 0.15s; display: block; text-decoration: none; color: inherit; }
+        .agent-card:hover { transform: translateY(-2px); border-color: #3b82f655 !important; }
         .copy-btn:hover { background: #ffffff18 !important; }
-        .run-btn:hover { opacity: 0.85; }
       `}</style>
       <Nav />
 
@@ -115,8 +114,7 @@ export default function MarketplacePage() {
               const icon = CATEGORY_ICONS[agent.category] ?? "🧩";
               const isCopied = copied === agent.id;
               return (
-                <div key={agent.id} className="agent-card" style={{ background: "#0d1120", border: `1px solid #1c2136`, borderRadius: 14, padding: "20px", boxSizing: "border-box", display: "flex", flexDirection: "column" }}>
-                  {/* ヘッダー */}
+                <Link key={agent.id} href={`/apps/${agent.id}`} className="agent-card" style={{ background: "#0d1120", border: "1px solid #1c2136", borderRadius: 14, padding: "20px", boxSizing: "border-box", display: "flex", flexDirection: "column" }}>
                   <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 12 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                       <div style={{ width: 40, height: 40, background: color + "18", border: `1px solid ${color}30`, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>
@@ -132,17 +130,14 @@ export default function MarketplacePage() {
                     </div>
                   </div>
 
-                  {/* 説明 */}
                   <p style={{ color: "#6b7280", fontSize: 12, lineHeight: 1.65, marginBottom: 16, flex: 1, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                     {agent.description}
                   </p>
 
-                  {/* フッター */}
                   <div style={{ fontSize: 11, color: "#4a5068", marginBottom: 12 }}>
                     by {agent.authorName} · {agent.useCount}回使用
                   </div>
 
-                  {/* ボタン2つ */}
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                     <button
                       className="copy-btn"
@@ -159,15 +154,14 @@ export default function MarketplacePage() {
                     >
                       {isCopied ? "✓ コピー済み" : agent.price > 0 ? "🔒 有料" : "📋 コピー"}
                     </button>
-                    <Link href={`/apps/${agent.id}`} className="run-btn" style={{
+                    <div style={{
                       background: "#2563eb", color: "#fff", borderRadius: 8, padding: "9px",
-                      fontSize: 12, fontWeight: 700, textDecoration: "none",
-                      textAlign: "center", display: "block", transition: "opacity 0.15s",
+                      fontSize: 12, fontWeight: 700, textAlign: "center",
                     }}>
                       ▶ 実行する
-                    </Link>
+                    </div>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>
