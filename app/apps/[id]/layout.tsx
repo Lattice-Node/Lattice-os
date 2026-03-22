@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const agent = await prisma.agent.findUnique({ where: { id: params.id } });
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const agent = await prisma.agent.findUnique({ where: { id } });
   if (!agent) return { title: "Lattice" };
 
   return {
