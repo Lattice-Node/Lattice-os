@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 
 export default function Nav() {
   const { data: session } = useSession();
@@ -35,9 +35,9 @@ export default function Nav() {
             </button>
           </div>
         ) : (
-          <button onClick={() => signIn("github")} style={{ background: "#2563eb", color: "#fff", border: "none", borderRadius: 8, padding: "7px 16px", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+          <Link href="/login" style={{ background: "#2563eb", color: "#fff", textDecoration: "none", border: "none", borderRadius: 8, padding: "7px 16px", fontSize: 13, fontWeight: 700, display: "inline-block" }}>
             ログイン
-          </button>
+          </Link>
         )}
       </div>
     </nav>
