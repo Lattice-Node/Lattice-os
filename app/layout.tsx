@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://www.lattice-protocol.com/og.png",
+        url: "https://www.lattice-protocol.com/api/og",
         width: 1200,
         height: 630,
         alt: "Lattice - AIを使うなら、全部ここで。",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     title: "Lattice - AIを使うなら、全部ここで。",
     description: "ChatGPT・Gemini・Claudeをリアルタイム比較。AIプロンプトの売買。AI活用情報。日本のAI情報基地。",
     site: "@Lattice_Node",
-    images: ["https://www.lattice-protocol.com/og.png"],
+    images: ["https://www.lattice-protocol.com/api/og"],
   },
   alternates: {
     canonical: "https://www.lattice-protocol.com",
