@@ -11,12 +11,24 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const { slug, title, description, content, secret } = await req.json();
+  const body = await req.json();
+  const { slug, title, description, content, secret } = body;
   if (secret !== process.env.CRON_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const post = await prisma.post.create({
-    data: { slug, title, description, content, published: true },
+  const post = await prisma.post.upsert({
+    where: { slug },
+    update: { title, description, content, published: true },
+    create: { slug, title, description, content, published: true },
   });
   return NextResponse.json({ success: true, post });
+}
+
+export async function DELETE(req: NextRequest) {
+  const { slug, secret } = await req.json();
+  if (secret !== process.env.CRON_SECRET) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  await prisma.post.delete({ where: { slug } });
+  return NextResponse.json({ success: true });
 }
