@@ -18,7 +18,7 @@ async function askGPT(prompt: string): Promise<string> {
 
 async function askGemini(prompt: string): Promise<string> {
   const res = await genAI.models.generateContent({
-    model: 'gemini-2.0-flash-lite',
+    model: 'gemini-2.5-flash',
     contents: prompt,
   })
   return res.text ?? ''
