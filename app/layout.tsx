@@ -18,6 +18,10 @@ export const metadata: Metadata = {
   title: "Lattice - 日本最大のAIプロンプトマーケット",
   description: "AIプロンプトを売り買いできる日本最大のマーケットプレイス。ChatGPT・Claude対応のプロンプトをコピーして使うか、そのままLatticeで実行。収益の80%を受け取れる。",
   keywords: ["AIプロンプト", "プロンプトマーケット", "ChatGPT", "Claude", "プロンプト販売", "Promptbase 日本語"],
+  icons: {
+    icon: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
   verification: {
     google: "ZpPUOe99Wj1YozE10oadL9VIO6ZTFx7eN5LRmzjCpBk",
   },
