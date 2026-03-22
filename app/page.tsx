@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import Nav from "@/components/Nav";
 
@@ -23,6 +23,15 @@ async function getFeaturedAgents() {
   });
 }
 
+async function getLatestPosts() {
+  return prisma.post.findMany({
+    where: { published: true },
+    orderBy: { createdAt: "desc" },
+    take: 3,
+    select: { slug: true, title: true, description: true, createdAt: true },
+  });
+}
+
 const CATEGORY_COLORS: Record<string, string> = {
   Research: "#4FC3F7", Writing: "#81C784", Code: "#FF8A65",
   Business: "#CE93D8", Medical: "#F06292", Legal: "#FFD54F",
@@ -34,17 +43,73 @@ const CATEGORY_ICONS: Record<string, string> = {
   Finance: "💰", Custom: "⚡", default: "🧩",
 };
 
+const OS_MODULES = [
+  {
+    href: "/marketplace",
+    icon: "🛒",
+    color: "#3b82f6",
+    label: "プロンプトマーケット",
+    desc: "厳選AIプロンプトを購入・販売",
+    badge: null,
+  },
+  {
+    href: "/compare",
+    icon: "⚡",
+    color: "#a78bfa",
+    label: "AI比較ツール",
+    desc: "GPT・Claude・Geminiをリアルタイム比較",
+    badge: "NEW",
+  },
+  {
+    href: "/blog",
+    icon: "📰",
+    color: "#34d399",
+    label: "AIブログ",
+    desc: "AI活用術・副業・最新情報",
+    badge: null,
+  },
+  {
+    href: "/publish",
+    icon: "💰",
+    color: "#fbbf24",
+    label: "プロンプトを販売",
+    desc: "収益の80%があなたに入る",
+    badge: null,
+  },
+  {
+    href: "/dashboard",
+    icon: "📊",
+    color: "#f472b6",
+    label: "ダッシュボード",
+    desc: "購入履歴・売上・管理",
+    badge: null,
+  },
+  {
+    href: "/tools",
+    icon: "🔧",
+    color: "#fb923c",
+    label: "AIツール集",
+    desc: "要約・翻訳・文章生成など",
+    badge: "SOON",
+  },
+];
+
 export default async function Home() {
-  const [{ agentCount, totalUseCount }, featured] = await Promise.all([
+  const [{ agentCount, totalUseCount }, featured, posts] = await Promise.all([
     getStats(),
     getFeaturedAgents(),
+    getLatestPosts(),
   ]);
 
   return (
     <main style={{ minHeight: "100vh", background: "#080b14", color: "#e8eaf0", fontFamily: "'DM Sans', 'Hiragino Sans', 'Noto Sans JP', sans-serif", overflowX: "hidden" }}>
       <style>{`
+        .os-card { transition: border-color 0.15s, transform 0.15s; }
+        .os-card:hover { border-color: #3b82f655 !important; transform: translateY(-2px); }
         .prompt-card { transition: border-color 0.15s; }
         .prompt-card:hover { border-color: #3b82f655 !important; }
+        .blog-card { transition: border-color 0.15s; }
+        .blog-card:hover { border-color: #3b82f655 !important; }
         .btn-primary { transition: opacity 0.15s; }
         .btn-primary:hover { opacity: 0.85; }
         .btn-secondary { transition: border-color 0.15s; }
@@ -54,30 +119,30 @@ export default async function Home() {
       <Nav />
 
       {/* HERO */}
-      <section style={{ position: "relative", textAlign: "center", padding: "96px 24px 80px", maxWidth: 860, margin: "0 auto" }}>
-        <div style={{ position: "absolute", top: 40, left: "50%", transform: "translateX(-50%)", width: 600, height: 300, background: "radial-gradient(ellipse, #2563eb22 0%, transparent 70%)", pointerEvents: "none" }} />
+      <section style={{ position: "relative", textAlign: "center", padding: "96px 24px 72px", maxWidth: 860, margin: "0 auto" }}>
+        <div style={{ position: "absolute", top: 40, left: "50%", transform: "translateX(-50%)", width: 700, height: 350, background: "radial-gradient(ellipse, #2563eb1a 0%, transparent 70%)", pointerEvents: "none" }} />
 
         <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#2563eb14", border: "1px solid #2563eb30", borderRadius: 100, padding: "5px 14px", fontSize: 12, color: "#60a5fa", marginBottom: 28, letterSpacing: "0.04em", fontWeight: 600, textTransform: "uppercase" }}>
-          <span style={{ width: 6, height: 6, background: "#60a5fa", borderRadius: "50%", display: "inline-block" }} />
-          日本最大のプロンプトマーケット
+          <span style={{ width: 6, height: 6, background: "#60a5fa", borderRadius: "50%", display: "inline-block", animation: "pulse 2s infinite" }} />
+          Lattice OS — AIの全てがここに
         </div>
 
-        <h1 style={{ fontSize: "clamp(36px, 7vw, 72px)", fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1.08, marginBottom: 20 }}>
-          使えるAIプロンプトを<br />
-          <span style={{ color: "#3b82f6" }}>すぐ見つけて、今すぐ使う</span>
+        <h1 style={{ fontSize: "clamp(36px, 7vw, 68px)", fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1.08, marginBottom: 20 }}>
+          AIを使うなら、<br />
+          <span style={{ color: "#3b82f6" }}>全部Latticeで。</span>
         </h1>
 
-        <p style={{ fontSize: "clamp(14px, 2vw, 17px)", color: "#8b92a9", maxWidth: 520, margin: "0 auto 36px", lineHeight: 1.75 }}>
-          厳選されたAIプロンプトを購入・販売できるプラットフォーム。<br />
-          コピーして使うか、そのままLatticeで実行するか。あなたが選ぶ。
+        <p style={{ fontSize: "clamp(14px, 2vw, 17px)", color: "#8b92a9", maxWidth: 540, margin: "0 auto 40px", lineHeight: 1.75 }}>
+          プロンプト売買・AI比較・最新情報・ツール集。<br />
+          AI時代を生き抜くための情報基地。
         </p>
 
         <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
           <Link href="/marketplace" className="btn-primary" style={{ background: "#2563eb", color: "#fff", textDecoration: "none", padding: "13px 28px", borderRadius: 10, fontSize: 15, fontWeight: 700, display: "inline-block" }}>
             プロンプトを探す →
           </Link>
-          <Link href="/publish" className="btn-secondary" style={{ background: "transparent", color: "#e8eaf0", textDecoration: "none", padding: "13px 28px", borderRadius: 10, fontSize: 15, fontWeight: 700, border: "1px solid #2a2f42", display: "inline-block" }}>
-            プロンプトを販売する
+          <Link href="/compare" className="btn-secondary" style={{ background: "transparent", color: "#e8eaf0", textDecoration: "none", padding: "13px 28px", borderRadius: 10, fontSize: 15, fontWeight: 700, border: "1px solid #2a2f42", display: "inline-block" }}>
+            ⚡ AI比較ツール
           </Link>
         </div>
 
@@ -87,6 +152,37 @@ export default async function Home() {
           <div><span style={{ color: "#e8eaf0", fontWeight: 800, fontSize: 22 }}>{totalUseCount.toLocaleString()}</span> 回実行済み</div>
           <div style={{ borderLeft: "1px solid #2a2f42" }} />
           <div><span style={{ color: "#e8eaf0", fontWeight: 800, fontSize: 22 }}>80%</span> 収益を受け取れる</div>
+        </div>
+      </section>
+
+      {/* OS モジュール */}
+      <section style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px 80px" }}>
+        <div style={{ textAlign: "center", marginBottom: 36 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.02em", marginBottom: 6 }}>Lattice OS</h2>
+          <p style={{ color: "#8b92a9", fontSize: 13 }}>AIに関するすべてが、ひとつの場所に</p>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 14 }}>
+          {OS_MODULES.map((mod) => (
+            <Link key={mod.href} href={mod.href} style={{ textDecoration: "none" }}>
+              <div className="os-card" style={{ background: "#0d1120", border: "1px solid #1c2136", borderRadius: 14, padding: "22px 24px", display: "flex", alignItems: "center", gap: 16, cursor: "pointer" }}>
+                <div style={{ width: 48, height: 48, background: mod.color + "18", border: `1px solid ${mod.color}30`, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>
+                  {mod.icon}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
+                    <span style={{ fontWeight: 700, fontSize: 14, color: "#e8eaf0" }}>{mod.label}</span>
+                    {mod.badge && (
+                      <span style={{ fontSize: 9, fontWeight: 800, padding: "2px 6px", borderRadius: 4, background: mod.badge === "NEW" ? "#2563eb30" : "#1c2136", color: mod.badge === "NEW" ? "#60a5fa" : "#4a5068", letterSpacing: "0.05em" }}>
+                        {mod.badge}
+                      </span>
+                    )}
+                  </div>
+                  <p style={{ fontSize: 12, color: "#8b92a9", margin: 0 }}>{mod.desc}</p>
+                </div>
+                <span style={{ color: "#4a5068", fontSize: 16 }}>→</span>
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -101,7 +197,6 @@ export default async function Home() {
             すべて見る →
           </Link>
         </div>
-
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 14 }}>
           {featured.map((agent) => {
             const color = CATEGORY_COLORS[agent.category] ?? CATEGORY_COLORS.default;
@@ -131,33 +226,51 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 使い方 */}
-      <section style={{ background: "#0d1120", borderTop: "1px solid #1c2136", borderBottom: "1px solid #1c2136", padding: "64px 24px" }}>
-        <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
-          <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.02em", marginBottom: 48 }}>3ステップで始められる</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 32 }}>
-            {[
-              { num: "01", title: "プロンプトを探す", desc: "カテゴリや検索でプロンプトを見つける。無料から有料まで揃っている。" },
-              { num: "02", title: "コピーまたは実行", desc: "プロンプトをコピーしてChatGPTで使うか、Lattice上でそのまま実行する。" },
-              { num: "03", title: "気に入ったら販売", desc: "自分のプロンプトを公開して販売。収益の80%があなたに入る。" },
-            ].map((step) => (
-              <div key={step.num} style={{ textAlign: "left" }}>
-                <div style={{ fontSize: 11, fontWeight: 800, color: "#3b82f6", letterSpacing: "0.1em", marginBottom: 12 }}>{step.num}</div>
-                <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>{step.title}</div>
-                <div style={{ fontSize: 13, color: "#8b92a9", lineHeight: 1.7 }}>{step.desc}</div>
+      {/* 最新ブログ */}
+      {posts.length > 0 && (
+        <section style={{ background: "#0d1120", borderTop: "1px solid #1c2136", borderBottom: "1px solid #1c2136", padding: "64px 24px" }}>
+          <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 28 }}>
+              <div>
+                <h2 style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.02em", marginBottom: 4 }}>最新記事</h2>
+                <p style={{ color: "#8b92a9", fontSize: 13 }}>AI活用術・副業・最新情報</p>
               </div>
-            ))}
+              <Link href="/blog" className="link-blue" style={{ color: "#3b82f6", fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
+                すべて見る →
+              </Link>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 14 }}>
+              {posts.map((post) => (
+                <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
+                  <div className="blog-card" style={{ background: "#080b14", border: "1px solid #1c2136", borderRadius: 14, padding: "22px 24px", height: "100%", boxSizing: "border-box" }}>
+                    <p style={{ fontSize: 15, fontWeight: 700, color: "#e8eaf0", marginBottom: 8, lineHeight: 1.5 }}>{post.title}</p>
+                    <p style={{ fontSize: 12, color: "#8b92a9", lineHeight: 1.6, marginBottom: 16, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{post.description}</p>
+                    <p style={{ fontSize: 11, color: "#4a5068" }}>{new Date(post.createdAt).toLocaleDateString("ja-JP")}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* CTA */}
       <section style={{ textAlign: "center", padding: "80px 24px" }}>
-        <h2 style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-0.03em", marginBottom: 12 }}>プロンプトで稼ぐ、一番シンプルな方法</h2>
-        <p style={{ color: "#8b92a9", fontSize: 14, marginBottom: 32 }}>今すぐ無料で始めて、あなたのプロンプトをマーケットに出そう</p>
-        <Link href="/publish" className="btn-primary" style={{ background: "#2563eb", color: "#fff", textDecoration: "none", padding: "14px 32px", borderRadius: 10, fontSize: 15, fontWeight: 700, display: "inline-block" }}>
-          無料で出品する →
-        </Link>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#34d39914", border: "1px solid #34d39930", borderRadius: 100, padding: "5px 14px", fontSize: 12, color: "#34d399", marginBottom: 20, fontWeight: 600 }}>
+          無料で始められる
+        </div>
+        <h2 style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-0.03em", marginBottom: 12 }}>AI時代の情報基地へ、ようこそ</h2>
+        <p style={{ color: "#8b92a9", fontSize: 14, marginBottom: 32, maxWidth: 400, margin: "0 auto 32px" }}>
+          プロンプトを探す・比較する・販売する。<br />全部、Latticeで。
+        </p>
+        <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+          <Link href="/marketplace" className="btn-primary" style={{ background: "#2563eb", color: "#fff", textDecoration: "none", padding: "14px 32px", borderRadius: 10, fontSize: 15, fontWeight: 700, display: "inline-block" }}>
+            今すぐ始める →
+          </Link>
+          <Link href="/blog" className="btn-secondary" style={{ background: "transparent", color: "#e8eaf0", textDecoration: "none", padding: "14px 32px", borderRadius: 10, fontSize: 15, fontWeight: 700, border: "1px solid #2a2f42", display: "inline-block" }}>
+            ブログを読む
+          </Link>
+        </div>
       </section>
     </main>
   );
