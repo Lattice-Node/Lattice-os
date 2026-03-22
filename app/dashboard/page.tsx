@@ -13,12 +13,14 @@ type Agent = {
   price: number;
   useCount: number;
   createdAt: string;
+  stripeAccountId: string;
 };
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [connectingId, setConnectingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === "unauthenticated") { setLoading(false); return; }
@@ -31,6 +33,13 @@ export default function DashboardPage() {
       });
   }, [status]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("connected") === "1") {
+      alert("Stripeアカウントの連携が完了しました！");
+    }
+  }, []);
+
   const totalUseCount = agents.reduce((sum, a) => sum + a.useCount, 0);
   const totalRevenue = agents.reduce((sum, a) => sum + a.price * a.useCount * 0.8, 0);
 
@@ -38,6 +47,24 @@ export default function DashboardPage() {
     if (!confirm("このプロンプトを削除しますか？")) return;
     await fetch(`/api/agents/${id}`, { method: "DELETE" });
     setAgents((prev) => prev.filter((a) => a.id !== id));
+  };
+
+  const handleConnect = async (agentId: string) => {
+    setConnectingId(agentId);
+    try {
+      const res = await fetch("/api/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ agentId }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+      else alert("エラー: " + data.error);
+    } catch {
+      alert("Stripe連携に失敗しました");
+    } finally {
+      setConnectingId(null);
+    }
   };
 
   if (status === "unauthenticated") {
@@ -83,7 +110,6 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* LIST */}
         <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#4a5068", marginBottom: 14 }}>
           出品中のプロンプト
         </div>
@@ -129,10 +155,27 @@ export default function DashboardPage() {
                   ))}
                 </div>
 
-                <div style={{ display: "flex", gap: 8 }}>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   <Link href={`/apps/${agent.id}`} style={{ fontSize: 13, color: "#3b82f6", textDecoration: "none", border: "1px solid #1c2a45", padding: "6px 14px", borderRadius: 6 }}>
                     詳細を見る
                   </Link>
+                  {agent.price > 0 && (
+                    <button
+                      onClick={() => handleConnect(agent.id)}
+                      disabled={connectingId === agent.id}
+                      style={{
+                        fontSize: 13,
+                        color: agent.stripeAccountId ? "#34d399" : "#f59e0b",
+                        background: "none",
+                        border: `1px solid ${agent.stripeAccountId ? "#1a2e1a" : "#3a2a0a"}`,
+                        padding: "6px 14px",
+                        borderRadius: 6,
+                        cursor: connectingId === agent.id ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      {connectingId === agent.id ? "処理中..." : agent.stripeAccountId ? "✓ Stripe連携済み" : "💳 Stripe口座を連携"}
+                    </button>
+                  )}
                   <button onClick={() => handleDelete(agent.id)} style={{ fontSize: 13, color: "#f87171", background: "none", border: "1px solid #3a1a1a", padding: "6px 14px", borderRadius: 6, cursor: "pointer" }}>
                     削除
                   </button>
