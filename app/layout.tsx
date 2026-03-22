@@ -27,12 +27,21 @@ export const metadata: Metadata = {
     siteName: "Lattice",
     locale: "ja_JP",
     type: "website",
+    images: [
+      {
+        url: "https://lattice-protocol.com/og.png",
+        width: 1200,
+        height: 630,
+        alt: "Lattice - 日本最大のAIプロンプトマーケット",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Lattice - 日本最大のAIプロンプトマーケット",
     description: "AIプロンプトを売り買いできる日本最大のマーケットプレイス。",
     site: "@Lattice_Node",
+    images: ["https://lattice-protocol.com/og.png"],
   },
   alternates: {
     canonical: "https://lattice-protocol.com",
