@@ -1,0 +1,16 @@
+name: Send AI Morning Newsletter
+
+on:
+  schedule:
+    - cron: '0 23 * * *'
+  workflow_dispatch:
+
+jobs:
+  send-newsletter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send morning newsletter
+        run: |
+          curl -X POST "https://www.lattice-protocol.com/api/newsletter/send" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json"
