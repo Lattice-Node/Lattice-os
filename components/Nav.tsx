@@ -25,11 +25,13 @@ export default function Nav() {
         <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: '-0.02em', color: '#e8eaf0' }}>Lattice</span>
       </Link>
       <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-        <Link href="/marketplace" style={{ fontSize: 13, color: '#8b92a9', textDecoration: 'none' }}>プロンプト一覧</Link>
+        <Link href="/work" style={{ fontSize: 13, color: '#34d399', textDecoration: 'none', fontWeight: 700 }}>Work</Link>
+        <Link href="/marketplace" style={{ fontSize: 13, color: '#8b92a9', textDecoration: 'none' }}>プロンプト</Link>
+        <Link href="/compare" style={{ fontSize: 13, color: '#8b92a9', textDecoration: 'none' }}>AI比較</Link>
+        <Link href="/news" style={{ fontSize: 13, color: '#8b92a9', textDecoration: 'none' }}>ニュース</Link>
         <Link href="/blog" style={{ fontSize: 13, color: '#8b92a9', textDecoration: 'none' }}>ブログ</Link>
-        <Link href="/publish" style={{ fontSize: 13, color: '#8b92a9', textDecoration: 'none' }}>出品する</Link>
         {isAdmin && (
-          <Link href="/admin" style={{ fontSize: 13, color: '#a78bfa', textDecoration: 'none', fontWeight: 600 }}>● 管理</Link>
+          <Link href="/admin" style={{ fontSize: 13, color: '#a78bfa', textDecoration: 'none', fontWeight: 600 }}>管理</Link>
         )}
         {session ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
