@@ -1,10 +1,12 @@
 generator client {
   provider = "prisma-client-js"
 }
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 model Agent {
   id              String   @id @default(cuid())
   name            String
@@ -21,12 +23,14 @@ model Agent {
   useCount        Int      @default(0)
   createdAt       DateTime @default(now())
 }
+
 model Purchase {
   id        String   @id @default(cuid())
   agentId   String
   userId    String
   createdAt DateTime @default(now())
 }
+
 model Subscription {
   id           String    @id @default(cuid())
   userId       String
@@ -39,6 +43,7 @@ model Subscription {
   nextRunAt    DateTime
   createdAt    DateTime  @default(now())
 }
+
 model Post {
   id          String   @id @default(cuid())
   slug        String   @unique
@@ -48,4 +53,14 @@ model Post {
   published   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model NewsArticle {
+  id          String   @id @default(cuid())
+  title       String
+  url         String   @unique
+  source      String
+  description String   @default("")
+  publishedAt DateTime
+  createdAt   DateTime @default(now())
 }
