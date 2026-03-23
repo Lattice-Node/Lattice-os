@@ -3,4 +3,4 @@ Allow: /
 Disallow: /api/
 Disallow: /dashboard/
 Disallow: /admin/
-Sitemap: https://www.lattice-protocol.com/sitemap.xml
+Sitemap: https://lattice-protocol.com/sitemap.xml
