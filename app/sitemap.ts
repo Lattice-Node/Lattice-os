@@ -1,37 +1,51 @@
-﻿import { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
+import type { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const agents = await prisma.agent.findMany({
-    select: { id: true, createdAt: true },
+  const posts = await prisma.post.findMany({
+    where: { published: true },
+    select: { slug: true, updatedAt: true },
   });
 
-  const agentPages = agents.map((agent) => ({
-    url: `https://lattice-protocol.com/apps/${agent.id}`,
-    lastModified: agent.createdAt,
+  const blogUrls = posts.map((post) => ({
+    url: `https://www.lattice-protocol.com/blog/${post.slug}`,
+    lastModified: post.updatedAt,
     changeFrequency: "weekly" as const,
-    priority: 0.7,
+    priority: 0.8,
   }));
 
-  return [
+  const staticUrls = [
     {
-      url: "https://lattice-protocol.com",
+      url: "https://www.lattice-protocol.com",
       lastModified: new Date(),
-      changeFrequency: "daily",
+      changeFrequency: "daily" as const,
       priority: 1.0,
     },
     {
-      url: "https://lattice-protocol.com/marketplace",
+      url: "https://www.lattice-protocol.com/blog",
       lastModified: new Date(),
-      changeFrequency: "daily",
+      changeFrequency: "daily" as const,
       priority: 0.9,
     },
     {
-      url: "https://lattice-protocol.com/publish",
+      url: "https://www.lattice-protocol.com/marketplace",
       lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.5,
+      changeFrequency: "daily" as const,
+      priority: 0.9,
     },
-    ...agentPages,
+    {
+      url: "https://www.lattice-protocol.com/compare",
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    },
+    {
+      url: "https://www.lattice-protocol.com/work",
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    },
   ];
+
+  return [...staticUrls, ...blogUrls];
 }

@@ -3,11 +3,21 @@ import { prisma } from "@/lib/prisma";
 import Nav from "@/components/Nav";
 import type { Metadata } from "next";
 
-export const revalidate = 0;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "AIプロンプトブログ | Lattice",
-  description: "AIプロンプトの使い方・副業での稼ぎ方・ChatGPT活用術を発信するブログ。",
+  title: "ChatGPTプロンプト完全ガイド・AI活用ブログ | Lattice",
+  description: "ChatGPTプロンプトの使い方・無料テンプレート・AI副業で稼ぐ方法を発信。コピペで使えるプロンプト集・仕事効率化・副業術を毎週更新中。",
+  keywords: ["ChatGPTプロンプト", "プロンプト テンプレート", "AI副業", "ChatGPT使い方", "プロンプト 無料"],
+  openGraph: {
+    title: "ChatGPTプロンプト完全ガイド・AI活用ブログ | Lattice",
+    description: "コピペで使えるChatGPTプロンプト集・AI副業術を毎週更新",
+    type: "website",
+    url: "https://lattice-os.vercel.app/blog",
+  },
+  alternates: {
+    canonical: "https://lattice-os.vercel.app/blog",
+  },
 };
 
 export default async function BlogPage() {
@@ -22,8 +32,12 @@ export default async function BlogPage() {
       <Nav />
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "48px 24px" }}>
         <div style={{ marginBottom: 40 }}>
-          <h1 style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-0.03em", marginBottom: 8 }}>ブログ</h1>
-          <p style={{ color: "#8b92a9", fontSize: 14 }}>AIプロンプトの使い方・副業での稼ぎ方・ChatGPT活用術</p>
+          <h1 style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-0.03em", marginBottom: 8 }}>
+            ChatGPTプロンプト・AI活用ブログ
+          </h1>
+          <p style={{ color: "#8b92a9", fontSize: 14 }}>
+            コピペで使えるプロンプト集・AI副業術・ChatGPT活用法を毎週更新
+          </p>
         </div>
 
         {posts.length === 0 ? (
