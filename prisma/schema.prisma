@@ -60,6 +60,7 @@ model NewsArticle {
   title       String
   url         String   @unique
   source      String
+  lang        String   @default("en")
   description String   @default("")
   publishedAt DateTime
   createdAt   DateTime @default(now())
