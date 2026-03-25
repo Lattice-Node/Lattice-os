@@ -1,52 +1,118 @@
-'use client'
-import Link from 'next/link'
-import { useSession, signOut } from 'next-auth/react'
-
-const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? '').split(',').map(e => e.trim())
+"use client";
+import Link from "next/link";
+import { useSession, signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 export default function Nav() {
-  const { data: session } = useSession()
-  const isAdmin = !!session?.user?.email && ADMIN_EMAILS.includes(session.user.email)
+  const { data: session } = useSession();
+  const pathname = usePathname();
+
+  const links = [
+    { href: "/marketplace", label: "プロンプト" },
+    { href: "/compare", label: "AI比較" },
+    { href: "/news", label: "ニュース" },
+    { href: "/blog", label: "ブログ" },
+    { href: "/work", label: "副業" },
+  ];
+
+  const isAdmin = session?.user?.email &&
+    (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "").split(",").includes(session.user.email);
 
   return (
-    <nav style={{
-      borderBottom: '1px solid #1c2136',
-      padding: '14px 32px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      background: '#080b14',
-      position: 'sticky',
-      top: 0,
-      zIndex: 100,
+    <header style={{
+      background: "#fff",
+      borderBottom: "1px solid #f0f0f0",
+      position: "sticky", top: 0, zIndex: 100,
+      boxShadow: "0 1px 8px rgba(0,0,0,0.06)"
     }}>
-      <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', color: '#e8eaf0' }}>
-        <span style={{ fontSize: 20, color: '#3b82f6' }}>◆</span>
-        <span style={{ fontWeight: 800, fontSize: 16, letterSpacing: '-0.02em', color: '#e8eaf0' }}>Lattice</span>
-      </Link>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-        <Link href="/work" style={{ fontSize: 13, color: '#34d399', textDecoration: 'none', fontWeight: 700 }}>Work</Link>
-        <Link href="/marketplace" style={{ fontSize: 13, color: '#8b92a9', textDecoration: 'none' }}>プロンプト</Link>
-        <Link href="/compare" style={{ fontSize: 13, color: '#8b92a9', textDecoration: 'none' }}>AI比較</Link>
-        <Link href="/news" style={{ fontSize: 13, color: '#8b92a9', textDecoration: 'none' }}>ニュース</Link>
-        <Link href="/blog" style={{ fontSize: 13, color: '#8b92a9', textDecoration: 'none' }}>ブログ</Link>
-        {isAdmin && (
-          <Link href="/admin" style={{ fontSize: 13, color: '#a78bfa', textDecoration: 'none', fontWeight: 600 }}>管理</Link>
-        )}
-        {session ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Link href="/dashboard" style={{ fontSize: 13, color: '#8b92a9', textDecoration: 'none' }}>ダッシュボード</Link>
-            <img src={session.user?.image ?? ''} style={{ width: 28, height: 28, borderRadius: '50%' }} alt="avatar" />
-            <button onClick={() => signOut()} style={{ background: 'none', border: 'none', color: '#4a5068', fontSize: 12, cursor: 'pointer' }}>
-              ログアウト
-            </button>
+      <div style={{
+        maxWidth: 1200, margin: "0 auto",
+        padding: "0 24px",
+        height: 64,
+        display: "flex", alignItems: "center", justifyContent: "space-between"
+      }}>
+        {/* Logo */}
+        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{
+            width: 32, height: 32, background: "#6366f1",
+            borderRadius: 8, display: "flex", alignItems: "center",
+            justifyContent: "center"
+          }}>
+            <span style={{ color: "#fff", fontSize: 16, fontWeight: 900 }}>L</span>
           </div>
-        ) : (
-          <Link href="/login" style={{ background: '#2563eb', color: '#fff', textDecoration: 'none', borderRadius: 8, padding: '7px 16px', fontSize: 13, fontWeight: 700, display: 'inline-block' }}>
-            ログイン
-          </Link>
-        )}
+          <span style={{ fontSize: 18, fontWeight: 800, color: "#111827", letterSpacing: "-0.02em" }}>
+            Lattice
+          </span>
+        </Link>
+
+        {/* Nav links */}
+        <nav style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          {links.map((link) => (
+            <Link key={link.href} href={link.href} style={{
+              padding: "8px 14px", borderRadius: 8,
+              fontSize: 14, fontWeight: 500,
+              textDecoration: "none",
+              color: pathname === link.href ? "#6366f1" : "#4b5563",
+              background: pathname === link.href ? "#ede9fe" : "transparent",
+              transition: "all 0.15s"
+            }}>
+              {link.label}
+            </Link>
+          ))}
+          {isAdmin && (
+            <Link href="/admin" style={{
+              padding: "8px 14px", borderRadius: 8,
+              fontSize: 14, fontWeight: 500,
+              textDecoration: "none", color: "#4b5563"
+            }}>
+              管理
+            </Link>
+          )}
+        </nav>
+
+        {/* Auth */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {session ? (
+            <>
+              <Link href="/dashboard" style={{
+                padding: "8px 16px", borderRadius: 8,
+                fontSize: 14, fontWeight: 500,
+                textDecoration: "none", color: "#4b5563"
+              }}>
+                ダッシュボード
+              </Link>
+              <button onClick={() => signOut()} style={{
+                padding: "8px 16px", borderRadius: 8,
+                fontSize: 14, fontWeight: 600,
+                border: "1.5px solid #e5e7eb",
+                background: "#fff", color: "#4b5563",
+                cursor: "pointer"
+              }}>
+                ログアウト
+              </button>
+            </>
+          ) : (
+            <>
+              <Link href="/login" style={{
+                padding: "8px 16px", borderRadius: 8,
+                fontSize: 14, fontWeight: 500,
+                textDecoration: "none", color: "#4b5563"
+              }}>
+                ログイン
+              </Link>
+              <Link href="/login" style={{
+                padding: "9px 20px", borderRadius: 8,
+                fontSize: 14, fontWeight: 700,
+                textDecoration: "none",
+                background: "#6366f1", color: "#fff",
+                boxShadow: "0 2px 8px rgba(99,102,241,0.3)"
+              }}>
+                無料で始める
+              </Link>
+            </>
+          )}
+        </div>
       </div>
-    </nav>
-  )
+    </header>
+  );
 }
