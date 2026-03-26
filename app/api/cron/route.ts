@@ -1,78 +1,67 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { sendResultEmail } from "@/lib/mailer";
 
 export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const secret = req.headers.get("x-cron-secret");
+  if (secret !== process.env.CRON_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const now = new Date();
-  const subscriptions = await prisma.subscription.findMany({
+  const agents = await prisma.userAgent.findMany({
     where: {
       active: true,
       nextRunAt: { lte: now },
     },
   });
 
-  console.log(`Running ${subscriptions.length} subscriptions...`);
-
-  for (const sub of subscriptions) {
+  const results = [];
+  for (const agent of agents) {
     try {
-      const agent = await prisma.agent.findUnique({ where: { id: sub.agentId } });
-      if (!agent) continue;
-
-      const inputValues = JSON.parse(sub.inputValues);
-      const fieldSummary = Object.entries(inputValues)
-        .map(([key, value]) => `${key}: ${value}`)
-        .join("\n");
-      const task = `以下の情報をもとに処理してください:\n\n${fieldSummary}`;
-
-      const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      const res = await fetch(`${process.env.NEXTAUTH_URL}/api/execute`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: process.env.GROQ_MODEL || "llama-3.1-8b-instant",
-          max_tokens: 2048,
-          messages: [
-            { role: "system", content: agent.prompt },
-            { role: "user", content: task },
-          ],
+          agentId: agent.id,
+          agentName: agent.name,
+          agentPrompt: agent.prompt,
+          task: "Run scheduled task",
         }),
       });
 
-      const groqData = await groqRes.json();
-      const result = groqData.choices?.[0]?.message?.content ?? "結果を取得できませんでした";
-
-      await sendResultEmail({
-        to: sub.userEmail,
-        agentName: agent.name,
-        result,
+      await prisma.agentLog.create({
+        data: {
+          agentId: agent.id,
+          userId: agent.userId,
+          status: res.ok ? "success" : "error",
+          output: res.ok ? "Executed successfully" : "",
+          error: res.ok ? "" : "Execution failed",
+        },
       });
 
-      const nextRunAt = new Date();
-      switch (sub.frequency) {
-        case "daily": nextRunAt.setDate(nextRunAt.getDate() + 1); break;
-        case "weekly": nextRunAt.setDate(nextRunAt.getDate() + 7); break;
-        case "monthly": nextRunAt.setMonth(nextRunAt.getMonth() + 1); break;
-      }
-
-      await prisma.subscription.update({
-        where: { id: sub.id },
-        data: { lastRunAt: now, nextRunAt },
+      await prisma.userAgent.update({
+        where: { id: agent.id },
+        data: {
+          lastRunAt: now,
+          runCount: { increment: 1 },
+        },
       });
 
-      console.log(`✅ Sent email to ${sub.userEmail} for ${agent.name}`);
-    } catch (err) {
-      console.error(`❌ Error for subscription ${sub.id}:`, err);
+      results.push({ id: agent.id, status: "ok" });
+    } catch (e) {
+      await prisma.agentLog.create({
+        data: {
+          agentId: agent.id,
+          userId: agent.userId,
+          status: "error",
+          error: String(e),
+        },
+      });
+      results.push({ id: agent.id, status: "error" });
     }
   }
 
-  return NextResponse.json({ success: true, processed: subscriptions.length });
+  return NextResponse.json({ ran: results.length, results });
 }

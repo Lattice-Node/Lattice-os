@@ -1,48 +1,46 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
-export async function GET(req: Request) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const mine = searchParams.get("mine");
-    const session = await auth();
-    const agents = await prisma.agent.findMany({
-      orderBy: { createdAt: "desc" },
-      where: mine && session?.user?.id ? { authorId: session.user.id } : undefined,
-    });
-    return NextResponse.json({ success: true, agents });
-  } catch (error) {
-    return NextResponse.json({ success: false, error: "Failed to fetch agents" }, { status: 500 });
+export async function GET() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const user = await prisma.user.findUnique({ where: { email: session.user.email } });
+  if (!user) return NextResponse.json({ agents: [] });
+
+  const agents = await prisma.userAgent.findMany({
+    where: { userId: user.id },
+    orderBy: { createdAt: "desc" },
+  });
+  return NextResponse.json({ agents });
 }
 
 export async function POST(req: Request) {
-  try {
-    const session = await auth();
-    const body = await req.json();
-    const { name, description, category, prompt, authorName, price, agentType, webhookUrl, fields } = body;
-
-    if (!name || !description || !category) {
-      return NextResponse.json({ success: false, error: "必須項目が不足しています" }, { status: 400 });
-    }
-
-    const agent = await prisma.agent.create({
-      data: {
-        name,
-        description,
-        category,
-        prompt: prompt || "",
-        agentType: agentType || "prompt",
-        webhookUrl: webhookUrl || "",
-        fields: fields || "[]",
-        authorName: authorName || session?.user?.name || "anonymous",
-        authorId: session?.user?.id || "",
-        price: price || 0,
-      },
-    });
-    return NextResponse.json({ success: true, agent });
-  } catch (error) {
-    return NextResponse.json({ success: false, error: "Failed to create agent" }, { status: 500 });
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  let user = await prisma.user.findUnique({ where: { email: session.user.email } });
+  if (!user) {
+    user = await prisma.user.create({
+      data: { email: session.user.email, name: session.user.name ?? "" },
+    });
+  }
+
+  const { name, description, prompt, trigger, triggerCron, connections } = await req.json();
+  const agent = await prisma.userAgent.create({
+    data: {
+      userId: user.id,
+      name,
+      description: description ?? "",
+      prompt,
+      trigger,
+      triggerCron: triggerCron ?? "",
+      connections: connections ?? "[]",
+    },
+  });
+  return NextResponse.json({ agent });
 }

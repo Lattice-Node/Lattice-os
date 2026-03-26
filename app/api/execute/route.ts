@@ -1,47 +1,34 @@
-﻿import { NextRequest } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { NextRequest } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   const { agentPrompt, agentName, agentId, task } = await req.json();
-
   if (!agentPrompt || !task) {
-    return new Response(JSON.stringify({ error: "Missing agentPrompt or task" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(JSON.stringify({ error: "Missing agentPrompt or task" }), { status: 400 });
   }
 
   const groqApiKey = process.env.GROQ_API_KEY;
   if (!groqApiKey) {
-    return new Response(JSON.stringify({ error: "GROQ_API_KEY not set" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return new Response(JSON.stringify({ error: "GROQ_API_KEY not set" }), { status: 500 });
   }
 
-  // useCount++ (非同期・失敗しても続行)
   if (agentId) {
-    prisma.agent.update({
+    prisma.userAgent.update({
       where: { id: agentId },
-      data: { useCount: { increment: 1 } },
+      data: { runCount: { increment: 1 } },
     }).catch(() => {});
   }
 
   const encoder = new TextEncoder();
-
   const stream = new ReadableStream({
     async start(controller) {
       const send = (data: object) => {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
       };
-
       try {
-        send({ type: "status", message: `🤖 ${agentName} が起動しました...` });
-
+        send({ type: "status", message: `${agentName} is running...` });
         const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
           method: "POST",
           headers: {
@@ -65,8 +52,7 @@ export async function POST(req: NextRequest) {
           return;
         }
 
-        send({ type: "status", message: "✍️ 生成中..." });
-
+        send({ type: "status", message: "Generating..." });
         const reader = groqRes.body.getReader();
         const decoder = new TextDecoder();
         let buffer = "";
@@ -74,25 +60,19 @@ export async function POST(req: NextRequest) {
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-
           buffer += decoder.decode(value, { stream: true });
           const lines = buffer.split("\n");
           buffer = lines.pop() ?? "";
-
           for (const line of lines) {
             const trimmed = line.replace(/^data: /, "").trim();
             if (!trimmed || trimmed === "[DONE]") continue;
-
             try {
               const parsed = JSON.parse(trimmed);
               const delta = parsed.choices?.[0]?.delta?.content;
               if (delta) send({ type: "token", content: delta });
-            } catch {
-              // skip
-            }
+            } catch {}
           }
         }
-
         send({ type: "done" });
       } catch (err) {
         send({ type: "error", message: String(err) });
