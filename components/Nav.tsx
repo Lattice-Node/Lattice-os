@@ -7,48 +7,127 @@ export default function Nav() {
   const { data: session } = useSession();
   const pathname = usePathname();
 
-  const links = [
-    { href: "/marketplace", label: "AIツール" },
-    { href: "/compare", label: "AI比較" },
-    { href: "/news", label: "News" },
-    { href: "/blog", label: "Blog" },
-    { href: "/work", label: "Work" },
-  ];
-
-  const isAdmin = session?.user?.email &&
-    (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "").split(",").includes(session.user.email);
-
   return (
-    <header style={{ background: "#fff", borderBottom: "1px solid #e8e6e0", position: "sticky", top: 0, zIndex: 100, boxShadow: "0 1px 8px rgba(0,0,0,0.05)" }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{ width: 32, height: 32, background: "#6366f1", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ color: "#fff", fontSize: 15, fontWeight: 900 }}>L</span>
-          </div>
-          <span style={{ fontSize: 18, fontWeight: 800, color: "#1a1a1a", letterSpacing: "-0.02em" }}>Lattice</span>
+    <header style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      zIndex: 100,
+      height: 56,
+      borderBottom: "1px solid #1a1a1a",
+      background: "rgba(10,10,10,0.9)",
+      backdropFilter: "blur(12px)",
+      WebkitBackdropFilter: "blur(12px)",
+    }}>
+      <div style={{
+        maxWidth: 1200,
+        margin: "0 auto",
+        padding: "0 24px",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}>
+        <Link href="/" style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          textDecoration: "none",
+        }}>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="2" y="2" width="7" height="7" rx="1.5" fill="#5b5fc7"/>
+            <rect x="11" y="2" width="7" height="7" rx="1.5" fill="#5b5fc7" opacity="0.6"/>
+            <rect x="2" y="11" width="7" height="7" rx="1.5" fill="#5b5fc7" opacity="0.6"/>
+            <rect x="11" y="11" width="7" height="7" rx="1.5" fill="#5b5fc7" opacity="0.3"/>
+          </svg>
+          <span style={{
+            fontSize: 15,
+            fontWeight: 600,
+            color: "#ffffff",
+            letterSpacing: "-0.01em",
+          }}>Lattice</span>
         </Link>
 
         <nav style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          {links.map((link) => (
-            <Link key={link.href} href={link.href} style={{ padding: "8px 14px", borderRadius: 8, fontSize: 14, fontWeight: 500, textDecoration: "none", color: pathname === link.href ? "#6366f1" : "#4b5563", background: pathname === link.href ? "#ede9fe" : "transparent" }}>
-              {link.label}
-            </Link>
-          ))}
-          {isAdmin && (
-            <Link href="/admin" style={{ padding: "8px 14px", borderRadius: 8, fontSize: 14, fontWeight: 500, textDecoration: "none", color: "#4b5563" }}>Admin</Link>
+          {session && (
+            <>
+              <Link href="/agents" style={{
+                padding: "6px 12px",
+                borderRadius: 6,
+                fontSize: 14,
+                fontWeight: 500,
+                color: pathname?.startsWith("/agents") ? "#ffffff" : "#888888",
+                background: pathname?.startsWith("/agents") ? "#161616" : "transparent",
+                transition: "all 0.15s",
+                textDecoration: "none",
+              }}>
+                Agents
+              </Link>
+              <Link href="/dashboard" style={{
+                padding: "6px 12px",
+                borderRadius: 6,
+                fontSize: 14,
+                fontWeight: 500,
+                color: pathname === "/dashboard" ? "#ffffff" : "#888888",
+                background: pathname === "/dashboard" ? "#161616" : "transparent",
+                transition: "all 0.15s",
+                textDecoration: "none",
+              }}>
+                Dashboard
+              </Link>
+            </>
           )}
         </nav>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {session ? (
             <>
-              <Link href="/dashboard" style={{ padding: "8px 16px", borderRadius: 8, fontSize: 14, fontWeight: 500, textDecoration: "none", color: "#4b5563" }}>Dashboard</Link>
-              <button onClick={() => signOut()} style={{ padding: "8px 16px", borderRadius: 8, fontSize: 14, fontWeight: 600, border: "1.5px solid #e8e6e0", background: "#fff", color: "#4b5563", cursor: "pointer" }}>Logout</button>
+              <span style={{ fontSize: 13, color: "#444444" }}>
+                {session.user?.email}
+              </span>
+              <button
+                onClick={() => signOut()}
+                style={{
+                  padding: "6px 14px",
+                  borderRadius: 6,
+                  fontSize: 13,
+                  fontWeight: 500,
+                  border: "1px solid #222222",
+                  background: "transparent",
+                  color: "#888888",
+                  cursor: "pointer",
+                  transition: "all 0.15s",
+                }}
+              >
+                Sign out
+              </button>
             </>
           ) : (
             <>
-              <Link href="/login" style={{ padding: "8px 16px", borderRadius: 8, fontSize: 14, fontWeight: 500, textDecoration: "none", color: "#4b5563" }}>Login</Link>
-              <Link href="/login" style={{ padding: "9px 20px", borderRadius: 8, fontSize: 14, fontWeight: 700, textDecoration: "none", background: "#6366f1", color: "#fff" }}>Start Free</Link>
+              <Link href="/login" style={{
+                padding: "6px 14px",
+                borderRadius: 6,
+                fontSize: 13,
+                fontWeight: 500,
+                color: "#888888",
+                textDecoration: "none",
+                transition: "color 0.15s",
+              }}>
+                Log in
+              </Link>
+              <Link href="/login" style={{
+                padding: "7px 16px",
+                borderRadius: 6,
+                fontSize: 13,
+                fontWeight: 600,
+                background: "#5b5fc7",
+                color: "#ffffff",
+                textDecoration: "none",
+                transition: "background 0.15s",
+              }}>
+                Get started
+              </Link>
             </>
           )}
         </div>

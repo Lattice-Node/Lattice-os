@@ -7,85 +7,59 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Agent {
-  id              String   @id @default(cuid())
-  name            String
-  description     String
-  category        String
-  prompt          String   @default("")
-  agentType       String   @default("prompt")
-  webhookUrl      String   @default("")
-  fields          String   @default("[]")
-  authorName      String   @default("anonymous")
-  authorId        String   @default("")
-  stripeAccountId String   @default("")
-  price           Float    @default(0)
-  useCount        Int      @default(0)
-  createdAt       DateTime @default(now())
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String   @default("")
+  plan      String   @default("free")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agents    UserAgent[]
+  logs      AgentLog[]
 }
 
-model Purchase {
+model UserAgent {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  description String   @default("")
+  prompt      String
+  trigger     String
+  triggerCron String   @default("")
+  connections String   @default("[]")
+  active      Boolean  @default(true)
+  runCount    Int      @default(0)
+  lastRunAt   DateTime?
+  nextRunAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id])
+  logs        AgentLog[]
+}
+
+model AgentLog {
   id        String   @id @default(cuid())
   agentId   String
   userId    String
+  status    String
+  output    String   @default("")
+  error     String   @default("")
   createdAt DateTime @default(now())
+
+  agent     UserAgent @relation(fields: [agentId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
 }
 
-model Subscription {
-  id           String    @id @default(cuid())
-  userId       String
-  userEmail    String
-  agentId      String
-  frequency    String
-  inputValues  String
-  active       Boolean   @default(true)
-  lastRunAt    DateTime?
-  nextRunAt    DateTime
-  createdAt    DateTime  @default(now())
-}
-
-model Post {
+model AgentTemplate {
   id          String   @id @default(cuid())
-  slug        String   @unique
-  title       String
+  name        String
   description String
-  content     String
-  published   Boolean  @default(false)
+  prompt      String
+  trigger     String
+  connections String   @default("[]")
+  category    String   @default("general")
+  useCount    Int      @default(0)
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model NewsArticle {
-  id          String   @id @default(cuid())
-  title       String
-  url         String   @unique
-  source      String
-  lang        String   @default("en")
-  description String   @default("")
-  publishedAt DateTime
-  createdAt   DateTime @default(now())
-}
-
-model WorkSpace {
-  id            String   @id @default(cuid())
-  userId        String   @unique
-  jobType       String   @default("")
-  monthlyTarget Int      @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-}
-
-model WorkLog {
-  id        String   @id @default(cuid())
-  userId    String
-  content   String
-  income    Int      @default(0)
-  date      DateTime @default(now())
-  createdAt DateTime @default(now())
-}
-
-model NewsletterSubscriber {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
 }
