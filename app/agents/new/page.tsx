@@ -95,6 +95,9 @@ export default function NewAgentPage() {
 
         {/* Header */}
         <div style={{ marginBottom: 36 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 20 }}>
+            <a href="/agents" style={{ fontSize: 13, color: "#4a5060", textDecoration: "none" }}>← Agents</a>
+          </div>
           <p style={{ fontSize: 12, color: "#4a5060", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 10px" }}>
             新規作成
           </p>
