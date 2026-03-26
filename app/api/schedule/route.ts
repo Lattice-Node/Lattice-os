@@ -31,38 +31,42 @@ export async function POST(req: NextRequest) {
 
   const baseUrl = process.env.NEXTAUTH_URL;
   const endpoint = `${baseUrl}/api/execute`;
+  const body = JSON.stringify({
+    agentId: agent.id,
+    agentName: agent.name,
+    agentPrompt: agent.prompt,
+    task: "スケジュールされたタスクを実行してください",
+  });
 
   try {
-    const res = await fetch(`https://qstash.upstash.io/v2/schedules`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${qstashToken}`,
-        "Content-Type": "application/json",
-        "Upstash-Cron": agent.triggerCron,
-        "Upstash-Method": "POST",
-        "Upstash-Body": JSON.stringify({
-          agentId: agent.id,
-          agentName: agent.name,
-          agentPrompt: agent.prompt,
-          task: "スケジュールされたタスクを実行してください",
-        }),
-      },
-      body: JSON.stringify({ destination: endpoint }),
-    });
+    const res = await fetch(
+      `https://qstash.upstash.io/v2/schedules/${encodeURIComponent(endpoint)}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${qstashToken}`,
+          "Content-Type": "application/json",
+          "Upstash-Cron": agent.triggerCron,
+          "Upstash-Method": "POST",
+          "Upstash-Content-Type": "application/json",
+        },
+        body,
+      }
+    );
+
+    const responseText = await res.text();
 
     if (!res.ok) {
-      const err = await res.text();
-      return NextResponse.json({ error: `QStash error: ${err}` }, { status: 500 });
+      return NextResponse.json(
+        { error: `QStash error: ${responseText}` },
+        { status: 500 }
+      );
     }
 
-    const data = await res.json();
+    let data: { scheduleId?: string } = {};
+    try { data = JSON.parse(responseText); } catch {}
 
-    await prisma.userAgent.update({
-      where: { id: agentId },
-      data: { triggerCron: agent.triggerCron },
-    });
-
-    return NextResponse.json({ success: true, scheduleId: data.scheduleId });
+    return NextResponse.json({ success: true, scheduleId: data.scheduleId, raw: responseText });
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
