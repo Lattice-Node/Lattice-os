@@ -29,7 +29,7 @@ export default function AppPage() {
     if (!id) return;
     fetch("/api/agents/" + id)
       .then(r => r.json())
-      .then(data => setAgent(data))
+      .then(data => setAgent(data.agent ?? data))
       .catch(() => {});
   }, [id]);
 
@@ -72,7 +72,7 @@ export default function AppPage() {
         }
       }
     } catch (e) {
-      setResult("エラーが発生しました。もう一度試してください。");
+      setResult("繧ｨ繝ｩ繝ｼ縺檎匱逕溘＠縺ｾ縺励◆縲ゅｂ縺・ｸ蠎ｦ隧ｦ縺励※縺上□縺輔＞縲・);
     } finally {
       setLoading(false);
     }
@@ -83,7 +83,7 @@ export default function AppPage() {
       <main style={{ minHeight: "100vh", background: "#f8f7f4" }}>
         <Nav />
         <div style={{ maxWidth: 720, margin: "0 auto", padding: "80px 24px", textAlign: "center", color: "#9a9a9a" }}>
-          読み込み中...
+          隱ｭ縺ｿ霎ｼ縺ｿ荳ｭ...
         </div>
       </main>
     );
@@ -94,16 +94,16 @@ export default function AppPage() {
       <Nav />
       <div style={{ maxWidth: 720, margin: "0 auto", padding: "48px 24px 80px" }}>
 
-        {/* パンくず */}
+        {/* 繝代Φ縺上★ */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 32, fontSize: 13, color: "#9a9a9a" }}>
-          <Link href="/" style={{ color: "#9a9a9a", textDecoration: "none" }}>ホーム</Link>
-          <span>›</span>
-          <Link href="/marketplace" style={{ color: "#9a9a9a", textDecoration: "none" }}>AIツール集</Link>
-          <span>›</span>
+          <Link href="/" style={{ color: "#9a9a9a", textDecoration: "none" }}>繝帙・繝</Link>
+          <span>窶ｺ</span>
+          <Link href="/marketplace" style={{ color: "#9a9a9a", textDecoration: "none" }}>AI繝・・繝ｫ髮・/Link>
+          <span>窶ｺ</span>
           <span style={{ color: "#5a5a5a" }}>{agent.name}</span>
         </div>
 
-        {/* ヘッダー */}
+        {/* 繝倥ャ繝繝ｼ */}
         <div style={{ marginBottom: 36 }}>
           <span style={{ fontSize: 12, fontWeight: 700, color: "#6366f1", background: "#ede9fe", padding: "4px 12px", borderRadius: 20 }}>
             {agent.category}
@@ -115,19 +115,19 @@ export default function AppPage() {
             {agent.description}
           </p>
           <div style={{ fontSize: 12, color: "#9a9a9a", marginTop: 10 }}>
-            {agent.useCount}回使用 · {agent.authorName}
+            {agent.useCount}蝗樔ｽｿ逕ｨ ﾂｷ {agent.authorName}
           </div>
         </div>
 
-        {/* 入力エリア */}
+        {/* 蜈･蜉帙お繝ｪ繧｢ */}
         <div style={{ background: "#fff", border: "1.5px solid #e8e6e0", borderRadius: 16, padding: "28px", marginBottom: 24, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
           <label style={{ fontSize: 14, fontWeight: 700, color: "#1a1a1a", display: "block", marginBottom: 12 }}>
-            情報を入力してください
+            諠・ｱ繧貞・蜉帙＠縺ｦ縺上□縺輔＞
           </label>
           <textarea
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder="例：職種「Webエンジニア」、条件「リモート・週5・年収600万以上」"
+            placeholder="萓具ｼ夊・遞ｮ縲係eb繧ｨ繝ｳ繧ｸ繝九い縲阪∵擅莉ｶ縲後Μ繝｢繝ｼ繝医・騾ｱ5繝ｻ蟷ｴ蜿・00荳・ｻ･荳翫・
             rows={4}
             style={{
               width: "100%", padding: "14px 16px",
@@ -149,16 +149,16 @@ export default function AppPage() {
               transition: "all 0.15s"
             }}
           >
-            {loading ? "生成中..." : "AIに作ってもらう →"}
+            {loading ? "逕滓・荳ｭ..." : "AI縺ｫ菴懊▲縺ｦ繧ゅｉ縺・竊・}
           </button>
         </div>
 
-        {/* 結果エリア */}
+        {/* 邨先棡繧ｨ繝ｪ繧｢ */}
         {ran && (
           <div style={{ background: "#fff", border: "1.5px solid #e8e6e0", borderRadius: 16, padding: "28px", boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
               <span style={{ fontSize: 14, fontWeight: 700, color: "#1a1a1a" }}>
-                {loading ? "生成中..." : "完成しました"}
+                {loading ? "逕滓・荳ｭ..." : "螳梧・縺励∪縺励◆"}
               </span>
               {!loading && result && (
                 <button
@@ -169,7 +169,7 @@ export default function AppPage() {
                     fontSize: 13, fontWeight: 600, color: "#5a5a5a", cursor: "pointer"
                   }}
                 >
-                  コピー
+                  繧ｳ繝斐・
                 </button>
               )}
             </div>
@@ -177,15 +177,15 @@ export default function AppPage() {
               fontSize: 15, color: "#1a1a1a", lineHeight: 1.9,
               whiteSpace: "pre-wrap", minHeight: 80
             }}>
-              {result || (loading ? "▍" : "")}
+              {result || (loading ? "笆・ : "")}
             </div>
           </div>
         )}
 
-        {/* 他のツール */}
+        {/* 莉悶・繝・・繝ｫ */}
         <div style={{ marginTop: 48, textAlign: "center" }}>
           <Link href="/marketplace" style={{ fontSize: 14, color: "#6366f1", textDecoration: "none", fontWeight: 600 }}>
-            ← 他のAIツールを見る
+            竊・莉悶・AI繝・・繝ｫ繧定ｦ九ｋ
           </Link>
         </div>
       </div>

@@ -8,11 +8,11 @@ export default function Nav() {
   const pathname = usePathname();
 
   const links = [
-    { href: "/marketplace", label: "プロンプト" },
-    { href: "/compare", label: "AI比較" },
-    { href: "/news", label: "ニュース" },
-    { href: "/blog", label: "ブログ" },
-    { href: "/work", label: "副業" },
+    { href: "/marketplace", label: "繝励Ο繝ｳ繝励ヨ" },
+    { href: "/compare", label: "AI豈碑ｼ・ },
+    { href: "/news", label: "繝九Η繝ｼ繧ｹ" },
+    { href: "/blog", label: "繝悶Ο繧ｰ" },
+    { href: "/work", label: "蜑ｯ讌ｭ" },
   ];
 
   const isAdmin = session?.user?.email &&
@@ -65,7 +65,7 @@ export default function Nav() {
               fontSize: 14, fontWeight: 500,
               textDecoration: "none", color: "#4b5563"
             }}>
-              管理
+              邂｡逅・
             </Link>
           )}
         </nav>
@@ -79,7 +79,7 @@ export default function Nav() {
                 fontSize: 14, fontWeight: 500,
                 textDecoration: "none", color: "#4b5563"
               }}>
-                ダッシュボード
+                繝繝・す繝･繝懊・繝・
               </Link>
               <button onClick={() => signOut()} style={{
                 padding: "8px 16px", borderRadius: 8,
@@ -88,7 +88,7 @@ export default function Nav() {
                 background: "#fff", color: "#4b5563",
                 cursor: "pointer"
               }}>
-                ログアウト
+                繝ｭ繧ｰ繧｢繧ｦ繝・
               </button>
             </>
           ) : (
@@ -98,7 +98,7 @@ export default function Nav() {
                 fontSize: 14, fontWeight: 500,
                 textDecoration: "none", color: "#4b5563"
               }}>
-                ログイン
+                繝ｭ繧ｰ繧､繝ｳ
               </Link>
               <Link href="/login" style={{
                 padding: "9px 20px", borderRadius: 8,
@@ -107,7 +107,7 @@ export default function Nav() {
                 background: "#6366f1", color: "#fff",
                 boxShadow: "0 2px 8px rgba(99,102,241,0.3)"
               }}>
-                無料で始める
+                辟｡譁吶〒蟋九ａ繧・
               </Link>
             </>
           )}
