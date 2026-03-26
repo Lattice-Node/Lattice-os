@@ -1,24 +1,15 @@
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import Link from "next/link";
 import Nav from "@/components/Nav";
 import type { Metadata } from "next";
 
-export const revalidate = 3600;
-
 export const metadata: Metadata = {
-  title: "ChatGPTプロンプト完全ガイド・AI活用ブログ | Lattice",
-  description: "ChatGPTプロンプトの使い方・無料テンプレート・AI副業で稼ぐ方法を発信。コピペで使えるプロンプト集・仕事効率化・副業術を毎週更新中。",
-  keywords: ["ChatGPTプロンプト", "プロンプト テンプレート", "AI副業", "ChatGPT使い方", "プロンプト 無料"],
-  openGraph: {
-    title: "ChatGPTプロンプト完全ガイド・AI活用ブログ | Lattice",
-    description: "コピペで使えるChatGPTプロンプト集・AI副業術を毎週更新",
-    type: "website",
-    url: "https://lattice-os.vercel.app/blog",
-  },
-  alternates: {
-    canonical: "https://lattice-os.vercel.app/blog",
-  },
+  title: "AIブログ | Lattice - AI活用術・副業・最新情報",
+  description: "ChatGPT活用術・AI副業の始め方・最新AIツール解説を毎週更新。",
+  alternates: { canonical: "https://lattice-protocol.com/blog" },
 };
+
+export const revalidate = 3600;
 
 export default async function BlogPage() {
   const posts = await prisma.post.findMany({
@@ -27,29 +18,68 @@ export default async function BlogPage() {
   });
 
   return (
-    <main style={{ minHeight: "100vh", background: "#080b14", color: "#e8eaf0", fontFamily: "'DM Sans', 'Hiragino Sans', sans-serif" }}>
-      <style>{`.blog-card { transition: border-color 0.15s; } .blog-card:hover { border-color: #3b82f655 !important; }`}</style>
+    <main style={{ minHeight: "100vh", background: "var(--bg)", color: "var(--text-primary)" }}>
       <Nav />
-      <div style={{ maxWidth: 800, margin: "0 auto", padding: "48px 24px" }}>
+
+      <div style={{ maxWidth: 860, margin: "0 auto", padding: "48px 24px 80px" }}>
+
         <div style={{ marginBottom: 40 }}>
-          <h1 style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-0.03em", marginBottom: 8 }}>
-            ChatGPTプロンプト・AI活用ブログ
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--accent-light)", color: "var(--accent)", fontSize: 12, fontWeight: 700, padding: "5px 14px", borderRadius: 20, marginBottom: 16 }}>
+            毎週更新
+          </div>
+          <h1 style={{ fontSize: "clamp(28px, 4vw, 40px)", fontWeight: 800, marginBottom: 10, letterSpacing: "-0.02em" }}>
+            AIブログ
           </h1>
-          <p style={{ color: "#8b92a9", fontSize: 14 }}>
-            コピペで使えるプロンプト集・AI副業術・ChatGPT活用法を毎週更新
+          <p style={{ fontSize: 15, color: "var(--text-secondary)" }}>
+            AI活用術・副業の始め方・最新AIツール解説
           </p>
         </div>
 
         {posts.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "80px 0", color: "#4a5068" }}>記事を準備中です</div>
+          <div style={{ textAlign: "center", padding: "80px 0", color: "var(--text-muted)" }}>
+            <p>記事を準備中です。</p>
+          </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            {posts.map((post) => (
-              <Link key={post.id} href={`/blog/${post.slug}`} style={{ textDecoration: "none" }}>
-                <div className="blog-card" style={{ background: "#0d1120", border: "1px solid #1c2136", borderRadius: 12, padding: "24px" }}>
-                  <div style={{ fontSize: 18, fontWeight: 700, color: "#e8eaf0", marginBottom: 8 }}>{post.title}</div>
-                  <div style={{ fontSize: 13, color: "#8b92a9", lineHeight: 1.6, marginBottom: 12 }}>{post.description}</div>
-                  <div style={{ fontSize: 11, color: "#4a5068" }}>{new Date(post.createdAt).toLocaleDateString("ja-JP")}</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            {posts.map((post, i) => (
+              <Link key={post.id} href={"/blog/" + post.slug} style={{ textDecoration: "none" }}>
+                <div style={{
+                  background: "var(--surface)", border: "1px solid var(--border)",
+                  borderRadius: "var(--radius-md)", padding: "24px",
+                  transition: "box-shadow 0.15s, transform 0.15s",
+                  display: "flex", gap: 24, alignItems: "flex-start"
+                }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLDivElement).style.boxShadow = "var(--shadow-md)";
+                    (e.currentTarget as HTMLDivElement).style.transform = "translateY(-1px)";
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
+                    (e.currentTarget as HTMLDivElement).style.transform = "none";
+                  }}
+                >
+                  <div style={{
+                    width: 40, height: 40, background: "var(--accent-light)",
+                    borderRadius: "var(--radius-sm)", display: "flex",
+                    alignItems: "center", justifyContent: "center",
+                    flexShrink: 0, fontSize: 13, fontWeight: 800, color: "var(--accent)"
+                  }}>
+                    {String(i + 1).padStart(2, "0")}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h2 style={{ fontSize: 16, fontWeight: 700, color: "var(--text-primary)", marginBottom: 8, lineHeight: 1.5 }}>
+                      {post.title}
+                    </h2>
+                    {post.description && (
+                      <p style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.7, marginBottom: 10 }}>
+                        {post.description}
+                      </p>
+                    )}
+                    <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
+                      {new Date(post.createdAt).toLocaleDateString("ja-JP")}
+                    </span>
+                  </div>
+                  <span style={{ fontSize: 18, color: "var(--text-muted)", flexShrink: 0 }}>→</span>
                 </div>
               </Link>
             ))}
