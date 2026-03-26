@@ -1,18 +1,16 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import Script from "next/script";
-import Footer from "@/components/Footer";
 
 const dmSans = DM_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Lattice - AIをもっと身近に。",
-  description: "ChatGPTプロンプト無料テンプレート・AI副業スペース・複数AI同時比較。AIを使いたいすべての人のためのプラットフォーム。",
+  title: "Lattice - 自然言語で動くAIエージェント",
+  description: "話しかけるだけで業務を自動化。技術知識ゼロで使えるノーコード自動化プラットフォーム。",
   manifest: "/manifest.json",
   appleWebApp: { capable: true, statusBarStyle: "default", title: "Lattice" },
-  other: { "apple-mobile-web-app-capable": "yes" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -34,10 +32,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           `}
         </Script>
       </head>
-      <body className={dmSans.className} style={{ margin: 0, padding: 0, background: "#fff" }}>
+      <body className={dmSans.className} style={{ margin: 0, padding: 0, background: "#111318" }}>
         <Providers>
           {children}
-          <Footer />
         </Providers>
       </body>
     </html>
