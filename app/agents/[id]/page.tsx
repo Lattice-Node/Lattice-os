@@ -49,6 +49,8 @@ export default function AgentDetailPage() {
   const [slackWebhook, setSlackWebhook] = useState("");
   const [savingSlack, setSavingSlack] = useState(false);
   const [activeTab, setActiveTab] = useState<"settings" | "logs">("settings");
+  const [scheduling, setScheduling] = useState(false);
+  const [scheduleMsg, setScheduleMsg] = useState("");
 
   useEffect(() => {
     fetch(`/api/agents/${id}`)
@@ -148,6 +150,25 @@ export default function AgentDetailPage() {
       setOutputStatus("error");
     } finally {
       setRunning(false);
+    }
+  }
+
+  async function handleRegisterSchedule() {
+    setScheduling(true);
+    setScheduleMsg("");
+    try {
+      const res = await fetch("/api/schedule", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ agentId: id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "登録失敗");
+      setScheduleMsg("スケジュール登録完了 ✓");
+    } catch (e) {
+      setScheduleMsg(e instanceof Error ? e.message : "エラーが発生しました");
+    } finally {
+      setScheduling(false);
     }
   }
 
@@ -430,3 +451,4 @@ export default function AgentDetailPage() {
     </main>
   );
 }
+
