@@ -10,9 +10,9 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   const agent = await prisma.agent.findUnique({ where: { id: params.id } });
   if (!agent) return { title: "Not Found" };
   return {
-    title: `${agent.name} - 辟｡譁僊I繝励Ο繝ｳ繝励ヨ | Lattice`,
-    description: `${agent.description} ChatGPT繝ｻClaude繝ｻGemini蟇ｾ蠢懊・辟｡譁吶・繝ｭ繝ｳ繝励ヨ繝・Φ繝励Ξ繝ｼ繝医ゅさ繝斐・縺ｧ縺吶＄菴ｿ縺医∪縺吶Ａ,
-    keywords: [agent.name, agent.category, "ChatGPT繝励Ο繝ｳ繝励ヨ", "AI繝励Ο繝ｳ繝励ヨ 辟｡譁・, "繝励Ο繝ｳ繝励ヨ 繝・Φ繝励Ξ繝ｼ繝・],
+    title: `${agent.name} - 霎滂ｽ｡隴∝リI郢晏干ﾎ溽ｹ晢ｽｳ郢晏干繝ｨ | Lattice`,
+    description: `${agent.description} ChatGPT郢晢ｽｻClaude郢晢ｽｻGemini陝・ｽｾ陟｢諛翫・霎滂ｽ｡隴∝生繝ｻ郢晢ｽｭ郢晢ｽｳ郢晏干繝ｨ郢昴・ﾎｦ郢晏干ﾎ樒ｹ晢ｽｼ郢晏現ﾂ繧・＆郢晄鱒繝ｻ邵ｺ・ｧ邵ｺ蜷ｶ・・抄・ｿ邵ｺ蛹ｻ竏ｪ邵ｺ蜷ｶﾂ・｡,
+    keywords: [agent.name, agent.category, "ChatGPTプロンプト", "AIプロンプト 無料", "プロンプト テンプレート"],
     openGraph: {
       title: `${agent.name} | Lattice`,
       description: agent.description,
@@ -47,10 +47,10 @@ export default async function AppPage({ params }: { params: { id: string } }) {
 
         {/* Breadcrumb */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 32, fontSize: 13, color: "#9ca3af" }}>
-          <Link href="/" style={{ color: "#9ca3af", textDecoration: "none" }}>繝帙・繝</Link>
-          <span>窶ｺ</span>
-          <Link href="/marketplace" style={{ color: "#9ca3af", textDecoration: "none" }}>繝励Ο繝ｳ繝励ヨ髮・/Link>
-          <span>窶ｺ</span>
+          <Link href="/" style={{ color: "#9ca3af", textDecoration: "none" }}>郢晏ｸ吶・郢晢｣ｰ</Link>
+          <span>遯ｶ・ｺ</span>
+          <Link href="/marketplace" style={{ color: "#9ca3af", textDecoration: "none" }}>郢晏干ﾎ溽ｹ晢ｽｳ郢晏干繝ｨ鬮ｮ繝ｻ/Link>
+          <span>遯ｶ・ｺ</span>
           <span style={{ color: "#6b7280" }}>{agent.name}</span>
         </div>
 
@@ -69,7 +69,7 @@ export default async function AppPage({ params }: { params: { id: string } }) {
               background: agent.price === 0 ? "#d1fae5" : "#fef3c7",
               padding: "4px 12px", borderRadius: 20
             }}>
-              {agent.price === 0 ? "辟｡譁・ : `ﾂ･${agent.price}`}
+              {agent.price === 0 ? "霎滂ｽ｡隴√・ : `・ゑｽ･${agent.price}`}
             </span>
           </div>
           <h1 style={{ fontSize: "clamp(24px, 3vw, 36px)", fontWeight: 800, color: "#111827", marginBottom: 12, letterSpacing: "-0.02em", lineHeight: 1.3 }}>
@@ -79,15 +79,15 @@ export default async function AppPage({ params }: { params: { id: string } }) {
             {agent.description}
           </p>
           <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 12 }}>
-            蛻ｶ菴懶ｼ嘴agent.authorName} ﾂｷ {agent.useCount}蝗樔ｽｿ逕ｨ
+            陋ｻ・ｶ闖ｴ諛ｶ・ｼ蝌ｴagent.authorName} ・ゑｽｷ {agent.useCount}陜玲ｨ費ｽｽ・ｿ騾包ｽｨ
           </div>
         </div>
 
         {/* Main Card */}
         <div style={{ background: "#f9fafb", border: "1.5px solid #e5e7eb", borderRadius: 16, padding: "28px", marginBottom: 32 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <h2 style={{ fontSize: 15, fontWeight: 700, color: "#374151" }}>繝励Ο繝ｳ繝励ヨ繧貞ｮ溯｡後☆繧・/h2>
-            <span style={{ fontSize: 12, color: "#9ca3af" }}>ChatGPT繝ｻClaude繝ｻGemini蟇ｾ蠢・/span>
+            <h2 style={{ fontSize: 15, fontWeight: 700, color: "#374151" }}>郢晏干ﾎ溽ｹ晢ｽｳ郢晏干繝ｨ郢ｧ雋橸ｽｮ貅ｯ・｡蠕娯・郢ｧ繝ｻ/h2>
+            <span style={{ fontSize: 12, color: "#9ca3af" }}>ChatGPT郢晢ｽｻClaude郢晢ｽｻGemini陝・ｽｾ陟｢繝ｻ/span>
           </div>
 
           <div id="prompt-display" style={{
@@ -105,7 +105,7 @@ export default async function AppPage({ params }: { params: { id: string } }) {
               onClick={() => {
                 navigator.clipboard.writeText(agent.prompt || agent.description);
                 const btn = document.querySelector('.copy-btn') as HTMLButtonElement;
-                if (btn) { btn.textContent = "繧ｳ繝斐・縺励∪縺励◆・・; setTimeout(() => { btn.textContent = "繝励Ο繝ｳ繝励ヨ繧偵さ繝斐・"; }, 2000); }
+                if (btn) { btn.textContent = "郢ｧ・ｳ郢晄鱒繝ｻ邵ｺ蜉ｱ竏ｪ邵ｺ蜉ｱ笳・・繝ｻ; setTimeout(() => { btn.textContent = "郢晏干ﾎ溽ｹ晢ｽｳ郢晏干繝ｨ郢ｧ蛛ｵ縺慕ｹ晄鱒繝ｻ"; }, 2000); }
               }}
               style={{
                 flex: 1, padding: "12px",
@@ -114,7 +114,7 @@ export default async function AppPage({ params }: { params: { id: string } }) {
                 fontSize: 14, fontWeight: 700, cursor: "pointer"
               }}
             >
-              繝励Ο繝ｳ繝励ヨ繧偵さ繝斐・
+              郢晏干ﾎ溽ｹ晢ｽｳ郢晏干繝ｨ郢ｧ蛛ｵ縺慕ｹ晄鱒繝ｻ
             </button>
           </div>
         </div>
@@ -122,13 +122,13 @@ export default async function AppPage({ params }: { params: { id: string } }) {
         {/* How to use */}
         <div style={{ marginBottom: 48 }}>
           <h2 style={{ fontSize: 18, fontWeight: 800, color: "#111827", marginBottom: 16, letterSpacing: "-0.01em" }}>
-            菴ｿ縺・婿
+            闖ｴ・ｿ邵ｺ繝ｻ蟀ｿ
           </h2>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {[
-              { step: "1", title: "繝励Ο繝ｳ繝励ヨ繧偵さ繝斐・", desc: "荳翫・繝懊ち繝ｳ縺ｧ繝励Ο繝ｳ繝励ヨ繧偵け繝ｪ繝・・繝懊・繝峨↓繧ｳ繝斐・縺励∪縺・ },
-              { step: "2", title: "AI繧ｵ繝ｼ繝薙せ縺ｫ雋ｼ繧贋ｻ倥￠", desc: "ChatGPT繝ｻClaude繝ｻGemini縺ｪ縺ｩ縺ｮAI繝√Ε繝・ヨ縺ｫ雋ｼ繧贋ｻ倥￠縺ｾ縺・ },
-              { step: "3", title: "蠢・ｦ√↓蠢懊§縺ｦ邱ｨ髮・, desc: "[ ] 縺ｧ蝗ｲ縺ｾ繧後◆驛ｨ蛻・ｒ閾ｪ蛻・・諠・ｱ縺ｫ譖ｸ縺肴鋤縺医※騾∽ｿ｡縺励∪縺・ },
+              { step: "1", title: "郢晏干ﾎ溽ｹ晢ｽｳ郢晏干繝ｨ郢ｧ蛛ｵ縺慕ｹ晄鱒繝ｻ", desc: "闕ｳ鄙ｫ繝ｻ郢晄㈱縺｡郢晢ｽｳ邵ｺ・ｧ郢晏干ﾎ溽ｹ晢ｽｳ郢晏干繝ｨ郢ｧ蛛ｵ縺醍ｹ晢ｽｪ郢昴・繝ｻ郢晄㈱繝ｻ郢晏ｳｨ竊鍋ｹｧ・ｳ郢晄鱒繝ｻ邵ｺ蜉ｱ竏ｪ邵ｺ繝ｻ },
+              { step: "2", title: "AI郢ｧ・ｵ郢晢ｽｼ郢晁侭縺帷ｸｺ・ｫ髮具ｽｼ郢ｧ雍具ｽｻ蛟･・", desc: "ChatGPT郢晢ｽｻClaude郢晢ｽｻGemini邵ｺ・ｪ邵ｺ・ｩ邵ｺ・ｮAI郢昶・ﾎ慕ｹ昴・繝ｨ邵ｺ・ｫ髮具ｽｼ郢ｧ雍具ｽｻ蛟･・邵ｺ・ｾ邵ｺ繝ｻ },
+              { step: "3", title: "陟｢繝ｻ・ｦ竏壺・陟｢諛環ｧ邵ｺ・ｦ驍ｱ・ｨ鬮ｮ繝ｻ, desc: "[ ] 邵ｺ・ｧ陜暦ｽｲ邵ｺ・ｾ郢ｧ蠕娯螺鬩幢ｽｨ陋ｻ繝ｻ・帝明・ｪ陋ｻ繝ｻ繝ｻ隲繝ｻ・ｰ・ｱ邵ｺ・ｫ隴厄ｽｸ邵ｺ閧ｴ驪､邵ｺ蛹ｻ窶ｻ鬨ｾ竏ｽ・ｿ・｡邵ｺ蜉ｱ竏ｪ邵ｺ繝ｻ },
             ].map(item => (
               <div key={item.step} style={{
                 display: "flex", gap: 16, alignItems: "flex-start",
@@ -156,7 +156,7 @@ export default async function AppPage({ params }: { params: { id: string } }) {
         {related.length > 0 && (
           <div>
             <h2 style={{ fontSize: 18, fontWeight: 800, color: "#111827", marginBottom: 16, letterSpacing: "-0.01em" }}>
-              蜷後§繧ｫ繝・ざ繝ｪ縺ｮ繝励Ο繝ｳ繝励ヨ
+              陷ｷ蠕個ｧ郢ｧ・ｫ郢昴・縺也ｹ晢ｽｪ邵ｺ・ｮ郢晏干ﾎ溽ｹ晢ｽｳ郢晏干繝ｨ
             </h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
               {related.map(r => (
@@ -166,7 +166,7 @@ export default async function AppPage({ params }: { params: { id: string } }) {
                     borderRadius: 12, padding: "16px"
                   }}>
                     <div style={{ fontSize: 13, fontWeight: 700, color: "#111827", marginBottom: 6, lineHeight: 1.4 }}>{r.name}</div>
-                    <div style={{ fontSize: 12, color: "#9ca3af" }}>{r.useCount}蝗樔ｽｿ逕ｨ</div>
+                    <div style={{ fontSize: 12, color: "#9ca3af" }}>{r.useCount}陜玲ｨ費ｽｽ・ｿ騾包ｽｨ</div>
                   </div>
                 </Link>
               ))}
@@ -179,7 +179,7 @@ export default async function AppPage({ params }: { params: { id: string } }) {
           <Link href="/marketplace" style={{
             fontSize: 14, color: "#6366f1", textDecoration: "none", fontWeight: 600
           }}>
-            竊・繝励Ο繝ｳ繝励ヨ髮・↓謌ｻ繧・
+            遶翫・郢晏干ﾎ溽ｹ晢ｽｳ郢晏干繝ｨ鬮ｮ繝ｻ竊楢ｬ鯉ｽｻ郢ｧ繝ｻ
           </Link>
         </div>
       </div>
