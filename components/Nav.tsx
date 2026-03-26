@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
@@ -16,7 +16,7 @@ export default function Nav() {
       zIndex: 100,
       height: 56,
       borderBottom: "1px solid #1a1a1a",
-      background: "rgba(10,10,10,0.9)",
+      background: "rgba(10,10,10,0.95)",
       backdropFilter: "blur(12px)",
       WebkitBackdropFilter: "blur(12px)",
     }}>
@@ -29,63 +29,36 @@ export default function Nav() {
         alignItems: "center",
         justifyContent: "space-between",
       }}>
-        <Link href="/" style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          textDecoration: "none",
-        }}>
+        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
             <rect x="2" y="2" width="7" height="7" rx="1.5" fill="#5b5fc7"/>
             <rect x="11" y="2" width="7" height="7" rx="1.5" fill="#5b5fc7" opacity="0.6"/>
             <rect x="2" y="11" width="7" height="7" rx="1.5" fill="#5b5fc7" opacity="0.6"/>
             <rect x="11" y="11" width="7" height="7" rx="1.5" fill="#5b5fc7" opacity="0.3"/>
           </svg>
-          <span style={{
-            fontSize: 15,
-            fontWeight: 600,
-            color: "#ffffff",
-            letterSpacing: "-0.01em",
-          }}>Lattice</span>
+          <span style={{ fontSize: 15, fontWeight: 600, color: "#ffffff", letterSpacing: "-0.01em" }}>Lattice</span>
         </Link>
 
         <nav style={{ display: "flex", alignItems: "center", gap: 4 }}>
           {session && (
-            <>
-              <Link href="/agents" style={{
-                padding: "6px 12px",
-                borderRadius: 6,
-                fontSize: 14,
-                fontWeight: 500,
-                color: pathname?.startsWith("/agents") ? "#ffffff" : "#888888",
-                background: pathname?.startsWith("/agents") ? "#161616" : "transparent",
-                transition: "all 0.15s",
-                textDecoration: "none",
-              }}>
-                Agents
-              </Link>
-              <Link href="/dashboard" style={{
-                padding: "6px 12px",
-                borderRadius: 6,
-                fontSize: 14,
-                fontWeight: 500,
-                color: pathname === "/dashboard" ? "#ffffff" : "#888888",
-                background: pathname === "/dashboard" ? "#161616" : "transparent",
-                transition: "all 0.15s",
-                textDecoration: "none",
-              }}>
-                Dashboard
-              </Link>
-            </>
+            <Link href="/agents" style={{
+              padding: "6px 12px",
+              borderRadius: 6,
+              fontSize: 14,
+              fontWeight: 500,
+              color: pathname?.startsWith("/agents") ? "#ffffff" : "#666666",
+              background: pathname?.startsWith("/agents") ? "#161616" : "transparent",
+              textDecoration: "none",
+            }}>
+              Agents
+            </Link>
           )}
         </nav>
 
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {session ? (
             <>
-              <span style={{ fontSize: 13, color: "#444444" }}>
-                {session.user?.email}
-              </span>
+              <span style={{ fontSize: 13, color: "#3a3a3a" }}>{session.user?.email}</span>
               <button
                 onClick={() => signOut()}
                 style={{
@@ -93,11 +66,10 @@ export default function Nav() {
                   borderRadius: 6,
                   fontSize: 13,
                   fontWeight: 500,
-                  border: "1px solid #222222",
+                  border: "1px solid #222",
                   background: "transparent",
-                  color: "#888888",
+                  color: "#666",
                   cursor: "pointer",
-                  transition: "all 0.15s",
                 }}
               >
                 Sign out
@@ -105,27 +77,10 @@ export default function Nav() {
             </>
           ) : (
             <>
-              <Link href="/login" style={{
-                padding: "6px 14px",
-                borderRadius: 6,
-                fontSize: 13,
-                fontWeight: 500,
-                color: "#888888",
-                textDecoration: "none",
-                transition: "color 0.15s",
-              }}>
+              <Link href="/login" style={{ padding: "6px 14px", borderRadius: 6, fontSize: 13, color: "#666", textDecoration: "none" }}>
                 Log in
               </Link>
-              <Link href="/login" style={{
-                padding: "7px 16px",
-                borderRadius: 6,
-                fontSize: 13,
-                fontWeight: 600,
-                background: "#5b5fc7",
-                color: "#ffffff",
-                textDecoration: "none",
-                transition: "background 0.15s",
-              }}>
+              <Link href="/login" style={{ padding: "7px 16px", borderRadius: 6, fontSize: 13, fontWeight: 600, background: "#5b5fc7", color: "#fff", textDecoration: "none" }}>
                 Get started
               </Link>
             </>
