@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
@@ -6,19 +6,56 @@ import { Suspense } from "react";
 
 function LoginContent() {
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") ?? "/";
+  const callbackUrl = searchParams.get("callbackUrl") ?? "/agents";
 
   return (
-    <main style={{ minHeight: "100vh", background: "#080b14", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', 'Hiragino Sans', sans-serif" }}>
-      <div style={{ background: "#0d1120", border: "1px solid #1c2136", borderRadius: 16, padding: "40px 32px", width: "100%", maxWidth: 400, textAlign: "center" }}>
-        <div style={{ fontSize: 28, color: "#3b82f6", marginBottom: 16 }}>◈</div>
-        <h1 style={{ fontSize: 20, fontWeight: 900, color: "#e8eaf0", marginBottom: 8, letterSpacing: "-0.02em" }}>Latticeにログイン</h1>
-        <p style={{ fontSize: 13, color: "#8b92a9", marginBottom: 32 }}>プロンプトの購入・出品にはログインが必要です</p>
+    <main style={{
+      minHeight: "100vh",
+      background: "#111318",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "24px",
+    }}>
+      <div style={{ width: "100%", maxWidth: 380, textAlign: "center" }}>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        {/* Logo */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 40 }}>
+          <svg width="24" height="24" viewBox="0 0 20 20" fill="none">
+            <rect x="2" y="2" width="7" height="7" rx="1.5" fill="#6c71e8"/>
+            <rect x="11" y="2" width="7" height="7" rx="1.5" fill="#6c71e8" opacity="0.6"/>
+            <rect x="2" y="11" width="7" height="7" rx="1.5" fill="#6c71e8" opacity="0.6"/>
+            <rect x="11" y="11" width="7" height="7" rx="1.5" fill="#6c71e8" opacity="0.3"/>
+          </svg>
+          <span style={{ fontSize: 18, fontWeight: 600, color: "#fff", letterSpacing: "-0.01em" }}>Lattice</span>
+        </div>
+
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: "#f0f2f8", margin: "0 0 8px", letterSpacing: "-0.02em" }}>
+          ログイン
+        </h1>
+        <p style={{ fontSize: 13, color: "#4a5060", marginBottom: 32 }}>
+          アカウントにサインインして始めましょう
+        </p>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <button
             onClick={() => signIn("google", { callbackUrl })}
-            style={{ width: "100%", background: "#fff", color: "#1a1a1a", border: "none", borderRadius: 10, padding: "12px 20px", fontSize: 14, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}
+            style={{
+              width: "100%",
+              background: "#fff",
+              color: "#1a1a2e",
+              border: "none",
+              borderRadius: 8,
+              padding: "12px 20px",
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 10,
+              boxSizing: "border-box",
+            }}
           >
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
               <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
@@ -31,19 +68,34 @@ function LoginContent() {
 
           <button
             onClick={() => signIn("github", { callbackUrl })}
-            style={{ width: "100%", background: "#24292e", color: "#fff", border: "none", borderRadius: 10, padding: "12px 20px", fontSize: 14, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}
+            style={{
+              width: "100%",
+              background: "#1a1d24",
+              color: "#e8eaf0",
+              border: "1px solid #2a2d35",
+              borderRadius: 8,
+              padding: "12px 20px",
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 10,
+              boxSizing: "border-box",
+            }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#e8eaf0">
               <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
             </svg>
             GitHubでログイン
           </button>
         </div>
 
-        <p style={{ fontSize: 12, color: "#4a5068", marginTop: 24, lineHeight: 1.6 }}>
+        <p style={{ fontSize: 12, color: "#2a2d35", marginTop: 28, lineHeight: 1.7 }}>
           ログインすることで
-          <a href="/terms" style={{ color: "#3b82f6", textDecoration: "none" }}>利用規約</a>・
-          <a href="/privacy" style={{ color: "#3b82f6", textDecoration: "none" }}>プライバシーポリシー</a>
+          <a href="/terms" style={{ color: "#4a5060", textDecoration: "none" }}>利用規約</a>・
+          <a href="/privacy" style={{ color: "#4a5060", textDecoration: "none" }}>プライバシーポリシー</a>
           に同意したものとみなします
         </p>
       </div>
