@@ -73,16 +73,15 @@ export default function AgentDetailPage() {
       const res = await fetch("/api/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ agentId: id, prompt: agent?.prompt }),
+        body: JSON.stringify({
+          agentId: id,
+          agentName: agent?.name,
+          agentPrompt: agent?.prompt,
+          task: "今すぐタスクを実行してください",
+        }),
       });
-      const reader = res.body?.getReader();
-      const decoder = new TextDecoder();
-      if (!reader) return;
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        setOutput((prev) => prev + decoder.decode(value));
-      }
+      const data = await res.json();
+      setOutput(data.output || data.error || "実行完了");
     } catch {
       setOutput("実行中にエラーが発生しました");
     } finally {
