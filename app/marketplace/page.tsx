@@ -4,12 +4,12 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "無料AIツール集・ChatGPTプロンプトテンプレート | Lattice",
-  description: "コピペですぐ使えるAIプロンプト31種類以上。ビジネス文書・メール・企画書・副業・法律・医療など幅広いジャンルに対応。ChatGPT・Claude・Gemini対応。すべて無料。",
-  keywords: ["ChatGPTプロンプト", "AIプロンプト 無料", "プロンプト テンプレート", "ChatGPT 使い方", "AI 仕事効率化", "プロンプト集"],
+  title: "辟｡譁僊I繝・・繝ｫ髮・・ChatGPT繝励Ο繝ｳ繝励ヨ繝・Φ繝励Ξ繝ｼ繝・| Lattice",
+  description: "繧ｳ繝斐・縺ｧ縺吶＄菴ｿ縺医ｋAI繝励Ο繝ｳ繝励ヨ31遞ｮ鬘樔ｻ･荳翫ゅン繧ｸ繝阪せ譁・嶌繝ｻ繝｡繝ｼ繝ｫ繝ｻ莨∫判譖ｸ繝ｻ蜑ｯ讌ｭ繝ｻ豕募ｾ九・蛹ｻ逋ゅ↑縺ｩ蟷・ｺ・＞繧ｸ繝｣繝ｳ繝ｫ縺ｫ蟇ｾ蠢懊・hatGPT繝ｻClaude繝ｻGemini蟇ｾ蠢懊ゅ☆縺ｹ縺ｦ辟｡譁吶・,
+  keywords: ["ChatGPT繝励Ο繝ｳ繝励ヨ", "AI繝励Ο繝ｳ繝励ヨ 辟｡譁・, "繝励Ο繝ｳ繝励ヨ 繝・Φ繝励Ξ繝ｼ繝・, "ChatGPT 菴ｿ縺・婿", "AI 莉穂ｺ句柑邇・喧", "繝励Ο繝ｳ繝励ヨ髮・],
   openGraph: {
-    title: "無料AIツール集・ChatGPTプロンプトテンプレート | Lattice",
-    description: "コピペですぐ使えるAIプロンプト31種類以上。すべて無料。",
+    title: "辟｡譁僊I繝・・繝ｫ髮・・ChatGPT繝励Ο繝ｳ繝励ヨ繝・Φ繝励Ξ繝ｼ繝・| Lattice",
+    description: "繧ｳ繝斐・縺ｧ縺吶＄菴ｿ縺医ｋAI繝励Ο繝ｳ繝励ヨ31遞ｮ鬘樔ｻ･荳翫ゅ☆縺ｹ縺ｦ辟｡譁吶・,
     url: "https://lattice-protocol.com/marketplace",
     type: "website",
   },
@@ -19,15 +19,15 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 const CATEGORY_MAP: Record<string, string> = {
-  "すべて": "すべて",
-  "Writing": "文章・ライティング",
-  "Business": "ビジネス・仕事",
-  "Code": "コード・開発",
-  "Research": "調査・リサーチ",
-  "Finance": "財務・経理",
-  "Legal": "法律・契約",
-  "Medical": "医療・健康",
-  "Custom": "その他",
+  "縺吶∋縺ｦ": "縺吶∋縺ｦ",
+  "Writing": "譁・ｫ繝ｻ繝ｩ繧､繝・ぅ繝ｳ繧ｰ",
+  "Business": "繝薙ず繝阪せ繝ｻ莉穂ｺ・,
+  "Code": "繧ｳ繝ｼ繝峨・髢狗匱",
+  "Research": "隱ｿ譟ｻ繝ｻ繝ｪ繧ｵ繝ｼ繝・,
+  "Finance": "雋｡蜍吶・邨檎炊",
+  "Legal": "豕募ｾ九・螂醍ｴ・,
+  "Medical": "蛹ｻ逋ゅ・蛛･蠎ｷ",
+  "Custom": "縺昴・莉・,
 };
 
 export default async function MarketplacePage() {
@@ -35,7 +35,7 @@ export default async function MarketplacePage() {
     orderBy: { useCount: "desc" },
   });
 
-  const categories = ["すべて", "Writing", "Business", "Code", "Research", "Finance", "Legal", "Medical", "Custom"];
+  const categories = ["縺吶∋縺ｦ", "Writing", "Business", "Code", "Research", "Finance", "Legal", "Medical", "Custom"];
   const totalFree = agents.filter(a => a.price === 0).length;
 
   return (
@@ -63,14 +63,14 @@ export default async function MarketplacePage() {
             fontSize: 12, fontWeight: 700, padding: "5px 14px",
             borderRadius: 20, marginBottom: 20, letterSpacing: "0.05em"
           }}>
-            すべて無料 · {totalFree}種類以上
+            縺吶∋縺ｦ辟｡譁・ﾂｷ {totalFree}遞ｮ鬘樔ｻ･荳・
           </div>
           <h1 style={{ fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 800, color: "#111827", marginBottom: 16, letterSpacing: "-0.02em", lineHeight: 1.2 }}>
-            コピペで使えるAIプロンプト集
+            繧ｳ繝斐・縺ｧ菴ｿ縺医ｋAI繝励Ο繝ｳ繝励ヨ髮・
           </h1>
           <p style={{ fontSize: 16, color: "#6b7280", lineHeight: 1.8, marginBottom: 0, maxWidth: 560, margin: "0 auto" }}>
-            ChatGPT・Claude・Gemini対応。仕事・副業・日常生活で使えるテンプレートを無料公開。<br />
-            そのままLatticeで実行もできます。
+            ChatGPT繝ｻClaude繝ｻGemini蟇ｾ蠢懊ゆｻ穂ｺ九・蜑ｯ讌ｭ繝ｻ譌･蟶ｸ逕滓ｴｻ縺ｧ菴ｿ縺医ｋ繝・Φ繝励Ξ繝ｼ繝医ｒ辟｡譁吝・髢九・br />
+            縺昴・縺ｾ縺ｾLattice縺ｧ螳溯｡後ｂ縺ｧ縺阪∪縺吶・
           </p>
         </div>
       </section>
@@ -81,7 +81,7 @@ export default async function MarketplacePage() {
         <div style={{ marginBottom: 28 }}>
           <input
             type="search"
-            placeholder="プロンプトを検索..."
+            placeholder="繝励Ο繝ｳ繝励ヨ繧呈､懃ｴ｢..."
             style={{
               width: "100%", padding: "13px 18px",
               background: "#f9fafb", border: "1.5px solid #e5e7eb",
@@ -98,8 +98,8 @@ export default async function MarketplacePage() {
               padding: "8px 18px", borderRadius: 20,
               fontSize: 13, fontWeight: 600,
               border: "1.5px solid #e5e7eb",
-              background: cat === "すべて" ? "#6366f1" : "#fff",
-              color: cat === "すべて" ? "#fff" : "#4b5563",
+              background: cat === "縺吶∋縺ｦ" ? "#6366f1" : "#fff",
+              color: cat === "縺吶∋縺ｦ" ? "#fff" : "#4b5563",
               cursor: "pointer"
             }}>
               {CATEGORY_MAP[cat] ?? cat}
@@ -114,9 +114,9 @@ export default async function MarketplacePage() {
           borderRadius: 10, border: "1px solid #f3f4f6"
         }}>
           {[
-            { label: "公開中のツール", value: `${agents.length}種類` },
-            { label: "無料で使える", value: `${totalFree}種類` },
-            { label: "対応AI", value: "ChatGPT・Claude・Gemini" },
+            { label: "蜈ｬ髢倶ｸｭ縺ｮ繝・・繝ｫ", value: `${agents.length}遞ｮ鬘杼 },
+            { label: "辟｡譁吶〒菴ｿ縺医ｋ", value: `${totalFree}遞ｮ鬘杼 },
+            { label: "蟇ｾ蠢廣I", value: "ChatGPT繝ｻClaude繝ｻGemini" },
           ].map(stat => (
             <div key={stat.label}>
               <span style={{ fontSize: 13, fontWeight: 700, color: "#111827" }}>{stat.value}</span>
@@ -148,7 +148,7 @@ export default async function MarketplacePage() {
                   background: agent.price === 0 ? "#d1fae5" : "#fef3c7",
                   padding: "3px 10px", borderRadius: 20
                 }}>
-                  {agent.price === 0 ? "無料" : `¥${agent.price}`}
+                  {agent.price === 0 ? "辟｡譁・ : `ﾂ･${agent.price}`}
                 </span>
               </div>
 
@@ -164,7 +164,7 @@ export default async function MarketplacePage() {
 
               {/* Meta */}
               <div style={{ fontSize: 11, color: "#9ca3af", marginBottom: 14 }}>
-                {agent.useCount > 0 ? `${agent.useCount}回使用` : "新着"} · {agent.authorName}
+                {agent.useCount > 0 ? `${agent.useCount}蝗樔ｽｿ逕ｨ` : "譁ｰ逹"} ﾂｷ {agent.authorName}
               </div>
 
               {/* Actions */}
@@ -175,7 +175,7 @@ export default async function MarketplacePage() {
                   borderRadius: 8, fontSize: 13, fontWeight: 600,
                   color: "#4b5563", cursor: "pointer"
                 }}>
-                  コピー
+                  繧ｳ繝斐・
                 </button>
                 <Link href={`/apps/${agent.id}`} className="run-btn" style={{
                   flex: 2, padding: "10px",
@@ -184,7 +184,7 @@ export default async function MarketplacePage() {
                   color: "#fff", textDecoration: "none",
                   textAlign: "center", display: "block"
                 }}>
-                  Latticeで実行する →
+                  Lattice縺ｧ螳溯｡後☆繧・竊・
                 </Link>
               </div>
             </div>
@@ -194,21 +194,21 @@ export default async function MarketplacePage() {
         {/* SEO Footer Text */}
         <section style={{ marginTop: 72, padding: "40px", background: "#f9fafb", borderRadius: 16 }}>
           <h2 style={{ fontSize: 20, fontWeight: 800, color: "#111827", marginBottom: 16, letterSpacing: "-0.02em" }}>
-            ChatGPTプロンプトとは？使い方ガイド
+            ChatGPT繝励Ο繝ｳ繝励ヨ縺ｨ縺ｯ・滉ｽｿ縺・婿繧ｬ繧､繝・
           </h2>
           <p style={{ fontSize: 14, color: "#6b7280", lineHeight: 1.9, maxWidth: 720 }}>
-            プロンプトとは、AIに与える指示文のことです。同じ質問でも、プロンプトの書き方を工夫するだけで、AIの回答の質が大きく変わります。
-            Latticeのプロンプト集は、仕事・副業・日常生活で使えるテンプレートをコピペですぐに使えるよう整理しています。
-            ChatGPT・Claude・Geminiなど主要なAIサービスすべてに対応しており、登録不要で無料でご利用いただけます。
+            繝励Ο繝ｳ繝励ヨ縺ｨ縺ｯ縲、I縺ｫ荳弱∴繧区欠遉ｺ譁・・縺薙→縺ｧ縺吶ょ酔縺倩ｳｪ蝠上〒繧ゅ√・繝ｭ繝ｳ繝励ヨ縺ｮ譖ｸ縺肴婿繧貞ｷ･螟ｫ縺吶ｋ縺縺代〒縲、I縺ｮ蝗樒ｭ斐・雉ｪ縺悟､ｧ縺阪￥螟峨ｏ繧翫∪縺吶・
+            Lattice縺ｮ繝励Ο繝ｳ繝励ヨ髮・・縲∽ｻ穂ｺ九・蜑ｯ讌ｭ繝ｻ譌･蟶ｸ逕滓ｴｻ縺ｧ菴ｿ縺医ｋ繝・Φ繝励Ξ繝ｼ繝医ｒ繧ｳ繝斐・縺ｧ縺吶＄縺ｫ菴ｿ縺医ｋ繧医≧謨ｴ逅・＠縺ｦ縺・∪縺吶・
+            ChatGPT繝ｻClaude繝ｻGemini縺ｪ縺ｩ荳ｻ隕√↑AI繧ｵ繝ｼ繝薙せ縺吶∋縺ｦ縺ｫ蟇ｾ蠢懊＠縺ｦ縺翫ｊ縲∫匳骭ｲ荳崎ｦ√〒辟｡譁吶〒縺泌茜逕ｨ縺・◆縺縺代∪縺吶・
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 12, marginTop: 24 }}>
             {[
-              { title: "ビジネス文書作成", desc: "提案書・議事録・メールをAIで自動生成" },
-              { title: "副業・フリーランス", desc: "営業文・ポートフォリオ・請求書" },
-              { title: "コード・開発", desc: "バグ修正・コードレビュー・設計" },
-              { title: "調査・リサーチ", desc: "市場調査・競合分析・要約" },
-              { title: "法律・契約", desc: "契約書チェック・法的文書作成" },
-              { title: "医療・健康", desc: "症状説明・医療情報の整理" },
+              { title: "繝薙ず繝阪せ譁・嶌菴懈・", desc: "謠先｡域嶌繝ｻ隴ｰ莠矩鹸繝ｻ繝｡繝ｼ繝ｫ繧但I縺ｧ閾ｪ蜍慕函謌・ },
+              { title: "蜑ｯ讌ｭ繝ｻ繝輔Μ繝ｼ繝ｩ繝ｳ繧ｹ", desc: "蝟ｶ讌ｭ譁・・繝昴・繝医ヵ繧ｩ繝ｪ繧ｪ繝ｻ隲区ｱよ嶌" },
+              { title: "繧ｳ繝ｼ繝峨・髢狗匱", desc: "繝舌げ菫ｮ豁｣繝ｻ繧ｳ繝ｼ繝峨Ξ繝薙Η繝ｼ繝ｻ險ｭ險・ },
+              { title: "隱ｿ譟ｻ繝ｻ繝ｪ繧ｵ繝ｼ繝・, desc: "蟶ょｴ隱ｿ譟ｻ繝ｻ遶ｶ蜷亥・譫舌・隕∫ｴ・ },
+              { title: "豕募ｾ九・螂醍ｴ・, desc: "螂醍ｴ・嶌繝√ぉ繝・け繝ｻ豕慕噪譁・嶌菴懈・" },
+              { title: "蛹ｻ逋ゅ・蛛･蠎ｷ", desc: "逞・憾隱ｬ譏弱・蛹ｻ逋よュ蝣ｱ縺ｮ謨ｴ逅・ },
             ].map(item => (
               <div key={item.title} style={{ padding: "14px 16px", background: "#fff", borderRadius: 10, border: "1px solid #f0f0f0" }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: "#111827", marginBottom: 4 }}>{item.title}</div>
