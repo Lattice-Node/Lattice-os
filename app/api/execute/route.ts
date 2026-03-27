@@ -1,122 +1,310 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import {
+  buildDailyAiNewsFallback,
+  buildDailyAiNewsSystemPrompt,
+  buildDailyAiNewsUserPrompt,
+  extractTextFromClaudeResponse,
+  isDailyAiNewsAgent,
+  normalizeDailyAiNewsOutput,
+} from "@/lib/agents/daily-ai-news";
 
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json();
-    const { agentId } = body;
+export const dynamic = "force-dynamic";
 
-    if (!agentId) {
-      return NextResponse.json({ error: "agentId is required" }, { status: 400 });
-    }
+type ExecuteBody = {
+  agentId?: string;
+  id?: string;
+};
 
-    const agent = await prisma.userAgent.findUnique({
-      where: { id: agentId },
-      include: { user: true },
-    });
+type AgentShape = {
+  id: string;
+  userId: string;
+  name: string;
+  description: string | null;
+  prompt: string | null;
+  trigger: string | null;
+  triggerCron: string | null;
+  outputType: string;
+};
 
-    if (!agent) {
-      return NextResponse.json({ error: "Agent not found" }, { status: 404 });
-    }
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return String(error);
+}
 
-    // --- Anthropic API + web_search で実行 ---
-    const anthropicRes = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": process.env.ANTHROPIC_API_KEY || "",
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 2048,
+function buildGenericSystemPrompt() {
+  return [
+    "あなたはLattice上で動作する有能なAIエージェントです。",
+    "ユーザーの依頼を正確に処理してください。",
+    "不要な前置きは避け、分かりやすく構造化して出力してください。",
+    "日本語で返答してください。",
+  ].join("\n");
+}
+
+function buildGenericUserPrompt(agent: AgentShape) {
+  return [
+    `エージェント名: ${agent.name}`,
+    agent.description ? `説明: ${agent.description}` : "",
+    agent.prompt ? `指示: ${agent.prompt}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+}
+
+async function runWithAnthropic(agent: AgentShape, now: Date, isDailyNews: boolean) {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    throw new Error("ANTHROPIC_API_KEY is not set.");
+  }
+
+  const client = new Anthropic({ apiKey });
+
+  const systemPrompt = isDailyNews
+    ? buildDailyAiNewsSystemPrompt()
+    : buildGenericSystemPrompt();
+
+  const userPrompt = isDailyNews
+    ? buildDailyAiNewsUserPrompt({ now })
+    : buildGenericUserPrompt(agent);
+
+  const message = isDailyNews
+    ? await client.messages.create({
+        model: process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001",
+        max_tokens: 1400,
+        system: systemPrompt,
         messages: [
           {
             role: "user",
-            content: agent.prompt,
+            content: userPrompt,
           },
         ],
         tools: [
           {
             type: "web_search_20250305",
             name: "web_search",
-            max_uses: 3,
           },
         ],
-      }),
-    });
-
-    if (!anthropicRes.ok) {
-      const errText = await anthropicRes.text();
-      console.error("Anthropic API error:", anthropicRes.status, errText);
-
-      // Anthropic失敗時はGroqにフォールバック
-      const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer " + (process.env.GROQ_API_KEY || ""),
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: process.env.GROQ_MODEL || "llama-3.1-8b-instant",
-          messages: [
-            { role: "system", content: "あなたは優秀なAIアシスタントです。日本語で回答してください。" },
-            { role: "user", content: agent.prompt },
-          ],
-          max_tokens: 2048,
-        }),
+      })
+    : await client.messages.create({
+        model: process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001",
+        max_tokens: 1400,
+        system: systemPrompt,
+        messages: [
+          {
+            role: "user",
+            content: userPrompt,
+          },
+        ],
       });
 
-      const groqData = await groqRes.json();
-      const fallbackOutput = groqData.choices?.[0]?.message?.content || "実行に失敗しました";
+  const rawText = extractTextFromClaudeResponse(message.content);
 
-      await prisma.agentLog.create({
-        data: {
-          agentId: agent.id,
-          userId: agent.userId,
-          status: "success",
-          output: "[Groq fallback] " + fallbackOutput,
-        },
-      });
+  if (!rawText) {
+    throw new Error("Anthropic returned an empty response.");
+  }
 
-      await prisma.userAgent.update({
-        where: { id: agentId },
-        data: { runCount: { increment: 1 }, lastRunAt: new Date() },
-      });
+  return isDailyNews
+    ? normalizeDailyAiNewsOutput(rawText, now)
+    : rawText.trim();
+}
 
-      return NextResponse.json({ success: true, output: fallbackOutput, engine: "groq-fallback" });
+async function runWithGroq(agent: AgentShape, now: Date, isDailyNews: boolean) {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    throw new Error("GROQ_API_KEY is not set.");
+  }
+
+  const client = new OpenAI({
+    apiKey,
+    baseURL: "https://api.groq.com/openai/v1",
+  });
+
+  const systemPrompt = isDailyNews
+    ? [
+        buildDailyAiNewsSystemPrompt(),
+        "ただしリアルタイム検索が使えない場合は、その旨を曖昧にせず簡潔に示してください。",
+      ].join("\n\n")
+    : buildGenericSystemPrompt();
+
+  const userPrompt = isDailyNews
+    ? buildDailyAiNewsUserPrompt({ now })
+    : buildGenericUserPrompt(agent);
+
+  const completion = await client.chat.completions.create({
+    model: process.env.GROQ_MODEL || "llama-3.1-8b-instant",
+    temperature: 0.2,
+    messages: [
+      {
+        role: "system",
+        content: systemPrompt,
+      },
+      {
+        role: "user",
+        content: userPrompt,
+      },
+    ],
+  });
+
+  const rawText = completion.choices[0]?.message?.content?.trim() || "";
+
+  if (!rawText) {
+    throw new Error("Groq returned an empty response.");
+  }
+
+  return isDailyNews
+    ? normalizeDailyAiNewsOutput(rawText, now)
+    : rawText;
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const session = await auth();
+    const email = session?.user?.email;
+
+    if (!email) {
+      return NextResponse.json(
+        { ok: false, error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
-    const anthropicData = await anthropicRes.json();
+    const body = (await request.json().catch(() => ({}))) as ExecuteBody;
+    const agentId =
+      typeof body.agentId === "string"
+        ? body.agentId
+        : typeof body.id === "string"
+        ? body.id
+        : "";
 
-    // contentブロックからtextを抽出
-    const textBlocks = anthropicData.content?.filter(
-      (block: { type: string }) => block.type === "text"
-    ) || [];
-    const output = textBlocks.map((block: { text: string }) => block.text).join("\n\n") || "実行結果を取得できませんでした";
+    if (!agentId) {
+      return NextResponse.json(
+        { ok: false, error: "agentId is required" },
+        { status: 400 }
+      );
+    }
 
-    // --- ログ保存 ---
-    await prisma.agentLog.create({
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { ok: false, error: "User not found" },
+        { status: 404 }
+      );
+    }
+
+    const agent = await prisma.userAgent.findFirst({
+      where: {
+        id: agentId,
+        userId: user.id,
+      },
+      select: {
+        id: true,
+        userId: true,
+        name: true,
+        description: true,
+        prompt: true,
+        trigger: true,
+        triggerCron: true,
+        outputType: true,
+      },
+    });
+
+    if (!agent) {
+      return NextResponse.json(
+        { ok: false, error: "Agent not found" },
+        { status: 404 }
+      );
+    }
+
+    const now = new Date();
+
+    const log = await prisma.agentLog.create({
       data: {
         agentId: agent.id,
-        userId: agent.userId,
-        status: "success",
-        output: output,
+        userId: user.id,
+        status: "pending",
+        output: "",
+        error: "",
+      },
+      select: {
+        id: true,
       },
     });
 
-    // --- 実行回数更新 ---
-    await prisma.userAgent.update({
-      where: { id: agentId },
+    const isDailyNews = isDailyAiNewsAgent({
+      name: agent.name,
+      description: agent.description,
+      prompt: agent.prompt,
+    });
+
+    let finalOutput = "";
+    let finalError = "";
+
+    try {
+      finalOutput = await runWithAnthropic(agent, now, isDailyNews);
+    } catch (anthropicError) {
+      const anthropicMessage = getErrorMessage(anthropicError);
+
+      if (isDailyNews) {
+        finalError = `Anthropic failed: ${anthropicMessage}`;
+      } else {
+        try {
+          finalOutput = await runWithGroq(agent, now, isDailyNews);
+        } catch (groqError) {
+          const groqMessage = getErrorMessage(groqError);
+          finalError = `Anthropic failed: ${anthropicMessage} / Groq failed: ${groqMessage}`;
+        }
+      }
+    }
+
+    if (!finalOutput && isDailyNews) {
+      finalOutput = buildDailyAiNewsFallback(finalError);
+    }
+
+    if (!finalOutput && !finalError) {
+      finalError = "Execution returned no output.";
+    }
+
+    const finalStatus = finalError ? "error" : "success";
+
+    await prisma.agentLog.update({
+      where: { id: log.id },
       data: {
-        runCount: { increment: 1 },
-        lastRunAt: new Date(),
+        status: finalStatus,
+        output: finalOutput,
+        error: finalError,
       },
     });
 
-    return NextResponse.json({ success: true, output, engine: "anthropic-web-search" });
+    await prisma.userAgent.update({
+      where: { id: agent.id },
+      data: {
+        runCount: {
+          increment: 1,
+        },
+        lastRunAt: now,
+      },
+    });
+
+    return NextResponse.json({
+      ok: !finalError,
+      status: finalStatus,
+      output: finalOutput,
+      error: finalError,
+    });
   } catch (error) {
-    console.error("Execute error:", error);
-    return NextResponse.json({ error: "Execution failed" }, { status: 500 });
+    const message = getErrorMessage(error);
+    return NextResponse.json(
+      { ok: false, error: message },
+      { status: 500 }
+    );
   }
 }
