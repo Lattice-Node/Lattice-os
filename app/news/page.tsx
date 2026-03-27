@@ -1,3 +1,5 @@
+﻿@import "tailwindcss";
+
 export const dynamic = "force-dynamic";
 
 export default function NewsPage() {
