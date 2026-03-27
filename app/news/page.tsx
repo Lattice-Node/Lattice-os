@@ -11,34 +11,19 @@ export default function NewsPage() {
             </p>
             <div className="space-y-2">
               <h1 className="text-[32px] font-semibold tracking-tight text-white">
-                毎日のAIニュース
+                AIニュース
               </h1>
-              <p className="text-sm leading-7 text-slate-400">
-                これは反映確認用の簡易ページです。
+              <p className="text-sm leading-relaxed text-slate-400">
+                毎日のAIニュース要約が届きます。
               </p>
             </div>
           </section>
 
-          <section className="rounded-[28px] border border-[#2a2d35] bg-[#1a1d24] p-5">
-            <h2 className="text-base font-semibold text-white">反映チェック</h2>
-            <p className="mt-3 text-sm leading-7 text-slate-300">
-              このカードUIが見えたら、/news の更新は成功です。
+          <section className="rounded-[20px] border border-[#2a2d35] bg-[#1a1d24] p-5">
+            <p className="text-sm text-slate-500">まだ実行結果がありません。</p>
+            <p className="mt-2 text-xs text-slate-600">
+              マイAgentから「毎朝AIニュース要約」を実行してください。
             </p>
-          </section>
-
-          <section className="grid grid-cols-3 gap-3">
-            <div className="rounded-[24px] border border-[#2a2d35] bg-[#1a1d24] p-4">
-              <p className="text-xs text-slate-500">状態</p>
-              <p className="mt-2 text-sm font-semibold text-white">OK</p>
-            </div>
-            <div className="rounded-[24px] border border-[#2a2d35] bg-[#1a1d24] p-4">
-              <p className="text-xs text-slate-500">配信先</p>
-              <p className="mt-2 text-sm font-semibold text-white">アプリ内</p>
-            </div>
-            <div className="rounded-[24px] border border-[#2a2d35] bg-[#1a1d24] p-4">
-              <p className="text-xs text-slate-500">ナビ名</p>
-              <p className="mt-2 text-sm font-semibold text-white">受信箱</p>
-            </div>
           </section>
         </div>
       </div>
