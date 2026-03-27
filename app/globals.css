@@ -4,6 +4,8 @@
    NO gradients, NO glow, NO AI-aesthetic
    =========================================== */
 
+@import "tailwindcss";
+
 * {
   box-sizing: border-box;
   margin: 0;
