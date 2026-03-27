@@ -75,7 +75,7 @@ export default async function NewsPage() {
   if (!email) {
     return (
       <main className="min-h-screen bg-[#111318] text-white">
-        <div className="mx-auto w-full max-w-[420px] px-4 pb-28 pt-6">
+        <div className="mx-auto w-full max-w-[420px] px-4 pb-24 pt-8">
           <div className="rounded-[28px] border border-[#2a2d35] bg-[#1a1d24] p-5">
             <p className="text-sm leading-7 text-slate-300">
               このページを見るにはログインが必要です。
@@ -88,13 +88,13 @@ export default async function NewsPage() {
 
   const user = await prisma.user.findUnique({
     where: { email },
-    select: { id: true },
+    select: { id: true, name: true },
   });
 
   if (!user) {
     return (
       <main className="min-h-screen bg-[#111318] text-white">
-        <div className="mx-auto w-full max-w-[420px] px-4 pb-28 pt-6">
+        <div className="mx-auto w-full max-w-[420px] px-4 pb-24 pt-8">
           <div className="rounded-[28px] border border-[#2a2d35] bg-[#1a1d24] p-5">
             <p className="text-sm leading-7 text-slate-300">
               ユーザー情報が見つかりませんでした。
@@ -157,7 +157,7 @@ export default async function NewsPage() {
         <div className="space-y-6">
           <section className="space-y-3">
             <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">
-              Inbox
+              Daily Brief
             </p>
 
             <div className="space-y-2">
@@ -180,7 +180,7 @@ export default async function NewsPage() {
                 href="/logs"
                 className="inline-flex h-10 items-center rounded-2xl border border-[#2a2d35] bg-transparent px-4 text-sm font-medium text-slate-300 transition hover:border-[#6c71e8] hover:text-white"
               >
-                受信箱
+                ログ
               </Link>
             </div>
           </section>
