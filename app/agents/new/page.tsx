@@ -1,7 +1,7 @@
 ﻿"use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type ParsedAgent = {
   name: string;
@@ -10,6 +10,15 @@ type ParsedAgent = {
   triggerCron: string;
   prompt: string;
   connections: { type: string; action: string; config: object }[];
+};
+
+const TEMPLATE_INPUTS: Record<string, string> = {
+  "daily-ai-news": "毎朝8時にAI・テクノロジーの最新ニュースを3件まとめてアプリに届ける",
+  "competitor-monitor": "毎朝8時に競合他社の動向をチェックして、変化があればアプリに通知する",
+  "weekly-report": "毎週金曜17時に1週間の活動をまとめたレポートを自動で作成してアプリに届ける",
+  "sns-trend": "毎朝7時に業界のトレンドをまとめて、投稿ネタとして整理してアプリに届ける",
+  "price-alert": "1時間ごとに指定した商品の価格を監視して、目標価格になったらアプリに通知する",
+  "inquiry-reply": "新しい問い合わせが来たら内容を分析して返信文の下書きをアプリに届ける",
 };
 
 const EXAMPLES = [
@@ -34,11 +43,19 @@ const CONNECTION_LABEL: Record<string, string> = {
 
 export default function NewAgentPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [input, setInput] = useState("");
   const [parsing, setParsing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [parsed, setParsed] = useState<ParsedAgent | null>(null);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const templateId = searchParams.get("template");
+    if (templateId && TEMPLATE_INPUTS[templateId]) {
+      setInput(TEMPLATE_INPUTS[templateId]);
+    }
+  }, [searchParams]);
 
   async function handleParse() {
     if (!input.trim() || parsing) return;
@@ -93,7 +110,6 @@ export default function NewAgentPage() {
     <main style={{ minHeight: "100vh", backgroundColor: "#111318", color: "#e8eaf0", paddingTop: 56 }}>
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "48px 24px" }}>
 
-        {/* Header */}
         <div style={{ marginBottom: 36 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 20 }}>
             <a href="/agents" style={{ fontSize: 13, color: "#4a5060", textDecoration: "none" }}>← Agents</a>
@@ -109,7 +125,6 @@ export default function NewAgentPage() {
           </p>
         </div>
 
-        {/* Input */}
         <div style={{
           border: "1px solid #2a2d3a",
           borderRadius: 10,
@@ -168,7 +183,6 @@ export default function NewAgentPage() {
           <p style={{ color: "#f87171", fontSize: 13, marginBottom: 16 }}>{error}</p>
         )}
 
-        {/* Examples */}
         {!parsed && (
           <div style={{ marginBottom: 36 }}>
             <p style={{ fontSize: 11, color: "#3a3d4a", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
@@ -199,7 +213,6 @@ export default function NewAgentPage() {
           </div>
         )}
 
-        {/* Preview */}
         {parsed && (
           <div style={{
             border: "1px solid #2a2d3a",
@@ -226,7 +239,6 @@ export default function NewAgentPage() {
               <p style={{ fontSize: 13, color: "#6a7080", margin: "0 0 20px" }}>
                 {parsed.description}
               </p>
-
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <span style={{ fontSize: 12, color: "#4a5060" }}>トリガー</span>
@@ -259,7 +271,6 @@ export default function NewAgentPage() {
                 </div>
               </div>
             </div>
-
             <div style={{
               borderTop: "1px solid #22252f",
               padding: "14px 20px",

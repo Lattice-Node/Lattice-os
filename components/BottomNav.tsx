@@ -1,7 +1,7 @@
 ﻿"use client";
-
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const tabs = [
   {
@@ -59,8 +59,10 @@ const tabs = [
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const { status } = useSession();
 
-  if (pathname === "/" || pathname === "/login") return null;
+  const publicPaths = ["/", "/login", "/privacy", "/terms"];
+  if (publicPaths.includes(pathname) || status !== "authenticated") return null;
 
   return (
     <nav className="btm-nav">
@@ -71,7 +73,6 @@ export default function BottomNav() {
             : tab.href === "/agents/new"
             ? pathname === "/agents/new"
             : pathname.startsWith(tab.href);
-
         if (tab.isCenter) {
           return (
             <Link key={tab.href} href={tab.href} className="btm-nav-center">
@@ -80,7 +81,6 @@ export default function BottomNav() {
             </Link>
           );
         }
-
         return (
           <Link key={tab.href} href={tab.href} className="btm-nav-item">
             {tab.icon(isActive)}

@@ -1,5 +1,4 @@
 ﻿"use client";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -11,12 +10,20 @@ interface Template {
   prompt: string | null;
 }
 
+const TEMPLATE_ID_MAP: Record<string, string> = {
+  "daily-ai-news": "daily-ai-news",
+  "competitor-monitor": "competitor-monitor",
+  "weekly-report": "weekly-report",
+  "sns-trend": "sns-trend",
+  "price-alert": "price-alert",
+  "inquiry-reply": "inquiry-reply",
+};
+
 const categories = ["すべて", "リサーチ", "営業", "SNS", "生産性", "通知"];
 
 export default function StoreList({ templates }: { templates: Template[] }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("すべて");
-  const [loading, setLoading] = useState<string | null>(null);
   const router = useRouter();
 
   const filtered = templates.filter((t) => {
@@ -25,20 +32,9 @@ export default function StoreList({ templates }: { templates: Template[] }) {
     return matchSearch && matchCat;
   });
 
-  async function handleAdd(template: Template) {
-    setLoading(template.id);
-    try {
-      const res = await fetch("/api/agents", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: template.name, description: template.description, prompt: template.prompt, trigger: "schedule" }),
-      });
-      if (res.ok) router.push("/agents");
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(null);
-    }
+  function handleUse(template: Template) {
+    const templateKey = TEMPLATE_ID_MAP[template.id] || template.id;
+    router.push(`/agents/new?template=${templateKey}`);
   }
 
   return (
@@ -50,7 +46,6 @@ export default function StoreList({ templates }: { templates: Template[] }) {
         </svg>
         <input type="text" placeholder="エージェントを検索..." value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
-
       <div className="pills">
         {categories.map((cat) => (
           <button key={cat} className={"pill " + (category === cat ? "active" : "inactive")} onClick={() => setCategory(cat)}>
@@ -58,9 +53,7 @@ export default function StoreList({ templates }: { templates: Template[] }) {
           </button>
         ))}
       </div>
-
       <p className="section-label">{filtered.length}個のエージェント</p>
-
       {filtered.length === 0 ? (
         <div className="card" style={{ textAlign: "center", padding: "32px 14px" }}>
           <p style={{ color: "var(--muted)", fontSize: "14px" }}>該当するエージェントが見つかりません</p>
@@ -85,8 +78,8 @@ export default function StoreList({ templates }: { templates: Template[] }) {
                 <span className="store-card-stat" style={{ color: "var(--green)" }}>2 cr/回</span>
                 {t.category && <span className="store-card-stat" style={{ color: "var(--muted)" }}>{t.category}</span>}
               </div>
-              <button className="btn-add" onClick={() => handleAdd(t)} disabled={loading === t.id}>
-                {loading === t.id ? "追加中..." : "追加"}
+              <button className="btn-add" onClick={() => handleUse(t)}>
+                使う
               </button>
             </div>
           </div>

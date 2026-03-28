@@ -1,11 +1,8 @@
 ﻿import "./globals.css";
-
 import type { Metadata, Viewport } from "next";
 import { DM_Sans } from "next/font/google";
-import "./globals.css";
 import { Providers } from "./providers";
 import BottomNav from "@/components/BottomNav";
-import Script from "next/script";
 
 const dmSans = DM_Sans({ subsets: ["latin"] });
 
@@ -31,10 +28,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
-        <Script src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`} strategy="afterInteractive" />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');`}
-        </Script>
       </head>
       <body className={dmSans.className} style={{ margin: 0, padding: 0, background: "#111318" }}>
         <Providers>
