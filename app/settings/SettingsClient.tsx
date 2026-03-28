@@ -1,30 +1,49 @@
-﻿"use client";
+"use client";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 interface Props {
   name: string;
   email: string;
   image: string;
+  credits: number;
 }
 
-export default function SettingsClient({ name, email, image }: Props) {
+const CREDIT_PLANS = [
+  { id: "credits_100", label: "100クレジット", price: "500円" },
+  { id: "credits_500", label: "500クレジット", price: "2,000円" },
+  { id: "credits_1000", label: "1,000クレジット", price: "3,500円" },
+];
+
+export default function SettingsClient({ name, email, image, credits }: Props) {
   const [deleting, setDeleting] = useState(false);
   const [confirm, setConfirm] = useState(false);
-  const router = useRouter();
+  const [purchasing, setPurchasing] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const success = searchParams.get("success");
+
+  const handlePurchase = async (planId: string) => {
+    setPurchasing(planId);
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planId }),
+      });
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
+    } catch {
+      setPurchasing(null);
+    }
+  };
 
   const handleDelete = async () => {
-    if (!confirm) {
-      setConfirm(true);
-      return;
-    }
+    if (!confirm) { setConfirm(true); return; }
     setDeleting(true);
     try {
       const res = await fetch("/api/users/delete", { method: "DELETE" });
-      if (res.ok) {
-        await signOut({ callbackUrl: "/" });
-      }
+      if (res.ok) await signOut({ callbackUrl: "/" });
     } catch {
       setDeleting(false);
       setConfirm(false);
@@ -38,7 +57,12 @@ export default function SettingsClient({ name, email, image }: Props) {
           設定
         </p>
 
-        {/* Profile */}
+        {success && (
+          <div style={{ background: "#0f2a1a", border: "1px solid #1a4a2a", borderRadius: 10, padding: "12px 16px", marginBottom: 12 }}>
+            <p style={{ fontSize: 13, color: "#4ade80", margin: 0 }}>クレジットを購入しました</p>
+          </div>
+        )}
+
         <div style={{ background: "#1a1d24", border: "1px solid #2a2d35", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
           <p style={{ fontSize: 11, color: "#4a5060", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 14px" }}>アカウント</p>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
@@ -59,26 +83,26 @@ export default function SettingsClient({ name, email, image }: Props) {
           </div>
         </div>
 
-        {/* Plan */}
         <div style={{ background: "#1a1d24", border: "1px solid #2a2d35", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
-          <p style={{ fontSize: 11, color: "#4a5060", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 14px" }}>プラン</p>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <div>
-              <p style={{ fontSize: 15, fontWeight: 600, color: "#e8eaf0", margin: "0 0 3px" }}>Free</p>
-              <p style={{ fontSize: 13, color: "#6a7080", margin: 0 }}>100クレジット / エージェント2個まで</p>
-            </div>
-            <span style={{ fontSize: 11, color: "#6c71e8", background: "#1e2044", padding: "4px 10px", borderRadius: 6, fontWeight: 500 }}>
-              現在のプラン
-            </span>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <p style={{ fontSize: 11, color: "#4a5060", letterSpacing: "0.06em", textTransform: "uppercase", margin: 0 }}>クレジット</p>
+            <span style={{ fontSize: 20, fontWeight: 700, color: "#e8eaf0" }}>{credits}</span>
           </div>
-          <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #2a2d35" }}>
-            <a href="/login" style={{ display: "block", textAlign: "center", padding: "10px", borderRadius: 8, fontSize: 13, fontWeight: 500, background: "#6c71e8", color: "#fff", textDecoration: "none" }}>
-              アップグレード
-            </a>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {CREDIT_PLANS.map((plan) => (
+              <button
+                key={plan.id}
+                onClick={() => handlePurchase(plan.id)}
+                disabled={purchasing === plan.id}
+                style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", borderRadius: 8, border: "1px solid #2a2d35", background: purchasing === plan.id ? "#1e2044" : "transparent", color: "#e8eaf0", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}
+              >
+                <span>{plan.label}</span>
+                <span style={{ color: "#6c71e8", fontWeight: 600 }}>{plan.price}</span>
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Links */}
         <div style={{ background: "#1a1d24", border: "1px solid #2a2d35", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
           <a href="/privacy" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid #2a2d35", textDecoration: "none" }}>
             <span style={{ fontSize: 14, color: "#9096a8" }}>プライバシーポリシー</span>
@@ -90,23 +114,13 @@ export default function SettingsClient({ name, email, image }: Props) {
           </a>
         </div>
 
-        {/* Version */}
         <p style={{ fontSize: 12, color: "#2a2d35", textAlign: "center", margin: "16px 0" }}>Lattice v0.1.0 beta</p>
 
-        {/* Logout */}
-        <button
-          onClick={() => signOut({ callbackUrl: "/" })}
-          style={{ width: "100%", padding: "13px", borderRadius: 10, border: "1px solid #2a2d35", background: "transparent", color: "#f87171", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", marginBottom: 10 }}
-        >
+        <button onClick={() => signOut({ callbackUrl: "/" })} style={{ width: "100%", padding: "13px", borderRadius: 10, border: "1px solid #2a2d35", background: "transparent", color: "#f87171", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", marginBottom: 10 }}>
           ログアウト
         </button>
 
-        {/* Delete Account */}
-        <button
-          onClick={handleDelete}
-          disabled={deleting}
-          style={{ width: "100%", padding: "13px", borderRadius: 10, border: "1px solid #3a1a1a", background: "transparent", color: confirm ? "#f87171" : "#4a5060", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}
-        >
+        <button onClick={handleDelete} disabled={deleting} style={{ width: "100%", padding: "13px", borderRadius: 10, border: "1px solid #3a1a1a", background: "transparent", color: confirm ? "#f87171" : "#4a5060", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>
           {deleting ? "削除中..." : confirm ? "本当に削除しますか？もう一度タップで確定" : "アカウントを削除"}
         </button>
       </div>
