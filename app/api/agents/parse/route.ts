@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
@@ -11,13 +11,7 @@ const SYSTEM_PROMPT = `あなたはユーザーの自然言語の指示をエー
   "trigger": "schedule" | "manual" | "webhook",
   "triggerCron": "cron式（scheduleの場合のみ・それ以外は空文字）",
   "prompt": "実行時にAIに与える詳細な指示（日本語）",
-  "connections": [
-    {
-      "type": "slack" | "gmail" | "twitter" | "notion" | "email",
-      "action": "read" | "post" | "send",
-      "config": {}
-    }
-  ]
+  "connections": []
 }
 
 cronの例：
