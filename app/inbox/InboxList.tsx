@@ -155,7 +155,6 @@ export default function InboxList({ items }: { items: InboxItem[] }) {
             24時間より前の受信履歴
           </p>
         </button>
-      </div>
 
         {/* サマリーセクション */}
         <div style={{ marginTop: 24, background: "#1a1d24", border: "1px solid #2a2d35", borderRadius: 12, padding: "18px 20px" }}>
