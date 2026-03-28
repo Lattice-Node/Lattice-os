@@ -96,7 +96,7 @@ export default function StoreList({ templates }: { templates: Template[] }) {
         <div style={{ background: "#1a1d24", border: "1px solid #2a2d35", borderRadius: 12, overflow: "hidden", marginBottom: 24 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid #22252f" }}>
             <span style={{ fontSize: 13, color: "#6a7080" }}>実行コスト</span>
-            <span style={{ fontSize: 14, fontWeight: 600, color: "#4ade80" }}>2 cr / 回</span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: "#4ade80" }}>2クレジット / 実行</span>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px" }}>
             <span style={{ fontSize: 13, color: "#6a7080" }}>カテゴリ</span>
@@ -182,7 +182,7 @@ export default function StoreList({ templates }: { templates: Template[] }) {
             </div>
             <div className="store-card-bottom">
               <div className="store-card-stats">
-                <span className="store-card-stat" style={{ color: "var(--green)" }}>2 cr/回</span>
+                <span className="store-card-stat" style={{ color: "var(--green)" }}>2クレジット / 回</span>
                 {t.category && (
                   <span className="store-card-stat" style={{ color: "var(--muted)" }}>{t.category}</span>
                 )}

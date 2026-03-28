@@ -11,9 +11,9 @@ interface Props {
 }
 
 const CREDIT_PLANS = [
-  { id: "credits_100", label: "100クレジット", price: "¥500", priceNum: 500, perUnit: "5円/cr", desc: "お試し・少量追加に" },
-  { id: "credits_500", label: "500クレジット", price: "¥2,000", priceNum: 2000, perUnit: "4円/cr", desc: "月々の利用に", popular: true },
-  { id: "credits_1000", label: "1,000クレジット", price: "¥3,500", priceNum: 3500, perUnit: "3.5円/cr", desc: "ヘビーユーザー向け" },
+  { id: "credits_100", label: "100クレジット", price: "¥500", priceNum: 500, perUnit: "50回分の実行", desc: "お試し・少量追加に" },
+  { id: "credits_500", label: "500クレジット", price: "¥2,000", priceNum: 2000, perUnit: "250回分の実行", desc: "月々の利用に", popular: true },
+  { id: "credits_1000", label: "1,000クレジット", price: "¥3,500", priceNum: 3500, perUnit: "500回分の実行", desc: "ヘビーユーザー向け" },
 ];
 
 export default function SettingsClient({ name, email, image, credits }: Props) {
@@ -70,7 +70,7 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
             クレジットを追加する
           </h1>
           <p style={{ fontSize: 13, color: "#6a7080", margin: "0 0 28px" }}>
-            現在の残高：<span style={{ color: "#e8eaf0", fontWeight: 600 }}>{credits} cr</span>
+            現在の残高：<span style={{ color: "#e8eaf0", fontWeight: 600 }}>{credits} クレジット</span>
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>

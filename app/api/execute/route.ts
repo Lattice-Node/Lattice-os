@@ -190,13 +190,20 @@ export async function POST(request: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { email },
-      select: { id: true },
+      select: { id: true, credits: true },
     });
 
     if (!user) {
       return NextResponse.json(
         { ok: false, error: "User not found" },
         { status: 404 }
+      );
+    }
+
+    if ((user.credits ?? 0) < 2) {
+      return NextResponse.json(
+        { ok: false, error: "クレジットが不足しています。設定画面から追加してください。" },
+        { status: 402 }
       );
     }
 
@@ -292,6 +299,11 @@ export async function POST(request: NextRequest) {
         },
         lastRunAt: now,
       },
+    });
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { credits: { decrement: 2 } },
     });
 
     return NextResponse.json({
