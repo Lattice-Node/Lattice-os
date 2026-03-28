@@ -1,4 +1,4 @@
-﻿type DailyAiNewsBuildOptions = {
+type DailyAiNewsBuildOptions = {
   now?: Date;
 };
 
@@ -52,7 +52,7 @@ export function buildDailyAiNewsUserPrompt(options: DailyAiNewsBuildOptions = {}
   return [
     `現在時刻(JST): ${nowJst}`,
     "",
-    "過去24〜48時間を優先して、重要なAIニュースを3〜5件選定してください。",
+    "過去24〜48時間を優先して、重要なAIニュースを3件だけ選定してください。",
     "対象は、基盤モデル、主要AI企業、AIプロダクト、AI規制、研究・発表、大型提携、資金調達、障害・事故などです。",
     "ただし以下は除外または優先度を大きく下げてください。",
     "- 重要度の低い小規模アップデート",
