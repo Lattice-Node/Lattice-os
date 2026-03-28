@@ -1,4 +1,4 @@
-﻿import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import AgentsList from "./AgentsList";
@@ -29,7 +29,7 @@ export default async function AgentsPage() {
 
   return (
     <div className="page">
-      <p className="page-label">MY AGENTS</p>
+      <p className="page-label">マイエージェント</p>
       <h1 className="page-title">マイエージェント</h1>
 
       <div className="stat-row">
