@@ -17,6 +17,11 @@ type AgentGroup = {
   items: InboxItem[];
 };
 
+type Screen =
+  | { type: "top" }
+  | { type: "agent-list"; filter: "today" | "past" }
+  | { type: "agent-detail"; filter: "today" | "past"; group: AgentGroup };
+
 function formatTime(iso: string) {
   const d = new Date(iso);
   return new Intl.DateTimeFormat("ja-JP", {
@@ -42,18 +47,12 @@ function renderMarkdown(text: string) {
     .replace(/\n/g, "");
 }
 
-function getPreview(text: string) {
-  const clean = text.replace(/^#.+$/gm, "").replace(/^-.+$/gm, "").replace(/---/g, "").trim();
-  const first = clean.split("\n").filter(Boolean)[0] || "";
-  return first.length > 50 ? first.slice(0, 50) + "..." : first;
-}
-
 function isToday(iso: string) {
   const now = new Date();
   const d = new Date(iso);
-  const jstOffset = 9 * 60;
-  const nowJST = new Date(now.getTime() + (jstOffset - now.getTimezoneOffset()) * 60000);
-  const dJST = new Date(d.getTime() + (jstOffset - d.getTimezoneOffset()) * 60000);
+  const offset = 9 * 60;
+  const nowJST = new Date(now.getTime() + (offset - now.getTimezoneOffset()) * 60000);
+  const dJST = new Date(d.getTime() + (offset - d.getTimezoneOffset()) * 60000);
   return (
     nowJST.getFullYear() === dJST.getFullYear() &&
     nowJST.getMonth() === dJST.getMonth() &&
@@ -72,122 +71,161 @@ function groupByAgent(items: InboxItem[]): AgentGroup[] {
   return Array.from(map.values());
 }
 
-function AgentGroupCard({ group }: { group: AgentGroup }) {
-  const [open, setOpen] = useState(false);
-  const latest = group.items[0];
+const cardBtn: React.CSSProperties = {
+  display: "block",
+  width: "100%",
+  padding: "16px 18px",
+  borderRadius: 10,
+  border: "1px solid #2a2d35",
+  background: "#1a1d24",
+  color: "#e8eaf0",
+  textAlign: "left",
+  cursor: "pointer",
+  fontFamily: "inherit",
+  marginBottom: 10,
+};
 
-  return (
-    <div style={{ border: "1px solid #2a2d35", borderRadius: 10, backgroundColor: "#1a1d24", overflow: "hidden", marginBottom: 10 }}>
-      <div
-        onClick={() => setOpen(!open)}
-        style={{ padding: "14px 16px", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
-      >
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3 }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: "#e8eaf0" }}>
-              {group.agentName}
-            </span>
-            <span style={{ fontSize: 11, color: "#6c71e8", background: "#1e2044", padding: "1px 7px", borderRadius: 4, fontWeight: 500 }}>
-              {group.items.length}件
-            </span>
-          </div>
-          {!open && (
-            <p style={{ fontSize: 12, color: "#6a7080", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {getPreview(latest.output)}
-            </p>
-          )}
-        </div>
-        <svg
-          width="16" height="16" viewBox="0 0 16 16" fill="none"
-          stroke="#4a5060" strokeWidth="1.5"
-          style={{ flexShrink: 0, marginLeft: 12, transform: open ? "rotate(180deg)" : "none", transition: "transform 0.15s" }}
-        >
-          <path d="M4 6l4 4 4-4" />
-        </svg>
-      </div>
-
-      {open && (
-        <div style={{ borderTop: "1px solid #22252f" }}>
-          {group.items.map((item, i) => (
-            <div
-              key={item.id}
-              style={{
-                padding: "12px 16px",
-                borderBottom: i < group.items.length - 1 ? "1px solid #22252f" : "none",
-              }}
-            >
-              <p style={{ fontSize: 11, color: "#4a5060", margin: "0 0 8px" }}>
-                {formatTime(item.createdAt)}
-              </p>
-              <div
-                style={{ fontSize: 12, color: "#9096a8", lineHeight: 1.65 }}
-                dangerouslySetInnerHTML={{ __html: renderMarkdown(item.output) }}
-              />
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
+const backBtn: React.CSSProperties = {
+  background: "none",
+  border: "none",
+  color: "#4a5060",
+  fontSize: 13,
+  cursor: "pointer",
+  fontFamily: "inherit",
+  padding: 0,
+  marginBottom: 20,
+};
 
 export default function InboxList({ items }: { items: InboxItem[] }) {
-  const [tab, setTab] = useState<"today" | "past">("today");
+  const [screen, setScreen] = useState<Screen>({ type: "top" });
 
   const todayItems = items.filter((i) => isToday(i.createdAt));
   const pastItems = items.filter((i) => !isToday(i.createdAt));
 
-  const todayGroups = groupByAgent(todayItems);
-  const pastGroups = groupByAgent(pastItems);
+  // 画面1: トップ
+  if (screen.type === "top") {
+    return (
+      <div className="page">
+        <p className="page-label">受信箱</p>
+        <h1 className="page-title">受信箱</h1>
 
-  const currentGroups = tab === "today" ? todayGroups : pastGroups;
-  const currentItems = tab === "today" ? todayItems : pastItems;
+        <button
+          style={cardBtn}
+          onClick={() => setScreen({ type: "agent-list", filter: "today" })}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: 15, fontWeight: 600 }}>今日の受信</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              {todayItems.length > 0 && (
+                <span style={{ fontSize: 12, color: "#6c71e8", background: "#1e2044", padding: "2px 8px", borderRadius: 4, fontWeight: 500 }}>
+                  {todayItems.length}件
+                </span>
+              )}
+              <span style={{ color: "#4a5060", fontSize: 18 }}>›</span>
+            </div>
+          </div>
+          <p style={{ fontSize: 12, color: "#6a7080", margin: "4px 0 0" }}>
+            過去24時間に届いた結果
+          </p>
+        </button>
 
-  return (
-    <div className="page">
-      <p className="page-label">受信箱</p>
-      <h1 className="page-title">受信箱</h1>
+        <button
+          style={cardBtn}
+          onClick={() => setScreen({ type: "agent-list", filter: "past" })}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: 15, fontWeight: 600 }}>過去の受信</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              {pastItems.length > 0 && (
+                <span style={{ fontSize: 12, color: "#4a5060", background: "transparent", border: "1px solid #2a2d35", padding: "2px 8px", borderRadius: 4, fontWeight: 500 }}>
+                  {pastItems.length}件
+                </span>
+              )}
+              <span style={{ color: "#4a5060", fontSize: 18 }}>›</span>
+            </div>
+          </div>
+          <p style={{ fontSize: 12, color: "#6a7080", margin: "4px 0 0" }}>
+            24時間より前の受信履歴
+          </p>
+        </button>
+      </div>
+    );
+  }
 
-      {/* タブ */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-        {(["today", "past"] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            style={{
-              padding: "6px 16px",
-              borderRadius: 20,
-              fontSize: 13,
-              fontWeight: 500,
-              border: "1px solid",
-              cursor: "pointer",
-              fontFamily: "inherit",
-              transition: "all 0.15s",
-              borderColor: tab === t ? "#6c71e8" : "#2a2d35",
-              background: tab === t ? "#1e2044" : "transparent",
-              color: tab === t ? "#6c71e8" : "#6a7080",
-            }}
-          >
-            {t === "today" ? `今日（${todayItems.length}）` : `過去（${pastItems.length}）`}
-          </button>
+  // 画面2: エージェント一覧
+  if (screen.type === "agent-list") {
+    const filtered = screen.filter === "today" ? todayItems : pastItems;
+    const groups = groupByAgent(filtered);
+    const label = screen.filter === "today" ? "今日の受信" : "過去の受信";
+
+    return (
+      <div className="page">
+        <button style={backBtn} onClick={() => setScreen({ type: "top" })}>
+          ← 戻る
+        </button>
+        <p className="page-label">受信箱</p>
+        <h1 className="page-title">{label}</h1>
+
+        {groups.length === 0 ? (
+          <div className="card" style={{ textAlign: "center", padding: 28 }}>
+            <p style={{ color: "#4a5060", fontSize: 13, margin: "0 0 8px" }}>
+              {screen.filter === "today" ? "今日の受信はまだありません" : "過去の受信はありません"}
+            </p>
+            <Link href="/agents" style={{ color: "#6c71e8", fontSize: 13, textDecoration: "none" }}>
+              エージェントを実行する
+            </Link>
+          </div>
+        ) : (
+          groups.map((group) => (
+            <button
+              key={group.agentId}
+              style={cardBtn}
+              onClick={() => setScreen({ type: "agent-detail", filter: screen.filter, group })}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: 15, fontWeight: 600 }}>{group.agentName}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: 12, color: "#6c71e8", background: "#1e2044", padding: "2px 8px", borderRadius: 4, fontWeight: 500 }}>
+                    {group.items.length}件
+                  </span>
+                  <span style={{ color: "#4a5060", fontSize: 18 }}>›</span>
+                </div>
+              </div>
+              <p style={{ fontSize: 12, color: "#6a7080", margin: "4px 0 0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                最終受信 {formatTime(group.items[0].createdAt)}
+              </p>
+            </button>
+          ))
+        )}
+      </div>
+    );
+  }
+
+  // 画面3: 受信内容
+  if (screen.type === "agent-detail") {
+    const { group, filter } = screen;
+    return (
+      <div className="page">
+        <button style={backBtn} onClick={() => setScreen({ type: "agent-list", filter })}>
+          ← 戻る
+        </button>
+        <p className="page-label">受信箱</p>
+        <h1 className="page-title">{group.agentName}</h1>
+
+        {group.items.map((item) => (
+          <div key={item.id} className="card" style={{ marginBottom: 12, padding: 16 }}>
+            <p style={{ fontSize: 11, color: "#4a5060", margin: "0 0 10px" }}>
+              {formatTime(item.createdAt)}
+            </p>
+            <div
+              style={{ fontSize: 13, color: "#9096a8", lineHeight: 1.7 }}
+              dangerouslySetInnerHTML={{ __html: renderMarkdown(item.output) }}
+            />
+          </div>
         ))}
       </div>
+    );
+  }
 
-      {/* コンテンツ */}
-      {currentItems.length === 0 ? (
-        <div className="card" style={{ textAlign: "center", padding: 28 }}>
-          <p style={{ color: "#4a5060", fontSize: 13, margin: "0 0 8px" }}>
-            {tab === "today" ? "今日の受信はまだありません" : "過去の受信はありません"}
-          </p>
-          <Link href="/agents" style={{ color: "#6c71e8", fontSize: 13, textDecoration: "none" }}>
-            エージェントを実行する
-          </Link>
-        </div>
-      ) : (
-        currentGroups.map((group) => (
-          <AgentGroupCard key={group.agentId} group={group} />
-        ))
-      )}
-    </div>
-  );
+  return null;
 }
