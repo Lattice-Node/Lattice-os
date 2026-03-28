@@ -1,33 +1,43 @@
-﻿
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
+import NewsClient from "./NewsClient";
+
 export const dynamic = "force-dynamic";
 
-export default function NewsPage() {
-  return (
-    <main className="min-h-screen bg-[#111318] text-white">
-      <div className="mx-auto w-full max-w-[420px] px-4 pb-28 pt-6">
-        <div className="space-y-6">
-          <section className="space-y-3">
-            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-500">
-              Inbox
-            </p>
-            <div className="space-y-2">
-              <h1 className="text-[32px] font-semibold tracking-tight text-white">
-                AIニュース
-              </h1>
-              <p className="text-sm leading-relaxed text-slate-400">
-                毎日のAIニュース要約が届きます。
-              </p>
-            </div>
-          </section>
+export default async function NewsPage() {
+  const session = await auth();
+  if (!session?.user?.email) redirect("/login");
 
-          <section className="rounded-[20px] border border-[#2a2d35] bg-[#1a1d24] p-5">
-            <p className="text-sm text-slate-500">まだ実行結果がありません。</p>
-            <p className="mt-2 text-xs text-slate-600">
-              マイAgentから「毎朝AIニュース要約」を実行してください。
-            </p>
-          </section>
-        </div>
-      </div>
-    </main>
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: { id: true },
+  });
+  if (!user) redirect("/login");
+
+  const newsAgent = await prisma.userAgent.findFirst({
+    where: {
+      userId: user.id,
+      name: { contains: "AI" },
+    },
+    select: { id: true, name: true, lastRunAt: true },
+  });
+
+  let latestLog = null;
+  if (newsAgent) {
+    latestLog = await prisma.agentLog.findFirst({
+      where: { agentId: newsAgent.id, status: "success" },
+      orderBy: { createdAt: "desc" },
+      select: { output: true, createdAt: true },
+    });
+  }
+
+  return (
+    <NewsClient
+      agentId={newsAgent?.id || null}
+      agentName={newsAgent?.name || null}
+      latestOutput={latestLog?.output || null}
+      latestDate={latestLog?.createdAt?.toISOString() || null}
+    />
   );
 }
