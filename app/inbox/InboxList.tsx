@@ -48,7 +48,7 @@ export default function InboxList({ items }: { items: InboxItem[] }) {
   if (items.length === 0) {
     return (
       <div className="page">
-        <p className="page-label">INBOX</p>
+        <p className="page-label">受信箱</p>
         <h1 className="page-title">受信箱</h1>
         <div className="card" style={{ textAlign: "center", padding: 28 }}>
           <p style={{ color: "#4a5060", fontSize: 13, margin: "0 0 8px" }}>
@@ -64,7 +64,7 @@ export default function InboxList({ items }: { items: InboxItem[] }) {
 
   return (
     <div className="page">
-      <p className="page-label">INBOX</p>
+      <p className="page-label">受信箱</p>
       <h1 className="page-title">受信箱</h1>
 
       {items.map((item) => {
