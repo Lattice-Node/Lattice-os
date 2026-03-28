@@ -36,7 +36,7 @@ export default function HomePage() {
       <main style={{ background: BG, minHeight: "100vh", color: TEXT }}>
 
         {/* Hero */}
-        <section style={{ maxWidth: 1100, margin: "0 auto", padding: "148px 24px 100px", textAlign: "center" }}>
+        <section style={{ maxWidth: 1100, margin: "0 auto", padding: "80px 24px 60px", textAlign: "center" }}>
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 7,
             padding: "5px 14px", borderRadius: 20,
