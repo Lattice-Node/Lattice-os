@@ -79,11 +79,11 @@ export default function AgentDetailPage() {
         body: JSON.stringify({ agentId: id }),
       });
       const data = await res.json();
-      setOutput(data.output || data.error || "Done");
+      setOutput(data.output || data.error || "完了");
       setOutputStatus(data.ok ? "success" : "error");
       fetchLogs();
     } catch {
-      setOutput("Error");
+      setOutput("エラー");
       setOutputStatus("error");
     } finally {
       setRunning(false);
@@ -91,7 +91,7 @@ export default function AgentDetailPage() {
   }
 
   async function handleDelete() {
-    if (!confirm("Delete this agent?")) return;
+    if (!confirm("このエージェントを削除しますか？")) return;
     await fetch(`/api/agents/${id}`, { method: "DELETE" });
     router.push("/agents");
   }
@@ -99,7 +99,7 @@ export default function AgentDetailPage() {
   if (loading) {
     return (
       <div className="page" style={{ paddingTop: 24 }}>
-        <p style={{ color: "#4a5060", fontSize: 13 }}>Loading...</p>
+        <p style={{ color: "#4a5060", fontSize: 13 }}>読み込み中...</p>
       </div>
     );
   }
@@ -108,13 +108,13 @@ export default function AgentDetailPage() {
     return (
       <div className="page" style={{ paddingTop: 24 }}>
         <p style={{ color: "#9096a8", fontSize: 14, marginBottom: 12 }}>
-          Agent not found
+          エージェントが見つかりません
         </p>
         <Link
           href="/agents"
           style={{ color: "#6c71e8", fontSize: 13, textDecoration: "none" }}
         >
-          Back
+          戻る
         </Link>
       </div>
     );
@@ -132,7 +132,7 @@ export default function AgentDetailPage() {
           marginBottom: 16,
         }}
       >
-        &larr; Back
+        &larr; 戻る
       </Link>
 
       <div
@@ -183,7 +183,7 @@ export default function AgentDetailPage() {
       <div className="stat-row" style={{ marginBottom: 16 }}>
         <div className="stat-box">
           <p className="stat-number">{agent.runCount}</p>
-          <p className="stat-label">Total runs</p>
+          <p className="stat-label">実行回数</p>
         </div>
         <div className="stat-box">
           <p className="stat-number" style={{ fontSize: 16 }}>
@@ -194,13 +194,13 @@ export default function AgentDetailPage() {
                 })
               : "--"}
           </p>
-          <p className="stat-label">Last run</p>
+          <p className="stat-label">最終実行</p>
         </div>
         <div className="stat-box">
           <p className="stat-number" style={{ fontSize: 16 }}>
             {agent.trigger || "manual"}
           </p>
-          <p className="stat-label">Trigger</p>
+          <p className="stat-label">トリガー</p>
         </div>
       </div>
 
@@ -217,7 +217,7 @@ export default function AgentDetailPage() {
           opacity: running ? 0.5 : 1,
         }}
       >
-        {running ? "Executing..." : "Execute now"}
+        {running ? "実行中..." : "今すぐ実行"}
       </button>
 
       {output && (
@@ -240,7 +240,7 @@ export default function AgentDetailPage() {
               fontWeight: 500,
             }}
           >
-            {outputStatus === "error" ? "Error" : "Done"}
+            {outputStatus === "error" ? "エラー" : "完了"}
           </p>
           <p
             style={{
@@ -261,13 +261,13 @@ export default function AgentDetailPage() {
         className="section-label"
         style={{ marginTop: 8, marginBottom: 8 }}
       >
-        Recent logs
+        実行ログ
       </p>
 
       {logs.length === 0 ? (
         <div className="card" style={{ textAlign: "center", padding: 24 }}>
           <p style={{ color: "#4a5060", fontSize: 13, margin: 0 }}>
-            No logs yet
+            まだログがありません
           </p>
         </div>
       ) : (
@@ -339,7 +339,7 @@ export default function AgentDetailPage() {
           fontFamily: "inherit",
         }}
       >
-        Delete agent
+        エージェントを削除
       </button>
     </div>
   );
