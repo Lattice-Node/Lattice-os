@@ -13,9 +13,9 @@ type ParsedAgent = {
 };
 
 const EXAMPLES = [
-  "毎朝9時にGmailの未読メールを要約してSlackに送る",
-  "Xで自社名が言及されたら即座にSlackに通知する",
-  "毎週月曜の朝、先週のタスクをまとめてメールで送る",
+  "毎朝9時にGmailの未読メールを要約して通知する",
+  "Xで自社名が言及されたら即座に通知する",
+  "毎週月曜の朝、先週のタスクをまとめて届ける",
 ];
 
 const TRIGGER_LABEL: Record<string, string> = {
@@ -121,7 +121,7 @@ export default function NewAgentPage() {
             value={input}
             onChange={(e) => { setInput(e.target.value); setParsed(null); }}
             onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleParse(); }}
-            placeholder="例：毎朝8時にXのトレンドを調べて、Slackの#マーケティングチャンネルに要約を送る"
+            placeholder="例：毎朝8時にXのトレンドを調べて、AIニュースの要約を届ける"
             rows={5}
             style={{
               width: "100%",

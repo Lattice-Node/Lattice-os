@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 const TEMPLATES = [
-  { id: "1", name: "競合モニタリング", description: "競合他社の動向を毎朝チェックして、変化があればSlackに通知する。", trigger: "毎朝8時", category: "リサーチ" },
+  { id: "1", name: "競合モニタリング", description: "競合他社の動向を毎朝チェックして、変化があればアプリに通知する。", trigger: "毎朝8時", category: "リサーチ" },
   { id: "2", name: "週次レポート自動作成", description: "1週間の活動をまとめたレポートを自動で作成してメール送信。", trigger: "毎週金曜17時", category: "生産性" },
   { id: "3", name: "新規問い合わせ対応", description: "新しい問い合わせが来たら、内容を分析して返信文の下書きを作成。", trigger: "メール受信時", category: "営業" },
   { id: "4", name: "価格変動アラート", description: "指定した商品の価格を監視して、目標価格になったら即通知。", trigger: "1時間ごと", category: "EC" },
@@ -100,7 +100,7 @@ export default function HomePage() {
                 padding: "14px 16px", background: "#1e2230",
                 borderRadius: 8, border: `1px solid ${BORDER}`, minHeight: 72,
               }}>
-                「毎朝、競合3社のサイトをチェックして新着情報をSlackに送って」
+                「毎朝、競合3社のサイトをチェックして新着情報をアプリに届けて」
               </div>
               <div style={{ marginTop: 12, padding: "16px", background: "#1e2230", borderRadius: 8, border: `1px solid ${BORDER}` }}>
                 <p style={{ fontSize: 11, color: DIM, marginBottom: 12, letterSpacing: "0.06em", textTransform: "uppercase" }}>
@@ -109,7 +109,7 @@ export default function HomePage() {
                 {[
                   { label: "スケジュール", value: "毎朝 8:00" },
                   { label: "アクション", value: "3サイトをスキャン・差分を検出" },
-                  { label: "出力先", value: "Slack #updates" },
+                  { label: "出力先", value: "アプリ通知" },
                   { label: "ステータス", value: "稼働中", green: true },
                 ].map((item) => (
                   <div key={item.label} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 8 }}>
@@ -132,7 +132,7 @@ export default function HomePage() {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 12 }}>
             {[
-              { step: "01", title: "日本語で入力する", description: "「毎朝メールを要約してSlackに送って」のように、やりたいことをそのまま書くだけ。" },
+              { step: "01", title: "日本語で入力する", description: "「毎朝メールを要約してアプリに届けて」のように、やりたいことをそのまま書くだけ。" },
               { step: "02", title: "AIが自動で構築する", description: "LatticeがAIエージェントを自動で組み立てます。設定・コード・API連携は全部お任せ。" },
               { step: "03", title: "あとは勝手に動く", description: "スケジュール通りに動き続けます。あなたは結果を受け取るだけ。" },
             ].map((item) => (
