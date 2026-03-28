@@ -183,38 +183,58 @@ export default function NewAgentClient() {
           <div style={{ border: "1px solid #2a2d3a", borderRadius: 10, backgroundColor: "#1a1d24", overflow: "hidden", marginBottom: 16 }}>
             <div style={{ padding: "14px 20px", borderBottom: "1px solid #22252f", display: "flex", alignItems: "center", gap: 8 }}>
               <span style={{ fontSize: 11, color: "#6c71e8", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                解析完了
+                解析完了 - 編集して保存
               </span>
             </div>
-            <div style={{ padding: "20px" }}>
-              <p style={{ fontSize: 17, fontWeight: 600, color: "#f0f2f8", margin: "0 0 6px", letterSpacing: "-0.01em" }}>
-                {parsed.name}
-              </p>
-              <p style={{ fontSize: 13, color: "#6a7080", margin: "0 0 20px" }}>{parsed.description}</p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: 12, color: "#4a5060" }}>トリガー</span>
-                  <span style={{ fontSize: 13, color: "#9096a8" }}>
-                    {TRIGGER_LABEL[parsed.trigger] || parsed.trigger}
-                    {parsed.triggerCron && ` (${parsed.triggerCron})`}
-                  </span>
+            <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: 14 }}>
+              <div>
+                <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 6px" }}>エージェント名</p>
+                <input
+                  value={parsed.name}
+                  onChange={(e) => setParsed({ ...parsed, name: e.target.value })}
+                  style={{ width: "100%", background: "#111318", border: "1px solid #2a2d35", borderRadius: 6, padding: "8px 12px", color: "#f0f2f8", fontSize: 14, fontWeight: 600, fontFamily: "inherit", boxSizing: "border-box" as const, outline: "none" }}
+                />
+              </div>
+              <div>
+                <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 6px" }}>説明</p>
+                <input
+                  value={parsed.description}
+                  onChange={(e) => setParsed({ ...parsed, description: e.target.value })}
+                  style={{ width: "100%", background: "#111318", border: "1px solid #2a2d35", borderRadius: 6, padding: "8px 12px", color: "#9096a8", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" as const, outline: "none" }}
+                />
+              </div>
+              <div style={{ display: "flex", gap: 12 }}>
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 6px" }}>トリガー</p>
+                  <select
+                    value={parsed.trigger}
+                    onChange={(e) => setParsed({ ...parsed, trigger: e.target.value })}
+                    style={{ width: "100%", background: "#111318", border: "1px solid #2a2d35", borderRadius: 6, padding: "8px 12px", color: "#9096a8", fontSize: 13, fontFamily: "inherit", outline: "none" }}
+                  >
+                    <option value="schedule">スケジュール実行</option>
+                    <option value="manual">手動実行</option>
+                  </select>
                 </div>
-                {parsed.connections.length > 0 && (
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                    <span style={{ fontSize: 12, color: "#4a5060" }}>連携サービス</span>
-                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
-                      {parsed.connections.map((c, i) => (
-                        <span key={i} style={{ fontSize: 11, color: "#6c71e8", background: "#1e2044", padding: "3px 9px", borderRadius: 4, fontWeight: 500 }}>
-                          {CONNECTION_LABEL[c.type] || c.type}
-                        </span>
-                      ))}
-                    </div>
+                {parsed.trigger === "schedule" && (
+                  <div style={{ flex: 1 }}>
+                    <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 6px" }}>Cron式</p>
+                    <input
+                      value={parsed.triggerCron}
+                      onChange={(e) => setParsed({ ...parsed, triggerCron: e.target.value })}
+                      placeholder="0 8 * * *"
+                      style={{ width: "100%", background: "#111318", border: "1px solid #2a2d35", borderRadius: 6, padding: "8px 12px", color: "#9096a8", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" as const, outline: "none" }}
+                    />
                   </div>
                 )}
-                <div style={{ borderTop: "1px solid #22252f", paddingTop: 12 }}>
-                  <p style={{ fontSize: 12, color: "#4a5060", margin: "0 0 6px" }}>実行プロンプト</p>
-                  <p style={{ fontSize: 12, color: "#6a7080", lineHeight: 1.65, margin: 0 }}>{parsed.prompt}</p>
-                </div>
+              </div>
+              <div>
+                <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 6px" }}>実行プロンプト</p>
+                <textarea
+                  value={parsed.prompt}
+                  onChange={(e) => setParsed({ ...parsed, prompt: e.target.value })}
+                  rows={4}
+                  style={{ width: "100%", background: "#111318", border: "1px solid #2a2d35", borderRadius: 6, padding: "8px 12px", color: "#9096a8", fontSize: 12, lineHeight: 1.65, fontFamily: "inherit", boxSizing: "border-box" as const, outline: "none", resize: "vertical" }}
+                />
               </div>
             </div>
             <div style={{ borderTop: "1px solid #22252f", padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
