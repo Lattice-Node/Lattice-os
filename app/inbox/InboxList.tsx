@@ -20,7 +20,8 @@ type AgentGroup = {
 type Screen =
   | { type: "top" }
   | { type: "agent-list"; filter: "today" | "past" }
-  | { type: "agent-detail"; filter: "today" | "past"; group: AgentGroup };
+  | { type: "agent-detail"; filter: "today" | "past"; group: AgentGroup }
+  | { type: "article"; filter: "today" | "past"; group: AgentGroup; item: InboxItem };
 
 function formatTime(iso: string) {
   const d = new Date(iso);
@@ -35,16 +36,22 @@ function formatTime(iso: string) {
 
 function renderMarkdown(text: string) {
   return text
-    .replace(/^### (.+)$/gm, '<h3 style="font-size:13px;font-weight:600;color:#e8eaf0;margin:10px 0 4px">$1</h3>')
-    .replace(/^## (\d+)\. (.+)$/gm, '<h2 style="font-size:14px;font-weight:600;color:#e8eaf0;margin:14px 0 4px"><span style="color:#6c71e8;margin-right:4px">$1.</span>$2</h2>')
-    .replace(/^## (.+)$/gm, '<h2 style="font-size:14px;font-weight:600;color:#e8eaf0;margin:14px 0 4px">$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1 style="font-size:16px;font-weight:700;color:#e8eaf0;margin:0 0 8px">$1</h1>')
-    .replace(/^- (.+?): (.+)$/gm, '<div style="display:flex;gap:6px;margin:2px 0;font-size:12px;line-height:1.5"><span style="color:#6c71e8;font-weight:500;flex-shrink:0;min-width:32px">$1</span><span style="color:#9096a8">$2</span></div>')
-    .replace(/^- (.+)$/gm, '<div style="display:flex;gap:6px;margin:2px 0;font-size:12px;line-height:1.5"><span style="color:#6c71e8;flex-shrink:0">-</span><span style="color:#9096a8">$1</span></div>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#e8eaf0;font-weight:500">$1</strong>')
-    .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid #2a2d35;margin:10px 0"/>')
-    .replace(/\n\n/g, '<div style="height:4px"></div>')
+    .replace(/^### (.+)$/gm, '<h3 style="font-size:14px;font-weight:600;color:#e8eaf0;margin:14px 0 6px">$1</h3>')
+    .replace(/^## (\d+)\. (.+)$/gm, '<h2 style="font-size:16px;font-weight:700;color:#e8eaf0;margin:20px 0 6px"><span style="color:#6c71e8;margin-right:6px">$1.</span>$2</h2>')
+    .replace(/^## (.+)$/gm, '<h2 style="font-size:16px;font-weight:700;color:#e8eaf0;margin:20px 0 6px">$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1 style="font-size:20px;font-weight:700;color:#f0f2f8;margin:0 0 16px;letter-spacing:-0.02em">$1</h1>')
+    .replace(/^- (.+?): (.+)$/gm, '<div style="display:flex;gap:8px;margin:4px 0;font-size:13px;line-height:1.6"><span style="color:#6c71e8;font-weight:500;flex-shrink:0;min-width:40px">$1</span><span style="color:#9096a8">$2</span></div>')
+    .replace(/^- (.+)$/gm, '<div style="display:flex;gap:8px;margin:4px 0;font-size:13px;line-height:1.6"><span style="color:#6c71e8;flex-shrink:0">-</span><span style="color:#9096a8">$1</span></div>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#e8eaf0;font-weight:600">$1</strong>')
+    .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid #2a2d35;margin:16px 0"/>')
+    .replace(/\n\n/g, '<div style="height:8px"></div>')
     .replace(/\n/g, "");
+}
+
+function getPreview(text: string) {
+  const clean = text.replace(/^#.+$/gm, "").replace(/^-.+$/gm, "").replace(/---/g, "").trim();
+  const first = clean.split("\n").filter(Boolean)[0] || "";
+  return first.length > 45 ? first.slice(0, 45) + "..." : first;
 }
 
 function isToday(iso: string) {
@@ -191,7 +198,7 @@ export default function InboxList({ items }: { items: InboxItem[] }) {
                   <span style={{ color: "#4a5060", fontSize: 18 }}>›</span>
                 </div>
               </div>
-              <p style={{ fontSize: 12, color: "#6a7080", margin: "4px 0 0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <p style={{ fontSize: 12, color: "#6a7080", margin: "4px 0 0" }}>
                 最終受信 {formatTime(group.items[0].createdAt)}
               </p>
             </button>
@@ -201,7 +208,7 @@ export default function InboxList({ items }: { items: InboxItem[] }) {
     );
   }
 
-  // 画面3: 受信内容
+  // 画面3: 受信一覧（カード式・タップで記事へ）
   if (screen.type === "agent-detail") {
     const { group, filter } = screen;
     return (
@@ -213,16 +220,46 @@ export default function InboxList({ items }: { items: InboxItem[] }) {
         <h1 className="page-title">{group.agentName}</h1>
 
         {group.items.map((item) => (
-          <div key={item.id} className="card" style={{ marginBottom: 12, padding: 16 }}>
-            <p style={{ fontSize: 11, color: "#4a5060", margin: "0 0 10px" }}>
-              {formatTime(item.createdAt)}
+          <button
+            key={item.id}
+            style={cardBtn}
+            onClick={() => setScreen({ type: "article", filter, group, item })}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+              <span style={{ fontSize: 11, color: "#4a5060" }}>{formatTime(item.createdAt)}</span>
+              <span style={{ color: "#4a5060", fontSize: 18 }}>›</span>
+            </div>
+            <p style={{ fontSize: 13, color: "#9096a8", margin: 0, lineHeight: 1.5 }}>
+              {getPreview(item.output)}
             </p>
-            <div
-              style={{ fontSize: 13, color: "#9096a8", lineHeight: 1.7 }}
-              dangerouslySetInnerHTML={{ __html: renderMarkdown(item.output) }}
-            />
-          </div>
+          </button>
         ))}
+      </div>
+    );
+  }
+
+  // 画面4: 記事全文（ブログ風・全画面）
+  if (screen.type === "article") {
+    const { group, filter, item } = screen;
+    return (
+      <div className="page">
+        <button style={backBtn} onClick={() => setScreen({ type: "agent-detail", filter, group })}>
+          ← 戻る
+        </button>
+
+        <div style={{ marginBottom: 16 }}>
+          <span style={{ fontSize: 11, color: "#6c71e8", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+            {group.agentName}
+          </span>
+          <p style={{ fontSize: 11, color: "#4a5060", margin: "4px 0 0" }}>
+            {formatTime(item.createdAt)}
+          </p>
+        </div>
+
+        <div
+          style={{ fontSize: 14, lineHeight: 1.8, color: "#9096a8" }}
+          dangerouslySetInnerHTML={{ __html: renderMarkdown(item.output) }}
+        />
       </div>
     );
   }
