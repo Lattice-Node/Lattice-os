@@ -193,9 +193,9 @@ export default function HomePage() {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
             {[
-              { name: "Free", price: "無料", desc: "個人利用・試しに使う", features: ["エージェント3個まで", "月100回実行", "基本連携"], highlight: false },
-              { name: "Personal", price: "¥980/月", desc: "個人事業主・フリーランス", features: ["エージェント無制限", "月1,000回実行", "全連携対応", "優先サポート"], highlight: true },
-              { name: "Business", price: "¥4,980/月", desc: "チーム・中小企業向け", features: ["エージェント無制限", "月10,000回実行", "全連携対応", "チーム共有", "専用サポート"], highlight: false },
+              { name: "Free", price: "無料", desc: "個人利用・試しに使う", features: ["エージェント2個まで", "100クレジット付与", "アプリ内通知"], highlight: false },
+              { name: "Personal", price: "¥980", desc: "個人事業主・フリーランス", features: ["500クレジット", "エージェント10個", "アプリ内通知", "メール通知"], highlight: true },
+              { name: "Business", price: "¥4,980", desc: "チーム・中小企業向け", features: ["5,000クレジット", "エージェント無制限", "全通知対応", "チーム共有", "優先サポート"], highlight: false },
             ].map((plan) => (
               <div key={plan.name} className="plan-card" style={{
                 padding: "32px 28px",
