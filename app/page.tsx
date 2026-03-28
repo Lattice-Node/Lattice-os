@@ -8,12 +8,12 @@ export const metadata: Metadata = {
 };
 
 const TEMPLATES = [
-  { id: "1", name: "競合モニタリング", description: "競合他社の動向を毎朝チェックして、変化があればアプリに通知する。", trigger: "毎朝8時", category: "リサーチ" },
-  { id: "2", name: "週次レポート自動作成", description: "1週間の活動をまとめたレポートを自動で作成してメール送信。", trigger: "毎週金曜17時", category: "生産性" },
-  { id: "3", name: "新規問い合わせ対応", description: "新しい問い合わせが来たら、内容を分析して返信文の下書きを作成。", trigger: "メール受信時", category: "営業" },
-  { id: "4", name: "価格変動アラート", description: "指定した商品の価格を監視して、目標価格になったら即通知。", trigger: "1時間ごと", category: "EC" },
-  { id: "5", name: "SNSトレンド収集", description: "業界のトレンドを毎朝まとめて、投稿ネタとして整理する。", trigger: "毎朝7時", category: "マーケ" },
-  { id: "6", name: "契約書チェック", description: "送られてきた契約書を読み込み、注意すべき条項をリストアップ。", trigger: "ファイル受信時", category: "法務" },
+  { id: "competitor-monitor", name: "競合モニタリング", description: "競合他社の動向を毎朝チェックして、変化があればアプリに通知する。", trigger: "毎朝8時", category: "リサーチ" },
+  { id: "weekly-report", name: "週次レポート自動作成", description: "1週間の活動をまとめたレポートを自動で作成してメール送信。", trigger: "毎週金曜17時", category: "生産性" },
+  { id: "inquiry-reply", name: "新規問い合わせ対応", description: "新しい問い合わせが来たら、内容を分析して返信文の下書きを作成。", trigger: "メール受信時", category: "営業" },
+  { id: "price-alert", name: "価格変動アラート", description: "指定した商品の価格を監視して、目標価格になったら即通知。", trigger: "1時間ごと", category: "EC" },
+  { id: "sns-trend", name: "SNSトレンド収集", description: "業界のトレンドを毎朝まとめて、投稿ネタとして整理する。", trigger: "毎朝7時", category: "マーケ" },
+  { id: "contract-check", name: "契約書チェック", description: "送られてきた契約書を読み込み、注意すべき条項をリストアップ。", trigger: "ファイル受信時", category: "法務" },
 ];
 
 const BG = "#111318";
@@ -158,7 +158,7 @@ export default function HomePage() {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 12 }}>
             {TEMPLATES.map((t) => (
-              <Link key={t.id} href="/agents/new" style={{ textDecoration: "none" }}>
+              <Link key={t.id} href={`/agents/new?template=${t.id}`} style={{ textDecoration: "none" }}>
                 <div className="template-card" style={{
                   padding: "24px", border: `1px solid ${BORDER}`,
                   background: CARD, cursor: "pointer",
