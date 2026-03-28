@@ -1,12 +1,10 @@
-﻿generator client {
+generator client {
   provider = "prisma-client-js"
 }
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -15,11 +13,9 @@ model User {
   credits   Int      @default(100)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
   agents    UserAgent[]
   logs      AgentLog[]
 }
-
 model UserAgent {
   id          String   @id @default(cuid())
   userId      String
@@ -36,11 +32,9 @@ model UserAgent {
   nextRunAt   DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
   user        User     @relation(fields: [userId], references: [id])
   logs        AgentLog[]
 }
-
 model AgentLog {
   id        String   @id @default(cuid())
   agentId   String
@@ -49,11 +43,9 @@ model AgentLog {
   output    String   @default("")
   error     String   @default("")
   createdAt DateTime @default(now())
-
   agent     UserAgent @relation(fields: [agentId], references: [id])
   user      User      @relation(fields: [userId], references: [id])
 }
-
 model AgentTemplate {
   id          String   @id @default(cuid())
   name        String
