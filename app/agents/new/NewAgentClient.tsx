@@ -217,13 +217,35 @@ export default function NewAgentClient() {
                 </div>
                 {parsed.trigger === "schedule" && (
                   <div style={{ flex: 1 }}>
-                    <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 6px" }}>Cron式</p>
-                    <input
-                      value={parsed.triggerCron}
-                      onChange={(e) => setParsed({ ...parsed, triggerCron: e.target.value })}
-                      placeholder="0 8 * * *"
-                      style={{ width: "100%", background: "#111318", border: "1px solid #2a2d35", borderRadius: 6, padding: "8px 12px", color: "#9096a8", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" as const, outline: "none" }}
-                    />
+                    <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 6px" }}>実行時刻（JST）</p>
+                    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                      <select
+                        value={parsed.triggerCron ? parsed.triggerCron.split(" ")[1] : "8"}
+                        onChange={(e) => {
+                          const parts = (parsed.triggerCron || "0 8 * * *").split(" ");
+                          parts[1] = e.target.value;
+                          setParsed({ ...parsed, triggerCron: parts.join(" ") });
+                        }}
+                        style={{ flex: 1, background: "#111318", border: "1px solid #2a2d35", borderRadius: 6, padding: "8px 10px", color: "#9096a8", fontSize: 13, fontFamily: "inherit", outline: "none" }}
+                      >
+                        {Array.from({length: 24}, (_, i) => (
+                          <option key={i} value={String(i)}>{String(i).padStart(2,"0")}時</option>
+                        ))}
+                      </select>
+                      <select
+                        value={parsed.triggerCron ? parsed.triggerCron.split(" ")[0] : "0"}
+                        onChange={(e) => {
+                          const parts = (parsed.triggerCron || "0 8 * * *").split(" ");
+                          parts[0] = e.target.value;
+                          setParsed({ ...parsed, triggerCron: parts.join(" ") });
+                        }}
+                        style={{ flex: 1, background: "#111318", border: "1px solid #2a2d35", borderRadius: 6, padding: "8px 10px", color: "#9096a8", fontSize: 13, fontFamily: "inherit", outline: "none" }}
+                      >
+                        {[0,15,30,45].map(m => (
+                          <option key={m} value={String(m)}>{String(m).padStart(2,"0")}分</option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 )}
               </div>
