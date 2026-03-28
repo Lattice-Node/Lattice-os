@@ -22,6 +22,8 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
   const session = await auth();
   if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
+  await prisma.agentLog.deleteMany({ where: { agentId: id } });
+  await prisma.agentLog.deleteMany({ where: { agentId: id } });
   await prisma.userAgent.delete({ where: { id } });
   return NextResponse.json({ success: true });
 }
