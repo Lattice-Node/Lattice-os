@@ -119,7 +119,7 @@ export default function NewAgentClient() {
             エージェントを作る
           </h1>
           <p style={{ color: "#6a7080", fontSize: 13, marginTop: 8 }}>
-            やりたいことを日本語で書いてください。AIが自動で設定します。
+            やりたいことを日本語で書いてください。自動で設定します。
           </p>
         </div>
 
@@ -149,7 +149,7 @@ export default function NewAgentClient() {
                 cursor: input.trim() && !parsing ? "pointer" : "default",
               }}
             >
-              {parsing ? "解析中..." : "AIで解析する"}
+              {parsing ? "解析中..." : "解析する"}
             </button>
           </div>
         </div>

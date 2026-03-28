@@ -63,7 +63,7 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
             ← 戻る
           </button>
 
-          <p style={{ fontSize: 12, color: "#4a5060", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 8px" }}>
+          <p style={{ fontSize: 12, color: "#6a7080", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 8px" }}>
             クレジット購入
           </p>
           <h1 style={{ fontSize: 24, fontWeight: 700, color: "#f0f2f8", margin: "0 0 6px", letterSpacing: "-0.02em" }}>
@@ -135,7 +135,7 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
   return (
     <main style={{ minHeight: "100vh", backgroundColor: "#111318", color: "#e8eaf0", paddingBottom: 100 }}>
       <div style={{ maxWidth: 420, margin: "0 auto", padding: "48px 20px 24px" }}>
-        <p style={{ fontSize: 12, color: "#4a5060", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 20px" }}>
+        <p style={{ fontSize: 12, color: "#6a7080", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 20px" }}>
           設定
         </p>
 
@@ -147,7 +147,7 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
 
         {/* アカウント */}
         <div style={{ background: "#1a1d24", border: "1px solid #2a2d35", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
-          <p style={{ fontSize: 11, color: "#4a5060", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 14px" }}>アカウント</p>
+          <p style={{ fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 14px" }}>アカウント</p>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             {image ? (
               <img src={image} alt={name} width={44} height={44} style={{ borderRadius: "50%", border: "1px solid #2a2d35" }} />
@@ -169,7 +169,7 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
         {/* クレジット */}
         <div style={{ background: "#1a1d24", border: "1px solid #2a2d35", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <p style={{ fontSize: 11, color: "#4a5060", letterSpacing: "0.06em", textTransform: "uppercase", margin: 0 }}>クレジット</p>
+            <p style={{ fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase", margin: 0 }}>クレジット</p>
             <span style={{ fontSize: 24, fontWeight: 700, color: "#e8eaf0", letterSpacing: "-0.02em" }}>{credits}</span>
           </div>
           <button
@@ -198,16 +198,16 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
         {/* リンク */}
         <div style={{ background: "#1a1d24", border: "1px solid #2a2d35", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
           <a href="/privacy" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid #2a2d35", textDecoration: "none" }}>
-            <span style={{ fontSize: 14, color: "#9096a8" }}>プライバシーポリシー</span>
+            <span style={{ fontSize: 14, color: "#c0c4d0" }}>プライバシーポリシー</span>
             <span style={{ fontSize: 14, color: "#4a5060" }}>→</span>
           </a>
           <a href="/terms" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", textDecoration: "none" }}>
-            <span style={{ fontSize: 14, color: "#9096a8" }}>利用規約</span>
+            <span style={{ fontSize: 14, color: "#c0c4d0" }}>利用規約</span>
             <span style={{ fontSize: 14, color: "#4a5060" }}>→</span>
           </a>
         </div>
 
-        <p style={{ fontSize: 12, color: "#2a2d35", textAlign: "center", margin: "16px 0" }}>Lattice v0.1.0 beta</p>
+        <p style={{ fontSize: 12, color: "#4a5060", textAlign: "center", margin: "16px 0" }}>Lattice v0.1.0 beta</p>
 
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
@@ -219,7 +219,7 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
         <button
           onClick={handleDelete}
           disabled={deleting}
-          style={{ width: "100%", padding: "13px", borderRadius: 10, border: "1px solid #3a1a1a", background: "transparent", color: confirm ? "#f87171" : "#4a5060", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}
+          style={{ width: "100%", padding: "13px", borderRadius: 10, border: "1px solid #3a1a1a", background: "transparent", color: confirm ? "#f87171" : "#6a7080", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}
         >
           {deleting ? "削除中..." : confirm ? "本当に削除しますか？もう一度タップで確定" : "アカウントを削除"}
         </button>
