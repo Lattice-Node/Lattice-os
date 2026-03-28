@@ -92,7 +92,7 @@ export function buildDailyAiNewsUserPrompt(options: DailyAiNewsBuildOptions = {}
     "- 見出しの番号を維持する",
     "- URLは直接書かない",
     "- 断定できないことは断定しない",
-    "- 余計な前置きは書かない",
+    "- 余計な前置きは絶対に書かない。最初の行は必ず # 今日のAIニュース要約 から始めること",
   ].join("\n");
 }
 
@@ -143,6 +143,8 @@ export function normalizeDailyAiNewsOutput(raw: string, now: Date = new Date()) 
   const hasSummary = text.includes("## 総括");
 
   let normalized = text;
+    const titleIndex = normalized.indexOf("# ");
+    if (titleIndex > 0) { normalized = normalized.substring(titleIndex); }
 
   if (!hasTitle) {
     normalized = `# 今日のAIニュース要約\n\n${normalized}`;
