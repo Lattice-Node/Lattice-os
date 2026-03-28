@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -37,7 +37,7 @@ const tabs = [
     ),
   },
   {
-    href: "/logs",
+    href: "/inbox",
     label: "受信箱",
     icon: (active: boolean) => (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={active ? "#6c71e8" : "#4a5060"} strokeWidth="1.6">
