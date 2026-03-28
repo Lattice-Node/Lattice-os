@@ -1,6 +1,7 @@
 ﻿"use client";
-
 import { signOut } from "next-auth/react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface Props {
   name: string;
@@ -9,10 +10,30 @@ interface Props {
 }
 
 export default function SettingsClient({ name, email, image }: Props) {
+  const [deleting, setDeleting] = useState(false);
+  const [confirm, setConfirm] = useState(false);
+  const router = useRouter();
+
+  const handleDelete = async () => {
+    if (!confirm) {
+      setConfirm(true);
+      return;
+    }
+    setDeleting(true);
+    try {
+      const res = await fetch("/api/users/delete", { method: "DELETE" });
+      if (res.ok) {
+        await signOut({ callbackUrl: "/" });
+      }
+    } catch {
+      setDeleting(false);
+      setConfirm(false);
+    }
+  };
+
   return (
     <main style={{ minHeight: "100vh", backgroundColor: "#111318", color: "#e8eaf0", paddingBottom: 100 }}>
       <div style={{ maxWidth: 420, margin: "0 auto", padding: "48px 20px 24px" }}>
-
         <p style={{ fontSize: 12, color: "#4a5060", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 20px" }}>
           設定
         </p>
@@ -51,11 +72,7 @@ export default function SettingsClient({ name, email, image }: Props) {
             </span>
           </div>
           <div style={{ marginTop: 14, paddingTop: 14, borderTop: "1px solid #2a2d35" }}>
-            <a href="/login" style={{
-              display: "block", textAlign: "center", padding: "10px",
-              borderRadius: 8, fontSize: 13, fontWeight: 500,
-              background: "#6c71e8", color: "#fff", textDecoration: "none"
-            }}>
+            <a href="/login" style={{ display: "block", textAlign: "center", padding: "10px", borderRadius: 8, fontSize: 13, fontWeight: 500, background: "#6c71e8", color: "#fff", textDecoration: "none" }}>
               アップグレード
             </a>
           </div>
@@ -79,16 +96,19 @@ export default function SettingsClient({ name, email, image }: Props) {
         {/* Logout */}
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
-          style={{
-            width: "100%", padding: "13px", borderRadius: 10,
-            border: "1px solid #2a2d35", background: "transparent",
-            color: "#f87171", fontSize: 14, fontWeight: 500,
-            cursor: "pointer", fontFamily: "inherit"
-          }}
+          style={{ width: "100%", padding: "13px", borderRadius: 10, border: "1px solid #2a2d35", background: "transparent", color: "#f87171", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", marginBottom: 10 }}
         >
           ログアウト
         </button>
 
+        {/* Delete Account */}
+        <button
+          onClick={handleDelete}
+          disabled={deleting}
+          style={{ width: "100%", padding: "13px", borderRadius: 10, border: "1px solid #3a1a1a", background: "transparent", color: confirm ? "#f87171" : "#4a5060", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}
+        >
+          {deleting ? "削除中..." : confirm ? "本当に削除しますか？もう一度タップで確定" : "アカウントを削除"}
+        </button>
       </div>
     </main>
   );
