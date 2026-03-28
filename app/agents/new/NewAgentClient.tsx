@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -19,6 +19,7 @@ const TEMPLATE_INPUTS: Record<string, string> = {
   "sns-trend": "毎朝7時に業界のトレンドをまとめて、投稿ネタとして整理してアプリに届ける",
   "price-alert": "1時間ごとに指定した商品の価格を監視して、目標価格になったらアプリに通知する",
   "inquiry-reply": "新しい問い合わせが来たら内容を分析して返信文の下書きをアプリに届ける",
+  "contract-check": "契約書やPDFをアップロードしたら、リスク条項と注意点を洗い出してアプリに届ける",
 };
 
 const EXAMPLES = [
