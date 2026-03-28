@@ -219,21 +219,31 @@ export default function InboxList({ items }: { items: InboxItem[] }) {
         <p className="page-label">受信箱</p>
         <h1 className="page-title">{group.agentName}</h1>
 
-        {group.items.map((item) => (
-          <button
-            key={item.id}
-            style={cardBtn}
-            onClick={() => setScreen({ type: "article", filter, group, item })}
-          >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-              <span style={{ fontSize: 11, color: "#4a5060" }}>{formatTime(item.createdAt)}</span>
-              <span style={{ color: "#4a5060", fontSize: 18 }}>›</span>
-            </div>
-            <p style={{ fontSize: 13, color: "#9096a8", margin: 0, lineHeight: 1.5 }}>
-              {getPreview(item.output)}
-            </p>
-          </button>
-        ))}
+        {group.items.map((item) => {
+          const d = new Date(item.createdAt);
+          const dateStr = new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", month: "numeric", day: "numeric", weekday: "short" }).format(d);
+          const timeStr = new Intl.DateTimeFormat("ja-JP", { timeZone: "Asia/Tokyo", hour: "2-digit", minute: "2-digit" }).format(d);
+          return (
+            <button
+              key={item.id}
+              style={{ ...cardBtn, borderLeft: "3px solid #6c71e8", paddingLeft: 15 }}
+              onClick={() => setScreen({ type: "article", filter, group, item })}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                <div>
+                  <span style={{ fontSize: 20, fontWeight: 700, color: "#e8eaf0", letterSpacing: "-0.02em", lineHeight: 1 }}>
+                    {timeStr}
+                  </span>
+                  <span style={{ fontSize: 11, color: "#4a5060", marginLeft: 8 }}>{dateStr}</span>
+                </div>
+                <span style={{ color: "#4a5060", fontSize: 18, marginTop: 2 }}>›</span>
+              </div>
+              <p style={{ fontSize: 13, color: "#9096a8", margin: 0, lineHeight: 1.5 }}>
+                {getPreview(item.output)}
+              </p>
+            </button>
+          );
+        })}
       </div>
     );
   }
