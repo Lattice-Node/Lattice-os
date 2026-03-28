@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import Nav from "@/components/Nav";
 import type { Metadata } from "next";
 
@@ -183,7 +183,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Pricing */}
+        {/* Pricing - temporarily hidden
         <section style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px 100px" }}>
           <div style={{ marginBottom: 56, textAlign: "center" }}>
             <p style={{ fontSize: 11, color: DIM, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14 }}>料金</p>
@@ -231,6 +231,7 @@ export default function HomePage() {
             ))}
           </div>
         </section>
+        */}
 
         {/* CTA */}
         <section style={{ borderTop: `1px solid ${BORDER}`, padding: "100px 24px", textAlign: "center" }}>
