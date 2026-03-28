@@ -117,21 +117,21 @@ export default function InboxList({ items }: { items: InboxItem[] }) {
         <h1 className="page-title">受信箱</h1>
 
         <button
-          style={cardBtn}
+          style={{ ...cardBtn, border: "1.5px solid #22c55e", background: "#0d1f14" }}
           onClick={() => setScreen({ type: "agent-list", filter: "today" })}
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: 15, fontWeight: 600 }}>今日の受信</span>
+            <span style={{ fontSize: 15, fontWeight: 600, color: "#f0f2f8" }}>今日の受信</span>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               {todayItems.length > 0 && (
-                <span style={{ fontSize: 12, color: "#6c71e8", background: "#1e2044", padding: "2px 8px", borderRadius: 4, fontWeight: 500 }}>
+                <span style={{ fontSize: 12, color: "#22c55e", background: "#0a2a16", padding: "2px 8px", borderRadius: 4, fontWeight: 500 }}>
                   {todayItems.length}件
                 </span>
               )}
-              <span style={{ color: "#4a5060", fontSize: 18 }}>›</span>
+              <span style={{ color: "#22c55e", fontSize: 18 }}>›</span>
             </div>
           </div>
-          <p style={{ fontSize: 12, color: "#6a7080", margin: "4px 0 0" }}>
+          <p style={{ fontSize: 12, color: "#4a7060", margin: "4px 0 0" }}>
             過去24時間に届いた結果
           </p>
         </button>
@@ -155,6 +155,34 @@ export default function InboxList({ items }: { items: InboxItem[] }) {
             24時間より前の受信履歴
           </p>
         </button>
+      </div>
+
+        {/* サマリーセクション */}
+        <div style={{ marginTop: 24, background: "#1a1d24", border: "1px solid #2a2d35", borderRadius: 12, padding: "18px 20px" }}>
+          <p style={{ fontSize: 11, color: "#4a5060", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 14px" }}>
+            今日の状況
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+            <div style={{ textAlign: "center" }}>
+              <p style={{ fontSize: 22, fontWeight: 700, color: "#e8eaf0", margin: "0 0 4px", letterSpacing: "-0.02em" }}>
+                {todayItems.length}
+              </p>
+              <p style={{ fontSize: 11, color: "#4a5060", margin: 0 }}>今日の受信</p>
+            </div>
+            <div style={{ textAlign: "center", borderLeft: "1px solid #2a2d35", borderRight: "1px solid #2a2d35" }}>
+              <p style={{ fontSize: 22, fontWeight: 700, color: "#e8eaf0", margin: "0 0 4px", letterSpacing: "-0.02em" }}>
+                {groupByAgent(todayItems).length}
+              </p>
+              <p style={{ fontSize: 11, color: "#4a5060", margin: 0 }}>稼働エージェント</p>
+            </div>
+            <div style={{ textAlign: "center" }}>
+              <p style={{ fontSize: 22, fontWeight: 700, color: items.length > 0 ? "#e8eaf0" : "#4a5060", margin: "0 0 4px", letterSpacing: "-0.02em" }}>
+                {items.length}
+              </p>
+              <p style={{ fontSize: 11, color: "#4a5060", margin: 0 }}>総受信数</p>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -226,7 +254,7 @@ export default function InboxList({ items }: { items: InboxItem[] }) {
           return (
             <button
               key={item.id}
-              style={{ ...cardBtn, borderLeft: "3px solid #6c71e8", paddingLeft: 15 }}
+              style={{ ...cardBtn, borderLeft: "4px solid #6c71e8", paddingLeft: 14, background: "#16182a" }}
               onClick={() => setScreen({ type: "article", filter, group, item })}
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
