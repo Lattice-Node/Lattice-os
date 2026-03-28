@@ -23,17 +23,19 @@ function formatDate(iso: string | null) {
 
 function renderMarkdown(text: string) {
   return text
-    .replace(/^### (.+)$/gm, '<h3 style="font-size:14px;font-weight:600;color:#e8eaf0;margin:16px 0 6px">$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2 style="font-size:16px;font-weight:600;color:#e8eaf0;margin:20px 0 8px">$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1 style="font-size:20px;font-weight:700;color:#e8eaf0;margin:0 0 12px">$1</h1>')
-    .replace(/^- (.+)$/gm, '<div style="display:flex;gap:8px;margin:4px 0;font-size:13px;line-height:1.6"><span style="color:#6c71e8;flex-shrink:0">-</span><span style="color:#9096a8">$1</span></div>')
+    .replace(/^### (.+)$/gm, '<h3 style="font-size:13px;font-weight:600;color:#e8eaf0;margin:12px 0 4px">$1</h3>')
+    .replace(/^## (\d+)\. (.+)$/gm, '<h2 style="font-size:15px;font-weight:600;color:#e8eaf0;margin:18px 0 6px;padding-top:12px;border-top:1px solid #2a2d35"><span style="color:#6c71e8;margin-right:6px">$1.</span>$2</h2>')
+    .replace(/^## (.+)$/gm, '<h2 style="font-size:15px;font-weight:600;color:#e8eaf0;margin:18px 0 6px">$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1 style="font-size:17px;font-weight:700;color:#e8eaf0;margin:0 0 8px">$1</h1>')
+    .replace(/^- (.+?): (.+)$/gm, '<div style="display:flex;gap:6px;margin:3px 0;font-size:12px;line-height:1.6"><span style="color:#6c71e8;font-weight:500;flex-shrink:0;min-width:36px">$1</span><span style="color:#9096a8">$2</span></div>')
+    .replace(/^- (.+)$/gm, '<div style="display:flex;gap:6px;margin:3px 0;font-size:12px;line-height:1.6"><span style="color:#6c71e8;flex-shrink:0">-</span><span style="color:#9096a8">$1</span></div>')
     .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#e8eaf0;font-weight:500">$1</strong>')
-    .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid #2a2d35;margin:16px 0"/>')
-    .replace(/\n\n/g, '<div style="height:8px"></div>')
+    .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid #2a2d35;margin:14px 0"/>')
+    .replace(/\n\n/g, '<div style="height:4px"></div>')
     .replace(/\n/g, "");
 }
 
-export default function NewsClient({ agentId, agentName, latestOutput, latestDate }: Props) {
+export default function NewsClient({ agentId, latestOutput, latestDate }: Props) {
   const [output, setOutput] = useState(latestOutput);
   const [date, setDate] = useState(latestDate);
   const [running, setRunning] = useState(false);
@@ -66,66 +68,60 @@ export default function NewsClient({ agentId, agentName, latestOutput, latestDat
   return (
     <div className="page">
       <p className="page-label">INBOX</p>
-      <h1 className="page-title">AI News</h1>
+      <h1 className="page-title" style={{ marginBottom: 12 }}>AI News</h1>
 
       {agentId ? (
-        <div style={{ marginBottom: 16 }}>
-          <button
-            onClick={handleRun}
-            disabled={running}
-            style={{
-              width: "100%",
-              padding: "12px",
-              borderRadius: 10,
-              border: "none",
-              background: running ? "#1a1d24" : "#6c71e8",
-              color: running ? "#4a5060" : "#fff",
-              fontSize: 14,
-              fontWeight: 500,
-              cursor: running ? "default" : "pointer",
-              fontFamily: "inherit",
-              transition: "opacity 0.15s",
-            }}
-          >
-            {running ? "Generating..." : "Generate latest AI news"}
-          </button>
-        </div>
+        <button
+          onClick={handleRun}
+          disabled={running}
+          className="btn-add"
+          style={{
+            width: "100%",
+            padding: "11px",
+            borderRadius: 10,
+            fontSize: 13,
+            marginBottom: 14,
+            opacity: running ? 0.5 : 1,
+          }}
+        >
+          {running ? "生成中..." : "最新ニュースを取得"}
+        </button>
       ) : (
-        <div className="card" style={{ textAlign: "center", padding: 24 }}>
-          <p style={{ color: "#9096a8", fontSize: 13 }}>
-            No AI news agent found.
+        <div className="card" style={{ textAlign: "center", padding: 20 }}>
+          <p style={{ color: "#9096a8", fontSize: 13, margin: "0 0 6px" }}>
+            AIニュースエージェントが見つかりません
           </p>
           <a href="/store" style={{ color: "#6c71e8", fontSize: 13, textDecoration: "none" }}>
-            Add from Store
+            ストアから追加
           </a>
         </div>
       )}
 
       {error && (
         <div style={{
-          background: "#2a1215",
-          border: "1px solid #5c2020",
+          background: "#1f1215",
+          border: "1px solid #3d1c1c",
           borderRadius: 10,
           padding: "10px 14px",
-          marginBottom: 12,
+          marginBottom: 10,
         }}>
-          <p style={{ color: "#f87171", fontSize: 13, margin: 0 }}>{error}</p>
+          <p style={{ color: "#f87171", fontSize: 12, margin: 0 }}>{error}</p>
         </div>
       )}
 
       {output ? (
-        <div className="card" style={{ padding: 20 }}>
+        <div className="card" style={{ padding: 16 }}>
           {date && (
-            <p style={{ fontSize: 11, color: "#4a5060", marginBottom: 12 }}>
+            <p style={{ fontSize: 11, color: "#4a5060", marginBottom: 10 }}>
               {formatDate(date)}
             </p>
           )}
           <div dangerouslySetInnerHTML={{ __html: renderMarkdown(output) }} />
         </div>
       ) : !error && agentId && (
-        <div className="card" style={{ textAlign: "center", padding: 32 }}>
-          <p style={{ color: "#4a5060", fontSize: 13 }}>
-            Press the button above to generate today's AI news.
+        <div className="card" style={{ textAlign: "center", padding: 28 }}>
+          <p style={{ color: "#4a5060", fontSize: 13, margin: 0 }}>
+            ボタンを押して最新ニュースを取得してください
           </p>
         </div>
       )}
