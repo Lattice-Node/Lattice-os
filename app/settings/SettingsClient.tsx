@@ -54,20 +54,12 @@ export default function SettingsClient({ name, email, image, credits, plan, curr
     } catch {} finally { setDisconnecting(null); }
   };
 
-const handleLineConnect = async () => {
-    if (!lineCode.trim()) return;
+const handleLineGenerate = async () => {
     setLineConnecting(true);
     try {
-      const res = await fetch("/api/connections/line", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lineUserId: lineCode.trim() }),
-      });
-      if (res.ok) {
-        setLineSuccess(true);
-        setConnections(c => [...c, { id: "line-new", provider: "line", metadata: JSON.stringify({ lineUserId: lineCode.trim() }) }]);
-        setLineCode("");
-      }
+      const res = await fetch("/api/connections/line/code", { method: "POST" });
+      const data = await res.json();
+      if (data.code) setLineCode(data.code);
     } catch {} finally { setLineConnecting(false); }
   };
 
@@ -303,15 +295,17 @@ const handleLineConnect = async () => {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="#06C755"><path d="M12 2C6.48 2 2 5.64 2 10.14c0 4.05 3.6 7.44 8.46 8.08.33.07.78.22.89.5.1.26.07.66.03.92l-.14.87c-.04.26-.2 1.03.9.56s5.97-3.52 8.15-6.02C22.14 13.07 22 11.63 22 10.14 22 5.64 17.52 2 12 2z"/></svg>
                 <span style={{ fontSize: 14, color: "#c0c4d0" }}>LINE連携</span>
               </div>
-              <p style={{ fontSize: 12, color: "#6a7080", margin: "0 0 10px" }}>
-                1. Lattice Bot を友だち追加 → 2. 届く連携コードを入力
-              </p>
-              <a href="https://lin.ee/P0E0l9c" target="_blank" rel="noopener noreferrer" style={{ display: "block", textAlign: "center", padding: "10px", borderRadius: 8, background: "#06C755", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none", marginBottom: 10 }}>Lattice Bot を友だち追加</a>
-              <div style={{ display: "flex", gap: 8 }}>
-                <input value={lineCode} onChange={e => setLineCode(e.target.value)} placeholder="連携コードを入力" style={{ flex: 1, padding: "10px 12px", borderRadius: 8, border: "1px solid #2e3440", background: "#1c2028", color: "#e8eaf0", fontSize: 13, fontFamily: "inherit", outline: "none" }} />
-                <button onClick={handleLineConnect} disabled={lineConnecting || !lineCode.trim()} style={{ padding: "10px 16px", borderRadius: 8, border: "none", background: "#06C755", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", opacity: lineConnecting ? 0.5 : 1 }}>{lineConnecting ? "..." : "連携"}</button>
-              </div>
-              {lineSuccess && <p style={{ fontSize: 12, color: "#4ade80", margin: "8px 0 0" }}>LINE連携が完了しました</p>}
+              <a href="https://lin.ee/P0E0l9c" target="_blank" rel="noopener noreferrer" style={{ display: "block", textAlign: "center", padding: "10px", borderRadius: 8, background: "#06C755", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none", marginBottom: 10 }}>1. Lattice Bot を友だち追加</a>
+              {!lineCode ? (
+                <button onClick={handleLineGenerate} disabled={lineConnecting} style={{ width: "100%", padding: "10px", borderRadius: 8, border: "1px solid #2e3440", background: "#1c2028", color: "#c0c4d0", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>{lineConnecting ? "..." : "2. 連携コードを発行"}</button>
+              ) : (
+                <div style={{ textAlign: "center" }}>
+                  <p style={{ fontSize: 12, color: "#6a7080", margin: "0 0 6px" }}>このコードをLINEで送信（10分有効）</p>
+                  <p style={{ fontSize: 32, fontWeight: 700, color: "#e8eaf0", letterSpacing: "0.15em", margin: "0 0 8px" }}>{lineCode}</p>
+                  <p style={{ fontSize: 12, color: "#6a7080", margin: 0 }}>Lattice Bot のトークに入力してください</p>
+                </div>
+              )}
+              {lineSuccess && <p style={{ fontSize: 12, color: "#4ade80", margin: "8px 0 0", textAlign: "center" }}>LINE連携が完了しました</p>}
             </div>
           )}
           {plan !== "business" && (
