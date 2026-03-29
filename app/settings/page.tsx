@@ -10,7 +10,7 @@ export default async function SettingsPage() {
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
-    select: { credits: true, plan: true, currentPeriodEnd: true },
+    select: { credits: true, plan: true, currentPeriodEnd: true, role: true },
   });
 
   return (
@@ -22,6 +22,7 @@ export default async function SettingsPage() {
         credits={user?.credits ?? 100}
         plan={user?.plan ?? "free"}
         currentPeriodEnd={user?.currentPeriodEnd?.toISOString() ?? null}
+        role={user?.role ?? "user"}
       />
     </Suspense>
   );

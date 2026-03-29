@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  if (user.plan !== "business") {
+  if (user.plan !== "business" && user.role !== "admin") {
     return NextResponse.json({ error: "Business plan required" }, { status: 403 });
   }
 

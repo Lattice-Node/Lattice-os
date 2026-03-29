@@ -10,6 +10,7 @@ interface Props {
   credits: number;
   plan: string;
   currentPeriodEnd: string | null;
+  role: string;
 }
 
 const CREDIT_PLANS = [
@@ -27,7 +28,7 @@ const SUB_PLANS = [
 const cardStyle = { background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, padding: "20px", marginBottom: 12 };
 const sectionLabel = { fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase" as const, margin: "0 0 14px" };
 
-export default function SettingsClient({ name, email, image, credits, plan, currentPeriodEnd }: Props) {
+export default function SettingsClient({ name, email, image, credits, plan, currentPeriodEnd, role }: Props) {
   const [deleting, setDeleting] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [purchasing, setPurchasing] = useState<string | null>(null);
@@ -107,7 +108,8 @@ const handleLineConnect = async () => {
 
   const planLabel = plan === "business" ? "ビジネス" : plan === "personal" ? "パーソナル" : "フリー";
   const periodEnd = currentPeriodEnd ? new Date(currentPeriodEnd).toLocaleDateString("ja-JP") : null;
-  const isPaid = plan === "personal" || plan === "business";
+  const isAdmin = role === "admin";
+  const isPaid = isAdmin || plan === "personal" || plan === "business";
 
   // Credit purchase view
   if (showCredit) {
@@ -295,7 +297,7 @@ const handleLineConnect = async () => {
               </a>
             )}
           </div>
-          {plan === "business" && !connections.find(c => c.provider === "line") && (
+          {(plan === "business" || isAdmin) && !connections.find(c => c.provider === "line") && (
             <div style={{ marginTop: 14, padding: "16px", background: "#0e1117", borderRadius: 10, border: "1px solid #2e3440" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="#06C755"><path d="M12 2C6.48 2 2 5.64 2 10.14c0 4.05 3.6 7.44 8.46 8.08.33.07.78.22.89.5.1.26.07.66.03.92l-.14.87c-.04.26-.2 1.03.9.56s5.97-3.52 8.15-6.02C22.14 13.07 22 11.63 22 10.14 22 5.64 17.52 2 12 2z"/></svg>
