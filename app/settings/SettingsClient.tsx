@@ -1,6 +1,6 @@
 "use client";
 import { signOut } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
 interface Props {
@@ -21,6 +21,21 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
   const [confirm, setConfirm] = useState(false);
   const [purchasing, setPurchasing] = useState<string | null>(null);
   const [showCredit, setShowCredit] = useState(false);
+  const [connections, setConnections] = useState<{id:string,provider:string,metadata:string}[]>([]);
+  const [disconnecting, setDisconnecting] = useState<string|null>(null);
+
+  useEffect(() => {
+    fetch("/api/connections").then(r => r.json()).then(d => setConnections(d.connections || [])).catch(() => {});
+  }, []);
+
+  const handleDisconnect = async (id: string) => {
+    setDisconnecting(id);
+    try {
+      await fetch("/api/connections", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ connectionId: id }) });
+      setConnections(c => c.filter(x => x.id !== id));
+    } catch {} finally { setDisconnecting(null); }
+  };
+
   const searchParams = useSearchParams();
   const success = searchParams.get("success");
 
@@ -193,6 +208,38 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
             <span>クレジットを追加する</span>
             <span style={{ fontSize: 16 }}>›</span>
           </button>
+        </div>
+
+
+        {/* サービス連携 */}
+        <div style={{ background: "#1a1d24", border: "1px solid #2a2d35", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
+          <p style={{ fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 14px" }}>サービス連携</p>
+
+          {connections.length > 0 && (
+            <div style={{ marginBottom: 14, display: "flex", flexDirection: "column", gap: 8 }}>
+              {connections.map(c => {
+                const meta = JSON.parse(c.metadata || "{}");
+                const label = c.provider === "discord" ? `Discord - ${meta.guildName || "サーバー"}` : c.provider === "google_gmail" ? "Gmail" : c.provider;
+                return (
+                  <div key={c.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#111318", borderRadius: 8, padding: "10px 14px" }}>
+                    <span style={{ fontSize: 13, color: "#c0c4d0" }}>{label}</span>
+                    <button onClick={() => handleDisconnect(c.id)} disabled={disconnecting === c.id} style={{ background: "none", border: "none", color: "#f87171", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                      {disconnecting === c.id ? "..." : "解除"}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {!connections.find(c => c.provider === "discord") && (
+              <a href="/api/connections/discord" style={{ display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", borderRadius: 8, border: "1px solid #2a2d35", textDecoration: "none", cursor: "pointer" }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#5865F2"><path d="M20.32 4.37a19.8 19.8 0 00-4.89-1.52.07.07 0 00-.08.04c-.21.38-.44.87-.61 1.26a18.27 18.27 0 00-5.49 0 12.64 12.64 0 00-.62-1.26.08.08 0 00-.08-.04 19.74 19.74 0 00-4.89 1.52.07.07 0 00-.03.03C.53 9.05-.32 13.58.1 18.06a.08.08 0 00.03.06 19.9 19.9 0 005.99 3.03.08.08 0 00.08-.03c.46-.63.87-1.3 1.22-2a.08.08 0 00-.04-.11 13.1 13.1 0 01-1.87-.9.08.08 0 01-.01-.13c.13-.09.25-.19.37-.29a.08.08 0 01.08-.01c3.93 1.79 8.18 1.79 12.07 0a.08.08 0 01.08.01c.12.1.25.2.37.29a.08.08 0 01-.01.13c-.6.35-1.22.65-1.87.9a.08.08 0 00-.04.11c.36.7.77 1.37 1.22 2a.08.08 0 00.08.03 19.83 19.83 0 006-3.03.08.08 0 00.03-.06c.5-5.18-.84-9.68-3.55-13.66a.06.06 0 00-.03-.03zM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.96 2.42-2.16 2.42zm7.97 0c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.95 2.42-2.16 2.42z"/></svg>
+                <span style={{ fontSize: 14, color: "#c0c4d0" }}>Discord を連携する</span>
+              </a>
+            )}
+          </div>
         </div>
 
         {/* リンク */}
