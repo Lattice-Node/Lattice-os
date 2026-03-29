@@ -24,13 +24,13 @@ function formatDate(iso: string | null) {
 function renderMarkdown(text: string) {
   return text
     .replace(/^### (.+)$/gm, '<h3 style="font-size:13px;font-weight:600;color:#e8eaf0;margin:12px 0 4px">$1</h3>')
-    .replace(/^## (\d+)\. (.+)$/gm, '<h2 style="font-size:15px;font-weight:600;color:#e8eaf0;margin:18px 0 6px;padding-top:12px;border-top:1px solid rgba(255, 255, 255, 0.09)"><span style="color:#6c71e8;margin-right:6px">$1.</span>$2</h2>')
+    .replace(/^## (\d+)\. (.+)$/gm, '<h2 style="font-size:15px;font-weight:600;color:#e8eaf0;margin:18px 0 6px;padding-top:12px;border-top:1px solid #27272a"><span style="color:#6c71e8;margin-right:6px">$1.</span>$2</h2>')
     .replace(/^## (.+)$/gm, '<h2 style="font-size:15px;font-weight:600;color:#e8eaf0;margin:18px 0 6px">$1</h2>')
     .replace(/^# (.+)$/gm, '<h1 style="font-size:17px;font-weight:700;color:#e8eaf0;margin:0 0 8px">$1</h1>')
     .replace(/^- (.+?): (.+)$/gm, '<div style="display:flex;gap:6px;margin:3px 0;font-size:12px;line-height:1.6"><span style="color:#6c71e8;font-weight:500;flex-shrink:0;min-width:36px">$1</span><span style="color:#9096a8">$2</span></div>')
     .replace(/^- (.+)$/gm, '<div style="display:flex;gap:6px;margin:3px 0;font-size:12px;line-height:1.6"><span style="color:#6c71e8;flex-shrink:0">-</span><span style="color:#9096a8">$1</span></div>')
     .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#e8eaf0;font-weight:500">$1</strong>')
-    .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid rgba(255, 255, 255, 0.09);margin:14px 0"/>')
+    .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid #27272a;margin:14px 0"/>')
     .replace(/\n\n/g, '<div style="height:4px"></div>')
     .replace(/\n/g, "");
 }

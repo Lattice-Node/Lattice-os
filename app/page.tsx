@@ -17,8 +17,8 @@ const TEMPLATES = [
 ];
 
 const BG = "#09090b";
-const CARD = "#141416";
-const BORDER = "rgba(255, 255, 255, 0.09)";
+const CARD = "#18181b";
+const BORDER = "#27272a";
 const TEXT = "#e8eaf0";
 const MUTED = "#9096a8";
 const DIM = "#4a5060";
@@ -265,7 +265,7 @@ export default function HomePage() {
               <Link href="/terms" style={{ fontSize: 13, color: DIM, textDecoration: "none" }}>利用規約</Link>
               <Link href="https://x.com/Lattice_Node" style={{ fontSize: 13, color: DIM, textDecoration: "none" }}>X</Link>
             </div>
-            <span style={{ fontSize: 13, color: "rgba(255, 255, 255, 0.09)" }}>&copy; 2026 Lattice</span>
+            <span style={{ fontSize: 13, color: "#27272a" }}>&copy; 2026 Lattice</span>
           </div>
         </footer>
       </main>
