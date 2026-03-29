@@ -28,6 +28,7 @@ model UserAgent {
   connections String   @default("[]")
   active      Boolean  @default(true)
   outputType  String   @default("app")
+  outputConfig String   @default("{}")
   runCount    Int      @default(0)
   lastRunAt   DateTime?
   nextRunAt   DateTime?
