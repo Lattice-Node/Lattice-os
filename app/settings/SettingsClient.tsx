@@ -82,7 +82,7 @@ export default function SettingsClient({ name, email, image, credits, plan, curr
     return (
       <main style={{ minHeight: "100vh", backgroundColor: "#0e1117", color: "#e8eaf0", paddingBottom: 100 }}>
         <div style={{ maxWidth: 420, margin: "0 auto", padding: "48px 20px 24px" }}>
-          <button onClick={() => setShowCredit(false)} style={{ background: "none", border: "none", color: "#4a5060", fontSize: 13, cursor: "pointer", fontFamily: "inherit", padding: 0, marginBottom: 28 }}>
+          <button onClick={() => setShowCredit(false)} style={{ background: "none", border: "none", color: "#9096a8", fontSize: 15, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", padding: "8px 0", marginBottom: 20, display: "flex", alignItems: "center", gap: 6 }}>
             back
           </button>
           <p style={sectionLabel}>credit purchase</p>
@@ -116,7 +116,7 @@ export default function SettingsClient({ name, email, image, credits, plan, curr
     return (
       <main style={{ minHeight: "100vh", backgroundColor: "#0e1117", color: "#e8eaf0", paddingBottom: 100 }}>
         <div style={{ maxWidth: 420, margin: "0 auto", padding: "48px 20px 24px" }}>
-          <button onClick={() => setShowPlans(false)} style={{ background: "none", border: "none", color: "#4a5060", fontSize: 13, cursor: "pointer", fontFamily: "inherit", padding: 0, marginBottom: 28 }}>
+          <button onClick={() => setShowPlans(false)} style={{ background: "none", border: "none", color: "#9096a8", fontSize: 15, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", padding: "8px 0", marginBottom: 20, display: "flex", alignItems: "center", gap: 6 }}>
             back
           </button>
           <p style={sectionLabel}>プラン</p>
