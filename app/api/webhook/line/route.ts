@@ -13,34 +13,26 @@ export async function POST(req: Request) {
     if (event.type === "follow") {
       await sendLineMessage(
         lineUserId,
-        "Lattice Bot\u3078\u3088\u3046\u3053\u305d\uff01\n\nLattice\u306e\u8a2d\u5b9a\u753b\u9762\u304b\u3089LINE\u9023\u643a\u3092\u884c\u3046\u3068\u3001\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u306e\u5b9f\u884c\u7d50\u679c\u3092LINE\u3067\u53d7\u3051\u53d6\u308c\u307e\u3059\u3002\n\n\u9023\u643a\u7528\u30b3\u30fc\u30c9: " + lineUserId
+        "Lattice Bot\u3078\u3088\u3046\u3053\u305d\uff01\n\n\u4ee5\u4e0b\u306e\u9023\u643a\u30b3\u30fc\u30c9\u3092Lattice\u306e\u8a2d\u5b9a\u753b\u9762\u306b\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044\u3002\n\n" + lineUserId
       );
     }
 
-    if (event.type === "message" && event.message?.type === "text") {
-      const text = event.message.text || "";
-
+    if (event.type === "message") {
       const conn = await prisma.userConnection.findFirst({
         where: { provider: "line", accessToken: lineUserId },
       });
 
-      if (!conn) {
+      if (conn) {
         await sendLineMessage(
           lineUserId,
-          "Lattice\u3068\u672a\u9023\u643a\u3067\u3059\u3002\u8a2d\u5b9a\u753b\u9762\u304b\u3089LINE\u9023\u643a\u3092\u884c\u3063\u3066\u304f\u3060\u3055\u3044\u3002\n\u9023\u643a\u7528\u30b3\u30fc\u30c9: " + lineUserId
+          "Lattice\u3068\u9023\u643a\u6e08\u307f\u3067\u3059\u3002\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u306e\u5b9f\u884c\u7d50\u679c\u304cLINE\u306b\u5c4a\u304d\u307e\u3059\u3002"
         );
-        continue;
+      } else {
+        await sendLineMessage(
+          lineUserId,
+          "\u9023\u643a\u30b3\u30fc\u30c9\u3092Lattice\u306e\u8a2d\u5b9a\u753b\u9762\u306b\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044\u3002\n\n" + lineUserId
+        );
       }
-
-      await prisma.agentLog.create({
-        data: {
-          agentId: "line-incoming",
-          userId: conn.userId,
-          status: "received",
-          output: text,
-          error: "",
-        },
-      });
     }
   }
 
