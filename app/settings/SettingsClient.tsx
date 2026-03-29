@@ -35,6 +35,8 @@ export default function SettingsClient({ name, email, image, credits, plan, curr
   const [showPlans, setShowPlans] = useState(false);
   const [connections, setConnections] = useState<{id:string,provider:string,metadata:string}[]>([]);
   const [disconnecting, setDisconnecting] = useState<string|null>(null);
+  const [canceling, setCanceling] = useState(false);
+  const [cancelConfirm, setCancelConfirm] = useState(false);
 
   useEffect(() => {
     fetch("/api/connections").then(r => r.json()).then(d => setConnections(d.connections || [])).catch(() => {});
@@ -71,6 +73,15 @@ export default function SettingsClient({ name, email, image, credits, plan, curr
       const res = await fetch("/api/users/delete", { method: "DELETE" });
       if (res.ok) await signOut({ callbackUrl: "/" });
     } catch { setDeleting(false); setConfirm(false); }
+  };
+
+  const handleCancel = async () => {
+    if (!cancelConfirm) { setCancelConfirm(true); return; }
+    setCanceling(true);
+    try {
+      const res = await fetch("/api/stripe/cancel", { method: "POST" });
+      if (res.ok) window.location.reload();
+    } catch { setCanceling(false); setCancelConfirm(false); }
   };
 
   const planLabel = plan === "business" ? "ビジネス" : plan === "personal" ? "パーソナル" : "フリー";
