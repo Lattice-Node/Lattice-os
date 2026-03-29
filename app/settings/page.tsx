@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import SettingsClient from "./SettingsClient";
+import { Suspense } from "react";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -13,13 +14,15 @@ export default async function SettingsPage() {
   });
 
   return (
-    <SettingsClient
-      name={session.user.name ?? ""}
-      email={session.user.email ?? ""}
-      image={session.user.image ?? ""}
-      credits={user?.credits ?? 100}
-      plan={user?.plan ?? "free"}
-      currentPeriodEnd={user?.currentPeriodEnd?.toISOString() ?? null}
-    />
+    <Suspense>
+      <SettingsClient
+        name={session.user.name ?? ""}
+        email={session.user.email ?? ""}
+        image={session.user.image ?? ""}
+        credits={user?.credits ?? 100}
+        plan={user?.plan ?? "free"}
+        currentPeriodEnd={user?.currentPeriodEnd?.toISOString() ?? null}
+      />
+    </Suspense>
   );
 }
