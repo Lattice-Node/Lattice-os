@@ -52,6 +52,11 @@ export default function NewAgentClient() {
   const [saving, setSaving] = useState(false);
   const [parsed, setParsed] = useState<ParsedAgent | null>(null);
   const [error, setError] = useState("");
+  const [userConnections, setUserConnections] = useState<{id:string,provider:string,metadata:string}[]>([]);
+
+  useEffect(() => {
+    fetch("/api/connections").then(r => r.json()).then(d => setUserConnections(d.connections || [])).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const templateId = searchParams.get("template");
@@ -267,30 +272,26 @@ export default function NewAgentClient() {
               <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 6px" }}>出力先</p>
               <select
                 value={parsed.outputType || "app"}
-                onChange={(e) => setParsed({ ...parsed, outputType: e.target.value })}
-                style={{ width: "100%", background: "#111318", border: "1px solid #2a2d35", borderRadius: 6, padding: "8px 12px", color: "#9096a8", fontSize: 13, fontFamily: "inherit", outline: "none", marginBottom: 8 }}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val.startsWith("discord:")) {
+                    const conn = userConnections.find(c => c.id === val.replace("discord:", ""));
+                    const meta = conn ? JSON.parse(conn.metadata || "{}") : {};
+                    setParsed({ ...parsed, outputType: "discord", outputConfig: { discordWebhookUrl: meta.webhookUrl || "" } });
+                  } else {
+                    setParsed({ ...parsed, outputType: val, outputConfig: {} });
+                  }
+                }}
+                style={{ width: "100%", background: "#111318", border: "1px solid #2a2d35", borderRadius: 6, padding: "8px 12px", color: "#9096a8", fontSize: 13, fontFamily: "inherit", outline: "none" }}
               >
                 <option value="app">アプリ内のみ</option>
-                <option value="discord">Discord</option>
-                <option value="line">LINE Notify</option>
-                <option value="app+discord">アプリ内 + Discord</option>
-                <option value="app+line">アプリ内 + LINE</option>
+                {userConnections.filter(c => c.provider === "discord").map(c => {
+                  const meta = JSON.parse(c.metadata || "{}");
+                  return <option key={c.id} value={`discord:${c.id}`}>Discord - {meta.guildName || "サーバー"}</option>;
+                })}
               </select>
-              {(parsed.outputType === "discord" || parsed.outputType === "app+discord") && (
-                <input
-                  value={parsed.outputConfig?.discordWebhookUrl || ""}
-                  onChange={(e) => setParsed({ ...parsed, outputConfig: { ...parsed.outputConfig, discordWebhookUrl: e.target.value } })}
-                  placeholder="Discord Webhook URL"
-                  style={{ width: "100%", background: "#111318", border: "1px solid #2a2d35", borderRadius: 6, padding: "8px 12px", color: "#9096a8", fontSize: 12, fontFamily: "inherit", boxSizing: "border-box" as const, outline: "none" }}
-                />
-              )}
-              {(parsed.outputType === "line" || parsed.outputType === "app+line") && (
-                <input
-                  value={parsed.outputConfig?.lineNotifyToken || ""}
-                  onChange={(e) => setParsed({ ...parsed, outputConfig: { ...parsed.outputConfig, lineNotifyToken: e.target.value } })}
-                  placeholder="LINE Notify Token"
-                  style={{ width: "100%", background: "#111318", border: "1px solid #2a2d35", borderRadius: 6, padding: "8px 12px", color: "#9096a8", fontSize: 12, fontFamily: "inherit", boxSizing: "border-box" as const, outline: "none" }}
-                />
+              {userConnections.length === 0 && (
+                <p style={{ fontSize: 11, color: "#4a5060", marginTop: 6 }}>設定画面からサービスを連携すると、出力先として選べます</p>
               )}
             </div>
             </div>
