@@ -93,7 +93,7 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
               <div
                 key={plan.id}
                 style={{
-                  background: plan.popular ? "#14163a" : "#0a0b0e",
+                  background: plan.popular ? "#14163a" : "#111114",
                   border: `1px solid ${plan.popular ? "#6c71e8" : "rgba(255, 255, 255, 0.15)"}`,
                   borderRadius: 12,
                   padding: "20px",
@@ -161,7 +161,7 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
         )}
 
         {/* アカウント */}
-        <div style={{ background: "#0a0b0e", border: "1px solid rgba(255, 255, 255, 0.15)", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
+        <div style={{ background: "#111114", border: "1px solid rgba(255, 255, 255, 0.15)", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
           <p style={{ fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 14px" }}>アカウント</p>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             {image ? (
@@ -182,7 +182,7 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
         </div>
 
         {/* クレジット */}
-        <div style={{ background: "#0a0b0e", border: "1px solid rgba(255, 255, 255, 0.15)", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
+        <div style={{ background: "#111114", border: "1px solid rgba(255, 255, 255, 0.15)", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
             <p style={{ fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase", margin: 0 }}>クレジット</p>
             <span style={{ fontSize: 24, fontWeight: 700, color: "#e8eaf0", letterSpacing: "-0.02em" }}>{credits}</span>
@@ -212,7 +212,7 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
 
 
         {/* サービス連携 */}
-        <div style={{ background: "#0a0b0e", border: "1px solid rgba(255, 255, 255, 0.15)", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
+        <div style={{ background: "#111114", border: "1px solid rgba(255, 255, 255, 0.15)", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
           <p style={{ fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 14px" }}>サービス連携</p>
 
           {connections.length > 0 && (
@@ -249,7 +249,7 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
         </div>
 
         {/* リンク */}
-        <div style={{ background: "#0a0b0e", border: "1px solid rgba(255, 255, 255, 0.15)", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
+        <div style={{ background: "#111114", border: "1px solid rgba(255, 255, 255, 0.15)", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
           <a href="/privacy" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid rgba(255, 255, 255, 0.15)", textDecoration: "none" }}>
             <span style={{ fontSize: 14, color: "#c0c4d0" }}>プライバシーポリシー</span>
             <span style={{ fontSize: 14, color: "#4a5060" }}>→</span>
