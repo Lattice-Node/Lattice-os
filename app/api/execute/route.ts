@@ -101,6 +101,12 @@ async function runWithAnthropic(agent: AgentShape, now: Date, isDailyNews: boole
             content: userPrompt,
           },
         ],
+        tools: [
+          {
+            type: "web_search_20250305",
+            name: "web_search",
+          },
+        ],
       });
 
   const rawText = extractTextFromClaudeResponse(message.content);
