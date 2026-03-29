@@ -19,8 +19,9 @@ const CREDIT_PLANS = [
 ];
 
 const SUB_PLANS = [
-  { id: "personal", label: "Personal", price: "980", credits: "300", features: ["300cr / month (150 runs)", "Unlimited agents", "Gmail / Discord", "Scheduled runs"] },
-  { id: "business", label: "Business", price: "4,980", credits: "1,500", features: ["1,500cr / month (750 runs)", "Unlimited agents", "All integrations (LINE)", "Priority support"] },
+  { id: "free", label: "フリー", price: "0", features: ["月30クレジット (15回実行)", "エージェント3体まで", "スケジュール実行", "アプリ内出力のみ"] },
+  { id: "personal", label: "パーソナル", price: "980", features: ["月300クレジット (150回実行)", "エージェント無制限", "Gmail / Discord 連携", "スケジュール実行"] },
+  { id: "business", label: "ビジネス", price: "4,980", features: ["月1,500クレジット (750回実行)", "エージェント無制限", "全連携 (LINE含む)", "優先サポート"] },
 ];
 
 const cardStyle = { background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, padding: "20px", marginBottom: 12 };
@@ -72,7 +73,7 @@ export default function SettingsClient({ name, email, image, credits, plan, curr
     } catch { setDeleting(false); setConfirm(false); }
   };
 
-  const planLabel = plan === "business" ? "Business" : plan === "personal" ? "Personal" : "Free";
+  const planLabel = plan === "business" ? "ビジネス" : plan === "personal" ? "パーソナル" : "フリー";
   const periodEnd = currentPeriodEnd ? new Date(currentPeriodEnd).toLocaleDateString("ja-JP") : null;
   const isPaid = plan === "personal" || plan === "business";
 
@@ -120,10 +121,10 @@ export default function SettingsClient({ name, email, image, credits, plan, curr
           </button>
           <p style={sectionLabel}>プラン</p>
           <h1 style={{ fontSize: 24, fontWeight: 700, color: "#f0f2f8", margin: "0 0 6px", letterSpacing: "-0.02em" }}>
-            Upgrade your plan
+            プランをアップグレード
           </h1>
           <p style={{ fontSize: 13, color: "#6a7080", margin: "0 0 28px" }}>
-            Current: <span style={{ color: "#e8eaf0", fontWeight: 600 }}>{planLabel}</span>
+            現在のプラン: <span style={{ color: "#e8eaf0", fontWeight: 600 }}>{planLabel}</span>
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {SUB_PLANS.map((p) => {
