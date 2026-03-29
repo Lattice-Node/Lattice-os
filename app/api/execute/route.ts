@@ -314,19 +314,43 @@ export async function POST(request: NextRequest) {
     if (finalOutput && agent.outputType !== "app") {
       try {
         const config = JSON.parse(agent.outputConfig || "{}");
-        if ((agent.outputType === "discord" || agent.outputType === "app+discord") && config.discordWebhookUrl) {
-          await fetch(config.discordWebhookUrl, {
+        // UserConnectionから自動取得
+        const conn = await prisma.userConnection.findFirst({
+          where: { userId: user.id, provider: agent.outputType },
+        });
+        const connMeta = conn ? JSON.parse(conn.metadata || "{}") : {};
+        let webhookUrl = (config.discordWebhookUrl || connMeta.webhookUrl) || "";
+
+        // outputConfigにURLがない場合、UserConnectionから取得
+        if (!webhookUrl && agent.outputType === "discord") {
+          const conn = await prisma.userConnection.findFirst({
+            where: { userId: user.id, provider: "discord" },
+          });
+          if (conn) {
+            const meta = JSON.parse(conn.metadata || "{}");
+            webhookUrl = meta.webhookUrl || "";
+          }
+        }
+
+        if (agent.outputType === "discord" && webhookUrl) {
+          await fetch(webhookUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ content: `**${agent.name}**\n${finalOutput}`.slice(0, 2000) }),
           });
         }
-        if ((agent.outputType === "line" || agent.outputType === "app+line") && config.lineNotifyToken) {
-          await fetch("https://notify-api.line.me/api/notify", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded", "Authorization": `Bearer ${config.lineNotifyToken}` },
-            body: `message=${encodeURIComponent(`\n${agent.name}\n${finalOutput}`.slice(0, 1000))}`,
+
+        if (agent.outputType === "line") {
+          const conn = await prisma.userConnection.findFirst({
+            where: { userId: user.id, provider: "line" },
           });
+          if (conn) {
+            await fetch("https://notify-api.line.me/api/notify", {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded", "Authorization": `Bearer ${conn.accessToken}` },
+              body: `message=${encodeURIComponent(`\n${agent.name}\n${finalOutput}`.slice(0, 1000))}`,
+            });
+          }
         }
       } catch (sendError) {
         console.error("Output delivery failed:", sendError);
