@@ -271,15 +271,15 @@ export default function NewAgentClient() {
             <div>
               <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 6px" }}>出力先</p>
               <select
-                value={parsed.outputType || "app"}
+                value={parsed.selectedOutput || "app"}
                 onChange={(e) => {
                   const val = e.target.value;
                   if (val.startsWith("discord:")) {
                     const conn = userConnections.find(c => c.id === val.replace("discord:", ""));
                     const meta = conn ? JSON.parse(conn.metadata || "{}") : {};
-                    setParsed({ ...parsed, outputType: "discord", outputConfig: { discordWebhookUrl: meta.webhookUrl || "" } });
+                    setParsed({ ...parsed, outputType: "discord", outputConfig: { discordWebhookUrl: meta.webhookUrl || "" }, selectedOutput: val });
                   } else {
-                    setParsed({ ...parsed, outputType: val, outputConfig: {} });
+                    setParsed({ ...parsed, outputType: val, outputConfig: {}, selectedOutput: val });
                   }
                 }}
                 style={{ width: "100%", background: "#111318", border: "1px solid #2a2d35", borderRadius: 6, padding: "8px 12px", color: "#9096a8", fontSize: 13, fontFamily: "inherit", outline: "none" }}
