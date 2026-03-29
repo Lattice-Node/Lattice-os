@@ -1,6 +1,29 @@
 import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
+import type { OAuthConfig } from "next-auth/providers";
+
+const LINE: OAuthConfig<any> = {
+  id: "line",
+  name: "LINE",
+  type: "oauth",
+  authorization: {
+    url: "https://access.line.me/oauth2/v2.1/authorize",
+    params: { scope: "profile openid email", bot_prompt: "normal" },
+  },
+  token: "https://api.line.me/oauth2/v2.1/token",
+  userinfo: "https://api.line.me/v2/profile",
+  clientId: process.env.LINE_CHANNEL_ID!,
+  clientSecret: process.env.LINE_CHANNEL_SECRET!,
+  profile(profile) {
+    return {
+      id: profile.userId,
+      name: profile.displayName,
+      email: null,
+      image: profile.pictureUrl,
+    };
+  },
+};
 import { sendLoginNotificationEmail } from "@/lib/mailer";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -9,6 +32,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
+    LINE,
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,

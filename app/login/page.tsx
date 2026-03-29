@@ -87,6 +87,29 @@ export default function LoginPage() {
         </button>
 
         <button
+          onClick={() => signIn("line", { callbackUrl: "/agents" })}
+          style={{
+            width: "100%",
+            padding: "14px 20px",
+            borderRadius: 10,
+            border: "1px solid #2e3440",
+            background: "#06C755",
+            color: "#fff",
+            fontSize: 15,
+            fontWeight: 500,
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 10,
+            fontFamily: "inherit",
+          }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M12 2C6.48 2 2 5.64 2 10.14c0 4.05 3.6 7.44 8.46 8.08.33.07.78.22.89.5.1.26.07.66.03.92l-.14.87c-.04.26-.2 1.03.9.56s5.97-3.52 8.15-6.02C22.14 13.07 22 11.63 22 10.14 22 5.64 17.52 2 12 2z"/></svg>
+          LINE{"\u3067\u30ED\u30B0\u30A4\u30F3"}
+        </button>
+
+        <button
           onClick={() => signIn("github", { callbackUrl: "/agents" })}
           style={{
             width: "100%",
