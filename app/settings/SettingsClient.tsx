@@ -304,8 +304,9 @@ const handleLineConnect = async () => {
                 <span style={{ fontSize: 14, color: "#c0c4d0" }}>LINE連携</span>
               </div>
               <p style={{ fontSize: 12, color: "#6a7080", margin: "0 0 10px" }}>
-                1. Lattice Bot を友だち追加{"\n"}2. 表示される連携コードを入力
+                1. Lattice Bot を友だち追加 → 2. 届く連携コードを入力
               </p>
+              <a href="https://lin.ee/P0E0l9c" target="_blank" rel="noopener noreferrer" style={{ display: "block", textAlign: "center", padding: "10px", borderRadius: 8, background: "#06C755", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none", marginBottom: 10 }}>Lattice Bot を友だち追加</a>
               <div style={{ display: "flex", gap: 8 }}>
                 <input value={lineCode} onChange={e => setLineCode(e.target.value)} placeholder="連携コードを入力" style={{ flex: 1, padding: "10px 12px", borderRadius: 8, border: "1px solid #2e3440", background: "#1c2028", color: "#e8eaf0", fontSize: 13, fontFamily: "inherit", outline: "none" }} />
                 <button onClick={handleLineConnect} disabled={lineConnecting || !lineCode.trim()} style={{ padding: "10px 16px", borderRadius: 8, border: "none", background: "#06C755", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", opacity: lineConnecting ? 0.5 : 1 }}>{lineConnecting ? "..." : "連携"}</button>
