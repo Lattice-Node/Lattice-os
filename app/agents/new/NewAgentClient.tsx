@@ -275,7 +275,9 @@ export default function NewAgentClient() {
                 value={parsed.selectedOutput || "app"}
                 onChange={(e) => {
                   const val = e.target.value;
-                  if (val.startsWith("discord:")) {
+                  if (val.startsWith("gmail:")) {
+                    setParsed({ ...parsed, outputType: "gmail", outputConfig: {}, selectedOutput: val });
+                  } else if (val.startsWith("discord:")) {
                     const conn = userConnections.find(c => c.id === val.replace("discord:", ""));
                     const meta = conn ? JSON.parse(conn.metadata || "{}") : {};
                     setParsed({ ...parsed, outputType: "discord", outputConfig: { discordWebhookUrl: meta.webhookUrl || "" }, selectedOutput: val });
