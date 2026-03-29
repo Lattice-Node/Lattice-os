@@ -43,7 +43,7 @@ function renderMarkdown(text: string) {
     .replace(/^- (.+?): (.+)$/gm, '<div style="display:flex;gap:8px;margin:4px 0;font-size:13px;line-height:1.6"><span style="color:#6c71e8;font-weight:500;flex-shrink:0;min-width:40px">$1</span><span style="color:#9096a8">$2</span></div>')
     .replace(/^- (.+)$/gm, '<div style="display:flex;gap:8px;margin:4px 0;font-size:13px;line-height:1.6"><span style="color:#6c71e8;flex-shrink:0">-</span><span style="color:#9096a8">$1</span></div>')
     .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#e8eaf0;font-weight:600">$1</strong>')
-    .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid rgba(255, 255, 255, 0.13);margin:16px 0"/>')
+    .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid rgba(255, 255, 255, 0.09);margin:16px 0"/>')
     .replace(/\n\n/g, '<div style="height:8px"></div>')
     .replace(/\n/g, "");
 }
@@ -83,8 +83,8 @@ const cardBtn: React.CSSProperties = {
   width: "100%",
   padding: "16px 18px",
   borderRadius: 10,
-  border: "1px solid rgba(255, 255, 255, 0.13)",
-  background: "#111114",
+  border: "1px solid rgba(255, 255, 255, 0.09)",
+  background: "#141416",
   color: "#e8eaf0",
   textAlign: "left",
   cursor: "pointer",
@@ -144,7 +144,7 @@ export default function InboxList({ items }: { items: InboxItem[] }) {
             <span style={{ fontSize: 15, fontWeight: 600 }}>過去の受信</span>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               {pastItems.length > 0 && (
-                <span style={{ fontSize: 12, color: "#4a5060", background: "transparent", border: "1px solid rgba(255, 255, 255, 0.13)", padding: "2px 8px", borderRadius: 4, fontWeight: 500 }}>
+                <span style={{ fontSize: 12, color: "#4a5060", background: "transparent", border: "1px solid rgba(255, 255, 255, 0.09)", padding: "2px 8px", borderRadius: 4, fontWeight: 500 }}>
                   {pastItems.length}件
                 </span>
               )}
@@ -157,7 +157,7 @@ export default function InboxList({ items }: { items: InboxItem[] }) {
         </button>
 
         {/* サマリーセクション */}
-        <div style={{ marginTop: 24, background: "#111114", border: "1px solid rgba(255, 255, 255, 0.13)", borderRadius: 12, padding: "18px 20px" }}>
+        <div style={{ marginTop: 24, background: "#141416", border: "1px solid rgba(255, 255, 255, 0.09)", borderRadius: 12, padding: "18px 20px" }}>
           <p style={{ fontSize: 11, color: "#4a5060", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 14px" }}>
             今日の状況
           </p>
@@ -168,7 +168,7 @@ export default function InboxList({ items }: { items: InboxItem[] }) {
               </p>
               <p style={{ fontSize: 11, color: "#4a5060", margin: 0 }}>今日の受信</p>
             </div>
-            <div style={{ textAlign: "center", borderLeft: "1px solid rgba(255, 255, 255, 0.13)", borderRight: "1px solid rgba(255, 255, 255, 0.13)" }}>
+            <div style={{ textAlign: "center", borderLeft: "1px solid rgba(255, 255, 255, 0.09)", borderRight: "1px solid rgba(255, 255, 255, 0.09)" }}>
               <p style={{ fontSize: 22, fontWeight: 700, color: "#e8eaf0", margin: "0 0 4px", letterSpacing: "-0.02em" }}>
                 {groupByAgent(todayItems).length}
               </p>
