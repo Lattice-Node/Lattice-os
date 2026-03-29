@@ -19,7 +19,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: "cover",
-  themeColor: "#111318",
+  themeColor: "#000000",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
       </head>
-      <body className={dmSans.className} style={{ margin: 0, padding: 0, background: "#111318" }}>
+      <body className={dmSans.className} style={{ margin: 0, padding: 0, background: "#000000" }}>
         <Providers>
           <div className="app-shell">{children}</div>
           <BottomNav />

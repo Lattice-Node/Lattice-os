@@ -16,9 +16,9 @@ const TEMPLATES = [
   { id: "contract-check", name: "契約書チェック", description: "送られてきた契約書を読み込み、注意すべき条項をリストアップ。", trigger: "ファイル受信時", category: "法務" },
 ];
 
-const BG = "#111318";
-const CARD = "#1a1d24";
-const BORDER = "#2a2d35";
+const BG = "#000000";
+const CARD = "#111114";
+const BORDER = "rgba(255, 255, 255, 0.13)";
 const TEXT = "#e8eaf0";
 const MUTED = "#9096a8";
 const DIM = "#4a5060";
@@ -241,7 +241,7 @@ export default function HomePage() {
           <p style={{ fontSize: 15, color: MUTED, marginBottom: 36 }}>クレジットカード不要。無料ではじめられます。</p>
           <Link href="/login" style={{
             display: "inline-block", padding: "13px 36px", borderRadius: 8,
-            fontSize: 14, fontWeight: 600, background: "#fff", color: "#111318",
+            fontSize: 14, fontWeight: 600, background: "#fff", color: "#000000",
             textDecoration: "none",
           }}>
             無料ではじめる
@@ -265,7 +265,7 @@ export default function HomePage() {
               <Link href="/terms" style={{ fontSize: 13, color: DIM, textDecoration: "none" }}>利用規約</Link>
               <Link href="https://x.com/Lattice_Node" style={{ fontSize: 13, color: DIM, textDecoration: "none" }}>X</Link>
             </div>
-            <span style={{ fontSize: 13, color: "#2a2d35" }}>&copy; 2026 Lattice</span>
+            <span style={{ fontSize: 13, color: "rgba(255, 255, 255, 0.13)" }}>&copy; 2026 Lattice</span>
           </div>
         </footer>
       </main>
