@@ -25,12 +25,10 @@ export function isDailyAiNewsAgent(input: {
     .join(" ")
     .toLowerCase();
 
-  return (
-    text.includes("aiニュース") ||
-    text.includes("ai news") ||
-    text.includes("毎朝") ||
-    text.includes("daily ai")
-  );
+  const hasAi = text.includes("ai") || text.includes("AI");
+  const hasNews = text.includes("ニュース") || text.includes("news");
+  return (hasAi && hasNews) || text.includes("daily ai");
+
 }
 
 export function buildDailyAiNewsSystemPrompt() {
