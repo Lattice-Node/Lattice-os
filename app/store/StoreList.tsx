@@ -2,23 +2,23 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+interface Variable {
+  key: string;
+  label: string;
+  placeholder: string;
+  type: "text" | "textarea";
+}
+
 interface Template {
   id: string;
   name: string;
   description: string | null;
   category: string | null;
   prompt: string | null;
+  trigger: string | null;
+  triggerCron: string | null;
+  variables: string | null;
 }
-
-const TEMPLATE_ID_MAP: Record<string, string> = {
-  "daily-ai-news": "daily-ai-news",
-  "competitor-monitor": "competitor-monitor",
-  "weekly-report": "weekly-report",
-  "sns-trend": "sns-trend",
-  "price-alert": "price-alert",
-  "inquiry-reply": "inquiry-reply",
-  "contract-check": "contract-check",
-};
 
 const CATEGORY_DESC: Record<string, string> = {
   "リサーチ": "情報収集・調査系",
@@ -36,6 +36,9 @@ export default function StoreList({ templates }: { templates: Template[] }) {
   const [category, setCategory] = useState("すべて");
   const [selected, setSelected] = useState<Template | null>(null);
   const [adding, setAdding] = useState(false);
+  const [varValues, setVarValues] = useState<Record<string, string>>({});
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
   const router = useRouter();
 
   const filtered = templates.filter((t) => {
@@ -47,24 +50,94 @@ export default function StoreList({ templates }: { templates: Template[] }) {
     return matchSearch && matchCat;
   });
 
-  async function handleAdd(template: Template) {
-    setAdding(true);
-    const templateKey = TEMPLATE_ID_MAP[template.id] || template.id;
-    router.push(`/agents/new?template=${templateKey}`);
+  function getVariables(template: Template): Variable[] {
+    try {
+      return JSON.parse(template.variables || "[]");
+    } catch {
+      return [];
+    }
   }
 
-  // 詳細画面
+  function buildPrompt(template: Template, values: Record<string, string>): string {
+    let prompt = template.prompt || "";
+    for (const [key, val] of Object.entries(values)) {
+      prompt = prompt.replaceAll(`{{${key}}}`, val || "");
+    }
+    return prompt;
+  }
+
+  async function handleAdd() {
+    if (!selected || adding) return;
+    setAdding(true);
+    setError("");
+
+    const vars = getVariables(selected);
+    const missing = vars.filter(v => !varValues[v.key]?.trim());
+    if (missing.length > 0) {
+      setError(`「${missing[0].label}」を入力してください`);
+      setAdding(false);
+      return;
+    }
+
+    const prompt = buildPrompt(selected, varValues);
+
+    try {
+      const res = await fetch("/api/agents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: selected.name,
+          description: selected.description || "",
+          prompt,
+          trigger: selected.trigger || "manual",
+          triggerCron: selected.triggerCron || "",
+          connections: "[]",
+          outputType: "app",
+          outputConfig: "{}",
+        }),
+      });
+      if (res.status === 403) {
+        setError("フリープランではエージェントは3体までです。アップグレードしてください。");
+        setAdding(false);
+        return;
+      }
+      if (!res.ok) throw new Error("作成に失敗しました");
+      const data = await res.json();
+      setSuccess(true);
+      setTimeout(() => router.push(`/agents/${data.agent.id}`), 800);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "エラーが発生しました");
+      setAdding(false);
+    }
+  }
+
+  function handleSelect(template: Template) {
+    setSelected(template);
+    setError("");
+    setSuccess(false);
+    setAdding(false);
+    // Pre-fill with placeholders
+    const vars = getVariables(template);
+    const defaults: Record<string, string> = {};
+    for (const v of vars) {
+      defaults[v.key] = "";
+    }
+    setVarValues(defaults);
+  }
+
+  // Detail + setup view
   if (selected) {
+    const vars = getVariables(selected);
+
     return (
       <div style={{ maxWidth: 420, margin: "0 auto", padding: "0 0 100px" }}>
         <button
-          onClick={() => setSelected(null)}
+          onClick={() => { setSelected(null); setSuccess(false); }}
           style={{ background: "none", border: "none", color: "#4a5060", fontSize: 13, cursor: "pointer", fontFamily: "inherit", padding: "0 0 20px", display: "block" }}
         >
           ← 戻る
         </button>
 
-        {/* アイコン＋タイトル */}
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
           <div style={{ width: 56, height: 56, borderRadius: 14, background: "rgba(108,113,232,0.12)", border: "1px solid rgba(108,113,232,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <svg width="24" height="24" viewBox="0 0 18 18" fill="none" stroke="#6c71e8" strokeWidth="1.6">
@@ -84,7 +157,6 @@ export default function StoreList({ templates }: { templates: Template[] }) {
           </div>
         </div>
 
-        {/* 説明 */}
         <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, padding: "18px 20px", marginBottom: 12 }}>
           <p style={{ fontSize: 11, color: "#4a5060", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 10px" }}>説明</p>
           <p style={{ fontSize: 14, color: "#9096a8", lineHeight: 1.7, margin: 0 }}>
@@ -92,44 +164,97 @@ export default function StoreList({ templates }: { templates: Template[] }) {
           </p>
         </div>
 
-        {/* 詳細情報 */}
-        <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, overflow: "hidden", marginBottom: 24 }}>
+        <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid #242830" }}>
             <span style={{ fontSize: 13, color: "#6a7080" }}>実行コスト</span>
             <span style={{ fontSize: 14, fontWeight: 600, color: "#4ade80" }}>2クレジット / 実行</span>
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: vars.length > 0 ? "1px solid #242830" : "none" }}>
             <span style={{ fontSize: 13, color: "#6a7080" }}>カテゴリ</span>
             <span style={{ fontSize: 13, color: "#9096a8" }}>
               {selected.category ? `${selected.category}（${CATEGORY_DESC[selected.category] || ""}）` : "一般"}
             </span>
           </div>
+          {selected.trigger === "schedule" && selected.triggerCron && (
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px" }}>
+              <span style={{ fontSize: 13, color: "#6a7080" }}>スケジュール</span>
+              <span style={{ fontSize: 13, color: "#9096a8" }}>
+                {(() => {
+                  const parts = (selected.triggerCron || "").split(" ");
+                  const h = parts[1] || "8";
+                  const m = (parts[0] || "0").padStart(2, "0");
+                  const dow = parts[4];
+                  if (dow === "1") return `毎週月曜 ${h}:${m}`;
+                  return `毎日 ${h}:${m}`;
+                })()}
+              </span>
+            </div>
+          )}
         </div>
 
-        {/* 追加ボタン */}
-        <button
-          onClick={() => handleAdd(selected)}
-          disabled={adding}
-          style={{
-            width: "100%",
-            padding: "14px",
-            borderRadius: 10,
-            border: "none",
-            background: adding ? "#1e2044" : "#6c71e8",
-            color: adding ? "#4a5060" : "#fff",
-            fontSize: 15,
-            fontWeight: 600,
-            cursor: adding ? "default" : "pointer",
-            fontFamily: "inherit",
-          }}
-        >
-          {adding ? "追加中..." : "マイエージェントに追加する"}
-        </button>
+        {/* Variable inputs */}
+        {vars.length > 0 && (
+          <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, padding: "18px 20px", marginBottom: 24 }}>
+            <p style={{ fontSize: 11, color: "#4a5060", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 14px" }}>設定項目</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              {vars.map((v) => (
+                <div key={v.key}>
+                  <label style={{ fontSize: 13, color: "#9096a8", display: "block", marginBottom: 6 }}>{v.label}</label>
+                  {v.type === "textarea" ? (
+                    <textarea
+                      value={varValues[v.key] || ""}
+                      onChange={(e) => setVarValues({ ...varValues, [v.key]: e.target.value })}
+                      placeholder={v.placeholder}
+                      rows={3}
+                      style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #2e3440", background: "#0e1117", color: "#e8eaf0", fontSize: 14, fontFamily: "inherit", resize: "vertical", outline: "none", boxSizing: "border-box" }}
+                    />
+                  ) : (
+                    <input
+                      value={varValues[v.key] || ""}
+                      onChange={(e) => setVarValues({ ...varValues, [v.key]: e.target.value })}
+                      placeholder={v.placeholder}
+                      style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #2e3440", background: "#0e1117", color: "#e8eaf0", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <p style={{ fontSize: 13, color: "#f87171", margin: "0 0 12px" }}>{error}</p>
+        )}
+
+        {success ? (
+          <div style={{ textAlign: "center", padding: "14px", borderRadius: 10, background: "#0f2a1a", border: "1px solid #1a4a2a" }}>
+            <p style={{ fontSize: 15, fontWeight: 600, color: "#4ade80", margin: 0 }}>エージェントを作成しました</p>
+          </div>
+        ) : (
+          <button
+            onClick={handleAdd}
+            disabled={adding}
+            style={{
+              width: "100%",
+              padding: "14px",
+              borderRadius: 10,
+              border: "none",
+              background: adding ? "#1e2044" : "#6c71e8",
+              color: adding ? "#4a5060" : "#fff",
+              fontSize: 15,
+              fontWeight: 600,
+              cursor: adding ? "default" : "pointer",
+              fontFamily: "inherit",
+            }}
+          >
+            {adding ? "作成中..." : "マイエージェントに追加する"}
+          </button>
+        )}
       </div>
     );
   }
 
-  // 一覧画面
+  // List view
   return (
     <>
       <div className="search-bar">
@@ -166,7 +291,7 @@ export default function StoreList({ templates }: { templates: Template[] }) {
             key={t.id}
             className="store-card animate-in"
             style={{ animationDelay: i * 50 + "ms", cursor: "pointer" }}
-            onClick={() => setSelected(t)}
+            onClick={() => handleSelect(t)}
           >
             <div className="store-card-top">
               <div style={{ flex: 1, minWidth: 0, marginRight: 12 }}>

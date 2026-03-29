@@ -8,7 +8,17 @@ export default async function StorePage() {
   if (!session?.user?.email) redirect("/login");
 
   const templates = await prisma.agentTemplate.findMany({
-    orderBy: { createdAt: "desc" },
+    orderBy: { useCount: "desc" },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      category: true,
+      prompt: true,
+      trigger: true,
+      triggerCron: true,
+      variables: true,
+    },
   });
 
   return (

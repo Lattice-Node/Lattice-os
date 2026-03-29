@@ -64,8 +64,10 @@ model AgentTemplate {
   description String
   prompt      String
   trigger     String
+  triggerCron String   @default("")
   connections String   @default("[]")
   category    String   @default("general")
+  variables   String   @default("[]")
   useCount    Int      @default(0)
   createdAt   DateTime @default(now())
 }
