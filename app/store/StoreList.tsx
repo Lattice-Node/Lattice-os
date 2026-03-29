@@ -85,7 +85,7 @@ export default function StoreList({ templates }: { templates: Template[] }) {
         </div>
 
         {/* 説明 */}
-        <div style={{ background: "#18181b", border: "1px solid #27272a", borderRadius: 12, padding: "18px 20px", marginBottom: 12 }}>
+        <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, padding: "18px 20px", marginBottom: 12 }}>
           <p style={{ fontSize: 11, color: "#4a5060", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 10px" }}>説明</p>
           <p style={{ fontSize: 14, color: "#9096a8", lineHeight: 1.7, margin: 0 }}>
             {selected.description || "AIエージェントテンプレート"}
@@ -93,8 +93,8 @@ export default function StoreList({ templates }: { templates: Template[] }) {
         </div>
 
         {/* 詳細情報 */}
-        <div style={{ background: "#18181b", border: "1px solid #27272a", borderRadius: 12, overflow: "hidden", marginBottom: 24 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid #1f1f23" }}>
+        <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, overflow: "hidden", marginBottom: 24 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid #242830" }}>
             <span style={{ fontSize: 13, color: "#6a7080" }}>実行コスト</span>
             <span style={{ fontSize: 14, fontWeight: 600, color: "#4ade80" }}>2クレジット / 実行</span>
           </div>

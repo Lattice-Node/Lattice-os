@@ -61,7 +61,7 @@ export default function AgentsList({ agents }: { agents: Agent[] }) {
           <Link href="/store" style={{ display: "block", padding: "12px", borderRadius: 10, background: "#6c71e8", color: "#fff", fontSize: 14, fontWeight: 600, textDecoration: "none" }}>
             ストアを見る
           </Link>
-          <Link href="/agents/new" style={{ display: "block", padding: "12px", borderRadius: 10, border: "1px solid #27272a", background: "transparent", color: "#9096a8", fontSize: 14, textDecoration: "none" }}>
+          <Link href="/agents/new" style={{ display: "block", padding: "12px", borderRadius: 10, border: "1px solid #2e3440", background: "transparent", color: "#9096a8", fontSize: 14, textDecoration: "none" }}>
             自分で作成する
           </Link>
         </div>

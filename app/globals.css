@@ -14,11 +14,11 @@
 }
 
 :root {
-  --bg: #09090b;
-  --card: #18181b;
-  --card-hover: #1f1f23;
-  --border: #27272a;
-  --border-light: #3f3f46;
+  --bg: #0e1117;
+  --card: #1c2028;
+  --card-hover: #242830;
+  --border: #2e3440;
+  --border-light: #3a4150;
   --accent: #6c71e8;
   --accent-soft: rgba(108, 113, 232, 0.12);
   --text: #eceef4;

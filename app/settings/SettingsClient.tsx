@@ -69,7 +69,7 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
   // クレジット購入画面
   if (showCredit) {
     return (
-      <main style={{ minHeight: "100vh", backgroundColor: "#09090b", color: "#e8eaf0", paddingBottom: 100 }}>
+      <main style={{ minHeight: "100vh", backgroundColor: "#0e1117", color: "#e8eaf0", paddingBottom: 100 }}>
         <div style={{ maxWidth: 420, margin: "0 auto", padding: "48px 20px 24px" }}>
           <button
             onClick={() => setShowCredit(false)}
@@ -93,8 +93,8 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
               <div
                 key={plan.id}
                 style={{
-                  background: plan.popular ? "#14163a" : "#18181b",
-                  border: `1px solid ${plan.popular ? "#6c71e8" : "#27272a"}`,
+                  background: plan.popular ? "#14163a" : "#1c2028",
+                  border: `1px solid ${plan.popular ? "#6c71e8" : "#2e3440"}`,
                   borderRadius: 12,
                   padding: "20px",
                   position: "relative",
@@ -127,7 +127,7 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
                     padding: "11px",
                     borderRadius: 8,
                     border: "none",
-                    background: plan.popular ? "#6c71e8" : "#1f1f23",
+                    background: plan.popular ? "#6c71e8" : "#242830",
                     color: plan.popular ? "#fff" : "#9096a8",
                     fontSize: 14,
                     fontWeight: 600,
@@ -148,7 +148,7 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
 
   // 通常の設定画面
   return (
-    <main style={{ minHeight: "100vh", backgroundColor: "#09090b", color: "#e8eaf0", paddingBottom: 100 }}>
+    <main style={{ minHeight: "100vh", backgroundColor: "#0e1117", color: "#e8eaf0", paddingBottom: 100 }}>
       <div style={{ maxWidth: 420, margin: "0 auto", padding: "48px 20px 24px" }}>
         <p style={{ fontSize: 12, color: "#6a7080", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 20px" }}>
           設定
@@ -161,13 +161,13 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
         )}
 
         {/* アカウント */}
-        <div style={{ background: "#18181b", border: "1px solid #27272a", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
+        <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
           <p style={{ fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 14px" }}>アカウント</p>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             {image ? (
-              <img src={image} alt={name} width={44} height={44} style={{ borderRadius: "50%", border: "1px solid #27272a" }} />
+              <img src={image} alt={name} width={44} height={44} style={{ borderRadius: "50%", border: "1px solid #2e3440" }} />
             ) : (
-              <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#27272a", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#2e3440", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#6a7080" strokeWidth="1.5">
                   <circle cx="10" cy="7" r="4" />
                   <path d="M3 18c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5" />
@@ -182,7 +182,7 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
         </div>
 
         {/* クレジット */}
-        <div style={{ background: "#18181b", border: "1px solid #27272a", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
+        <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
             <p style={{ fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase", margin: 0 }}>クレジット</p>
             <span style={{ fontSize: 24, fontWeight: 700, color: "#e8eaf0", letterSpacing: "-0.02em" }}>{credits}</span>
@@ -193,7 +193,7 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
               width: "100%",
               padding: "11px 16px",
               borderRadius: 8,
-              border: "1px solid #27272a",
+              border: "1px solid #2e3440",
               background: "transparent",
               color: "#6c71e8",
               fontSize: 14,
@@ -212,7 +212,7 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
 
 
         {/* サービス連携 */}
-        <div style={{ background: "#18181b", border: "1px solid #27272a", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
+        <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
           <p style={{ fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 14px" }}>サービス連携</p>
 
           {connections.length > 0 && (
@@ -221,7 +221,7 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
                 const meta = JSON.parse(c.metadata || "{}");
                 const label = c.provider === "discord" ? `Discord - ${meta.guildName || "サーバー"}` : c.provider === "gmail" ? `Gmail - ${meta.email || ""}` : c.provider;
                 return (
-                  <div key={c.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#09090b", borderRadius: 8, padding: "10px 14px" }}>
+                  <div key={c.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#0e1117", borderRadius: 8, padding: "10px 14px" }}>
                     <span style={{ fontSize: 13, color: "#c0c4d0" }}>{label}</span>
                     <button onClick={() => handleDisconnect(c.id)} disabled={disconnecting === c.id} style={{ background: "none", border: "none", color: "#f87171", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
                       {disconnecting === c.id ? "..." : "解除"}
@@ -234,13 +234,13 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
 
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {!connections.find(c => c.provider === "gmail") && (
-              <a href="/api/connections/gmail" style={{ display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", borderRadius: 8, border: "1px solid #27272a", textDecoration: "none", cursor: "pointer" }}>
+              <a href="/api/connections/gmail" style={{ display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", borderRadius: 8, border: "1px solid #2e3440", textDecoration: "none", cursor: "pointer" }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 18h-2V9.25L12 13 6 9.25V18H4V6h1.2l6.8 4.25L18.8 6H20v12z" fill="#EA4335"/><rect x="2" y="4" width="20" height="16" rx="2" stroke="#EA4335" strokeWidth="1.5" fill="none"/></svg>
                 <span style={{ fontSize: 14, color: "#c0c4d0" }}>Gmail を連携する</span>
               </a>
             )}
             {!connections.find(c => c.provider === "discord") && (
-              <a href="/api/connections/discord" style={{ display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", borderRadius: 8, border: "1px solid #27272a", textDecoration: "none", cursor: "pointer" }}>
+              <a href="/api/connections/discord" style={{ display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", borderRadius: 8, border: "1px solid #2e3440", textDecoration: "none", cursor: "pointer" }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="#5865F2"><path d="M20.32 4.37a19.8 19.8 0 00-4.89-1.52.07.07 0 00-.08.04c-.21.38-.44.87-.61 1.26a18.27 18.27 0 00-5.49 0 12.64 12.64 0 00-.62-1.26.08.08 0 00-.08-.04 19.74 19.74 0 00-4.89 1.52.07.07 0 00-.03.03C.53 9.05-.32 13.58.1 18.06a.08.08 0 00.03.06 19.9 19.9 0 005.99 3.03.08.08 0 00.08-.03c.46-.63.87-1.3 1.22-2a.08.08 0 00-.04-.11 13.1 13.1 0 01-1.87-.9.08.08 0 01-.01-.13c.13-.09.25-.19.37-.29a.08.08 0 01.08-.01c3.93 1.79 8.18 1.79 12.07 0a.08.08 0 01.08.01c.12.1.25.2.37.29a.08.08 0 01-.01.13c-.6.35-1.22.65-1.87.9a.08.08 0 00-.04.11c.36.7.77 1.37 1.22 2a.08.08 0 00.08.03 19.83 19.83 0 006-3.03.08.08 0 00.03-.06c.5-5.18-.84-9.68-3.55-13.66a.06.06 0 00-.03-.03zM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.96 2.42-2.16 2.42zm7.97 0c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.95 2.42-2.16 2.42z"/></svg>
                 <span style={{ fontSize: 14, color: "#c0c4d0" }}>Discord を連携する</span>
               </a>
@@ -249,8 +249,8 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
         </div>
 
         {/* リンク */}
-        <div style={{ background: "#18181b", border: "1px solid #27272a", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
-          <a href="/privacy" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid #27272a", textDecoration: "none" }}>
+        <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
+          <a href="/privacy" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid #2e3440", textDecoration: "none" }}>
             <span style={{ fontSize: 14, color: "#c0c4d0" }}>プライバシーポリシー</span>
             <span style={{ fontSize: 14, color: "#4a5060" }}>→</span>
           </a>
@@ -264,7 +264,7 @@ export default function SettingsClient({ name, email, image, credits }: Props) {
 
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
-          style={{ width: "100%", padding: "13px", borderRadius: 10, border: "1px solid #27272a", background: "transparent", color: "#f87171", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", marginBottom: 10 }}
+          style={{ width: "100%", padding: "13px", borderRadius: 10, border: "1px solid #2e3440", background: "transparent", color: "#f87171", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", marginBottom: 10 }}
         >
           ログアウト
         </button>
