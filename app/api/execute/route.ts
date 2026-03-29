@@ -3,7 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { getGmailToken, sendGmailMessage } from "@/lib/gmail";
+import { getGmailToken, sendGmailMessage, readGmailMessages } from "@/lib/gmail";
 import {
   buildDailyAiNewsFallback,
   buildDailyAiNewsSystemPrompt,
@@ -48,17 +48,18 @@ function buildGenericSystemPrompt() {
   ].join("\n");
 }
 
-function buildGenericUserPrompt(agent: AgentShape) {
+function buildGenericUserPrompt(agent: AgentShape, extraContext?: string) {
   return [
     `エージェント名: ${agent.name}`,
     agent.description ? `説明: ${agent.description}` : "",
     agent.prompt ? `指示: ${agent.prompt}` : "",
   ]
     .filter(Boolean)
-    .join("\n\n");
+    .join("\n\n")
+    + (extraContext ? "\n\n" + extraContext : "");
 }
 
-async function runWithAnthropic(agent: AgentShape, now: Date, isDailyNews: boolean) {
+async function runWithAnthropic(agent: AgentShape, now: Date, isDailyNews: boolean, extraContext?: string) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     throw new Error("ANTHROPIC_API_KEY is not set.");
@@ -72,7 +73,7 @@ async function runWithAnthropic(agent: AgentShape, now: Date, isDailyNews: boole
 
   const userPrompt = isDailyNews
     ? buildDailyAiNewsUserPrompt({ now })
-    : buildGenericUserPrompt(agent);
+    : buildGenericUserPrompt(agent, extraContext);
 
   const message = isDailyNews
     ? await client.messages.create({
@@ -121,7 +122,7 @@ async function runWithAnthropic(agent: AgentShape, now: Date, isDailyNews: boole
     : rawText.trim();
 }
 
-async function runWithGroq(agent: AgentShape, now: Date, isDailyNews: boolean) {
+async function runWithGroq(agent: AgentShape, now: Date, isDailyNews: boolean, extraContext?: string) {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     throw new Error("GROQ_API_KEY is not set.");
@@ -141,7 +142,7 @@ async function runWithGroq(agent: AgentShape, now: Date, isDailyNews: boolean) {
 
   const userPrompt = isDailyNews
     ? buildDailyAiNewsUserPrompt({ now })
-    : buildGenericUserPrompt(agent);
+    : buildGenericUserPrompt(agent, extraContext);
 
   const completion = await client.chat.completions.create({
     model: process.env.GROQ_MODEL || "llama-3.1-8b-instant",
@@ -261,11 +262,33 @@ export async function POST(request: NextRequest) {
       prompt: agent.prompt,
     });
 
+    // Gmail連携済みならメールを取得してコンテキストに注入
+    let extraContext = "";
+    const agentText = [agent.name, agent.description, agent.prompt].filter(Boolean).join(" ").toLowerCase();
+    const mentionsGmail = agentText.includes("gmail") || agentText.includes("メール") || agentText.includes("mail");
+    if (mentionsGmail) {
+      try {
+        const gmailToken = await getGmailToken(user.id);
+        if (gmailToken) {
+          const emails = await readGmailMessages(gmailToken, 10);
+          if (emails.length > 0) {
+            extraContext = "--- 取得したGmailの未読メール ---\n" + emails.map((e, i) =>
+              `${i + 1}. 差出人: ${e.from}\n   件名: ${e.subject}\n   概要: ${e.snippet}\n   日時: ${e.date}`
+            ).join("\n\n");
+          } else {
+            extraContext = "--- Gmail: 未読メールはありません ---";
+          }
+        }
+      } catch (gmailErr) {
+        console.error("Gmail read error:", gmailErr);
+      }
+    }
+
     let finalOutput = "";
     let finalError = "";
 
     try {
-      finalOutput = await runWithAnthropic(agent, now, isDailyNews);
+      finalOutput = await runWithAnthropic(agent, now, isDailyNews, extraContext);
     } catch (anthropicError) {
       const anthropicMessage = getErrorMessage(anthropicError);
 
@@ -273,7 +296,7 @@ export async function POST(request: NextRequest) {
         finalError = `Anthropic failed: ${anthropicMessage}`;
       } else {
         try {
-          finalOutput = await runWithGroq(agent, now, isDailyNews);
+          finalOutput = await runWithGroq(agent, now, isDailyNews, extraContext);
         } catch (groqError) {
           const groqMessage = getErrorMessage(groqError);
           finalError = `Anthropic failed: ${anthropicMessage} / Groq failed: ${groqMessage}`;
