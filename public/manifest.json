@@ -1,11 +1,11 @@
 {
   "name": "Lattice - AIの全てがここに",
   "short_name": "Lattice",
-  "description": "AI比較・プロンプトマーケット・AI副業スペース",
+  "description": "話しかけるだけで業務を自動化。AIエージェント自動化プラットフォーム。",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#080b14",
-  "theme_color": "#080b14",
+  "background_color": "#0e1117",
+  "theme_color": "#0e1117",
   "orientation": "portrait",
   "icons": [
     {
