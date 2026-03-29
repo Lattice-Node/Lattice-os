@@ -371,15 +371,15 @@ export async function POST(request: NextRequest) {
         }
 
         if (agent.outputType === "line") {
-          const conn = await prisma.userConnection.findFirst({
+          const { sendLineMessage } = await import("@/lib/line");
+          const lineConn = await prisma.userConnection.findFirst({
             where: { userId: user.id, provider: "line" },
           });
-          if (conn) {
-            await fetch("https://notify-api.line.me/api/notify", {
-              method: "POST",
-              headers: { "Content-Type": "application/x-www-form-urlencoded", "Authorization": `Bearer ${conn.accessToken}` },
-              body: `message=${encodeURIComponent(`\n${agent.name}\n${finalOutput}`.slice(0, 1000))}`,
-            });
+          if (lineConn?.accessToken) {
+            await sendLineMessage(
+              lineConn.accessToken,
+              `${agent.name}\n\n${finalOutput}`.slice(0, 5000)
+            );
           }
         }
         if (agent.outputType === "gmail") {

@@ -35,6 +35,9 @@ export default function SettingsClient({ name, email, image, credits, plan, curr
   const [showPlans, setShowPlans] = useState(false);
   const [connections, setConnections] = useState<{id:string,provider:string,metadata:string}[]>([]);
   const [disconnecting, setDisconnecting] = useState<string|null>(null);
+  const [lineCode, setLineCode] = useState("");
+  const [lineConnecting, setLineConnecting] = useState(false);
+  const [lineSuccess, setLineSuccess] = useState(false);
   const [canceling, setCanceling] = useState(false);
   const [cancelConfirm, setCancelConfirm] = useState(false);
 
@@ -48,6 +51,23 @@ export default function SettingsClient({ name, email, image, credits, plan, curr
       await fetch("/api/connections", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ connectionId: id }) });
       setConnections(c => c.filter(x => x.id !== id));
     } catch {} finally { setDisconnecting(null); }
+  };
+
+const handleLineConnect = async () => {
+    if (!lineCode.trim()) return;
+    setLineConnecting(true);
+    try {
+      const res = await fetch("/api/connections/line", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lineUserId: lineCode.trim() }),
+      });
+      if (res.ok) {
+        setLineSuccess(true);
+        setConnections(c => [...c, { id: "line-new", provider: "line", metadata: JSON.stringify({ lineUserId: lineCode.trim() }) }]);
+        setLineCode("");
+      }
+    } catch {} finally { setLineConnecting(false); }
   };
 
   const searchParams = useSearchParams();
@@ -275,6 +295,28 @@ export default function SettingsClient({ name, email, image, credits, plan, curr
               </a>
             )}
           </div>
+          {plan === "business" && !connections.find(c => c.provider === "line") && (
+            <div style={{ marginTop: 14, padding: "16px", background: "#0e1117", borderRadius: 10, border: "1px solid #2e3440" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#06C755"><path d="M12 2C6.48 2 2 5.64 2 10.14c0 4.05 3.6 7.44 8.46 8.08.33.07.78.22.89.5.1.26.07.66.03.92l-.14.87c-.04.26-.2 1.03.9.56s5.97-3.52 8.15-6.02C22.14 13.07 22 11.63 22 10.14 22 5.64 17.52 2 12 2z"/></svg>
+                <span style={{ fontSize: 14, color: "#c0c4d0" }}>LINE連携</span>
+              </div>
+              <p style={{ fontSize: 12, color: "#6a7080", margin: "0 0 10px" }}>
+                1. Lattice Bot を友だち追加{"\n"}2. 表示される連携コードを入力
+              </p>
+              <div style={{ display: "flex", gap: 8 }}>
+                <input value={lineCode} onChange={e => setLineCode(e.target.value)} placeholder="連携コードを入力" style={{ flex: 1, padding: "10px 12px", borderRadius: 8, border: "1px solid #2e3440", background: "#1c2028", color: "#e8eaf0", fontSize: 13, fontFamily: "inherit", outline: "none" }} />
+                <button onClick={handleLineConnect} disabled={lineConnecting || !lineCode.trim()} style={{ padding: "10px 16px", borderRadius: 8, border: "none", background: "#06C755", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", opacity: lineConnecting ? 0.5 : 1 }}>{lineConnecting ? "..." : "連携"}</button>
+              </div>
+              {lineSuccess && <p style={{ fontSize: 12, color: "#4ade80", margin: "8px 0 0" }}>LINE連携が完了しました</p>}
+            </div>
+          )}
+          {plan !== "business" && (
+            <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", borderRadius: 8, border: "1px solid #2e3440" }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#06C755"><path d="M12 2C6.48 2 2 5.64 2 10.14c0 4.05 3.6 7.44 8.46 8.08.33.07.78.22.89.5.1.26.07.66.03.92l-.14.87c-.04.26-.2 1.03.9.56s5.97-3.52 8.15-6.02C22.14 13.07 22 11.63 22 10.14 22 5.64 17.52 2 12 2z"/></svg>
+              <span style={{ fontSize: 14, color: "#c0c4d0" }}>LINE連携 (要ビジネスプラン)</span>
+            </div>
+          )}
         </div>
 
         {/* Links */}
