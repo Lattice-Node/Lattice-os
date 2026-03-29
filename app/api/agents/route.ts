@@ -66,6 +66,14 @@ export async function POST(req: Request) {
     });
   }
 
+  // Free plan: max 3 agents
+  if (user.plan === "free") {
+    const agentCount = await prisma.userAgent.count({ where: { userId: user.id } });
+    if (agentCount >= 3) {
+      return NextResponse.json({ error: "Free plan limit: max 3 agents" }, { status: 403 });
+    }
+  }
+
   const { name, description, prompt, trigger, triggerCron, connections, outputType, outputConfig } = await req.json();
   const nextRunAt = trigger === "schedule" && triggerCron
     ? calcNextRunAt(triggerCron)

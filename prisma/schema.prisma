@@ -12,7 +12,7 @@ model User {
   email          String           @unique
   name           String           @default("")
   plan           String           @default("free")
-  credits        Int              @default(100)
+  credits        Int              @default(30)
   role           String           @default("user")
   stripeCustomerId    String?
   stripeSubscriptionId String?
