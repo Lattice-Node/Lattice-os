@@ -11,7 +11,7 @@ export async function GET() {
     client_id: process.env.DISCORD_CLIENT_ID!,
     redirect_uri: `${process.env.NEXTAUTH_URL}/api/connections/discord/callback`,
     response_type: "code",
-    scope: "identify guilds webhooks.incoming",
+    scope: "webhook.incoming identify",
   });
 
   return NextResponse.redirect(`https://discord.com/api/oauth2/authorize?${params}`);
