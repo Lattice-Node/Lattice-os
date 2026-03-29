@@ -109,19 +109,19 @@ const handleLineGenerate = async () => {
       <main style={{ minHeight: "100vh", backgroundColor: "#0e1117", color: "#e8eaf0", paddingBottom: 100 }}>
         <div style={{ maxWidth: 420, margin: "0 auto", padding: "48px 20px 24px" }}>
           <button onClick={() => setShowCredit(false)} style={{ background: "none", border: "none", color: "#9096a8", fontSize: 15, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", padding: "8px 0", marginBottom: 20, display: "flex", alignItems: "center", gap: 6 }}>
-            back
+            戻る
           </button>
-          <p style={sectionLabel}>credit purchase</p>
+          <p style={sectionLabel}>クレジット購入</p>
           <h1 style={{ fontSize: 24, fontWeight: 700, color: "#f0f2f8", margin: "0 0 6px", letterSpacing: "-0.02em" }}>
-            Add credits
+            クレジット追加
           </h1>
           <p style={{ fontSize: 13, color: "#6a7080", margin: "0 0 28px" }}>
-            Balance: <span style={{ color: "#e8eaf0", fontWeight: 600 }}>{credits} cr</span>
+            残高: <span style={{ color: "#e8eaf0", fontWeight: 600 }}>{credits} cr</span>
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {CREDIT_PLANS.map((p) => (
               <div key={p.id} style={{ background: p.popular ? "#14163a" : "#1c2028", border: `1px solid ${p.popular ? "#6c71e8" : "#2e3440"}`, borderRadius: 12, padding: "20px", position: "relative" }}>
-                {p.popular && <span style={{ position: "absolute", top: -10, left: 16, fontSize: 11, color: "#fff", background: "#6c71e8", padding: "2px 10px", borderRadius: 20, fontWeight: 600 }}>Popular</span>}
+                {p.popular && <span style={{ position: "absolute", top: -10, left: 16, fontSize: 11, color: "#fff", background: "#6c71e8", padding: "2px 10px", borderRadius: 20, fontWeight: 600 }}>おすすめ</span>}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
                   <p style={{ fontSize: 18, fontWeight: 700, color: "#f0f2f8", margin: 0 }}>{p.label} cr</p>
                   <p style={{ fontSize: 22, fontWeight: 700, color: "#f0f2f8", margin: 0 }}>{p.price}</p>
@@ -143,7 +143,7 @@ const handleLineGenerate = async () => {
       <main style={{ minHeight: "100vh", backgroundColor: "#0e1117", color: "#e8eaf0", paddingBottom: 100 }}>
         <div style={{ maxWidth: 420, margin: "0 auto", padding: "48px 20px 24px" }}>
           <button onClick={() => setShowPlans(false)} style={{ background: "none", border: "none", color: "#9096a8", fontSize: 15, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", padding: "8px 0", marginBottom: 20, display: "flex", alignItems: "center", gap: 6 }}>
-            back
+            戻る
           </button>
           <p style={sectionLabel}>プラン</p>
           <h1 style={{ fontSize: 24, fontWeight: 700, color: "#f0f2f8", margin: "0 0 6px", letterSpacing: "-0.02em" }}>
@@ -229,10 +229,10 @@ const handleLineGenerate = async () => {
           <p style={sectionLabel}>プラン</p>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
             <span style={{ fontSize: 20, fontWeight: 700, color: "#f0f2f8" }}>{planLabel}</span>
-            {isPaid && <span style={{ fontSize: 11, color: "#4ade80", background: "#0f2a1a", padding: "3px 10px", borderRadius: 20 }}>Active</span>}
+            {isPaid && <span style={{ fontSize: 11, color: "#4ade80", background: "#0f2a1a", padding: "3px 10px", borderRadius: 20 }}>有効</span>}
           </div>
-          {periodEnd && <p style={{ fontSize: 12, color: "#6a7080", margin: "4px 0 14px" }}>Next billing: {periodEnd}</p>}
-          {!isPaid && <p style={{ fontSize: 12, color: "#6a7080", margin: "4px 0 14px" }}>30 cr / month - 3 agents</p>}
+          {periodEnd && <p style={{ fontSize: 12, color: "#6a7080", margin: "4px 0 14px" }}>次回請求日: {periodEnd}</p>}
+          {!isPaid && <p style={{ fontSize: 12, color: "#6a7080", margin: "4px 0 14px" }}>月30クレジット・エージェント3体まで</p>}
           <button onClick={() => setShowPlans(true)} style={{ width: "100%", padding: "11px 16px", borderRadius: 8, border: "1px solid #2e3440", background: "transparent", color: "#6c71e8", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span>{isPaid ? "プラン変更" : "アップグレード"}</span>
             <span style={{ fontSize: 16 }}>...</span>
@@ -247,7 +247,7 @@ const handleLineGenerate = async () => {
           </div>
           {isPaid && (
             <button onClick={() => setShowCredit(true)} style={{ width: "100%", padding: "11px 16px", borderRadius: 8, border: "1px solid #2e3440", background: "transparent", color: "#6c71e8", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span>Add credits</span>
+              <span>クレジットを追加</span>
               <span style={{ fontSize: 16 }}>...</span>
             </button>
           )}
