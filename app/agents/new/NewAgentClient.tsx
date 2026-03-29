@@ -12,6 +12,7 @@ type ParsedAgent = {
   connections: { type: string; action: string; config: object }[];
   outputType?: string;
   outputConfig?: { discordWebhookUrl?: string; lineNotifyToken?: string };
+  selectedOutput?: string;
 };
 
 const TEMPLATE_INPUTS: Record<string, string> = {
