@@ -11,7 +11,7 @@ type ParsedAgent = {
   prompt: string;
   connections: { type: string; action: string; config: object }[];
   outputType?: string;
-  outputConfig?: { discordWebhookUrl?: string; lineNotifyToken?: string };
+  outputConfig?: { discordWebhookUrl?: string; lineNotifyToken?: string; gmailTo?: string };
   selectedOutput?: string;
 };
 
@@ -286,11 +286,25 @@ export default function NewAgentClient() {
                 style={{ width: "100%", background: "#111318", border: "1px solid #2a2d35", borderRadius: 6, padding: "8px 12px", color: "#9096a8", fontSize: 13, fontFamily: "inherit", outline: "none" }}
               >
                 <option value="app">アプリ内のみ</option>
+                {userConnections.filter(c => c.provider === "gmail").map(c => {
+                  const meta = JSON.parse(c.metadata || "{}");
+                  return <option key={c.id} value={`gmail:${c.id}`}>Gmail - {meta.email || ""}</option>;
+                })}
                 {userConnections.filter(c => c.provider === "discord").map(c => {
                   const meta = JSON.parse(c.metadata || "{}");
                   return <option key={c.id} value={`discord:${c.id}`}>Discord - {meta.guildName || "サーバー"}</option>;
                 })}
               </select>
+              {parsed.outputType === "gmail" && (
+                <div style={{ marginTop: 8 }}>
+                  <input
+                    value={(parsed.outputConfig as Record<string,string>)?.gmailTo || ""}
+                    onChange={(e) => setParsed({ ...parsed, outputConfig: { ...parsed.outputConfig, gmailTo: e.target.value } })}
+                    placeholder="送信先メールアドレス"
+                    style={{ width: "100%", background: "#111318", border: "1px solid #2a2d35", borderRadius: 6, padding: "8px 12px", color: "#9096a8", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" as const, outline: "none" }}
+                  />
+                </div>
+              )}
               {userConnections.length === 0 && (
                 <p style={{ fontSize: 11, color: "#4a5060", marginTop: 6 }}>設定画面からサービスを連携すると、出力先として選べます</p>
               )}

@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { getGmailToken, sendGmailMessage } from "@/lib/gmail";
 import {
   buildDailyAiNewsFallback,
   buildDailyAiNewsSystemPrompt,
@@ -356,6 +357,20 @@ export async function POST(request: NextRequest) {
               headers: { "Content-Type": "application/x-www-form-urlencoded", "Authorization": `Bearer ${conn.accessToken}` },
               body: `message=${encodeURIComponent(`\n${agent.name}\n${finalOutput}`.slice(0, 1000))}`,
             });
+          }
+        }
+        if (agent.outputType === "gmail") {
+          const gmailToken = await getGmailToken(user.id);
+          if (gmailToken) {
+            const gmailTo = config.gmailTo || "";
+            if (gmailTo) {
+              await sendGmailMessage(
+                gmailToken,
+                gmailTo,
+                `[Lattice] ${agent.name}`,
+                finalOutput
+              );
+            }
           }
         }
       } catch (sendError) {
