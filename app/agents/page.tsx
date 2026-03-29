@@ -40,7 +40,7 @@ export default async function AgentsPage() {
           <p className="stat-label">稼働中</p>
         </div>
         <div className="stat-box animate-in">
-          <p className="stat-number" style={{ color: "var(--green)" }}>100</p>
+          <p className="stat-number" style={{ color: "var(--green)" }}>{user.credits}</p>
           <p className="stat-label">残りクレジット</p>
         </div>
         <div className="stat-box animate-in">
