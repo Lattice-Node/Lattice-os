@@ -135,7 +135,7 @@ export default function SettingsClient({ name, email, image, credits, plan, curr
                     <h2 style={{ fontSize: 20, fontWeight: 700, color: "#f0f2f8", margin: 0 }}>{p.label}</h2>
                     <div style={{ textAlign: "right" }}>
                       <span style={{ fontSize: 28, fontWeight: 700, color: "#f0f2f8" }}>{p.price}</span>
-                      <span style={{ fontSize: 13, color: "#6a7080" }}> /mo</span>
+                      <span style={{ fontSize: 13, color: "#6a7080" }}> /月</span>
                     </div>
                   </div>
                   <ul style={{ listStyle: "none", padding: 0, margin: "0 0 18px" }}>
