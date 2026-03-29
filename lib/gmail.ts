@@ -1,5 +1,18 @@
 import { prisma } from "@/lib/prisma";
 
+function markdownToHtml(md: string): string {
+  return md
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`)
+    .replace(/^---$/gm, '<hr>')
+    .replace(/\n{2,}/g, '<br><br>')
+    .replace(/\n/g, '<br>');
+}
+
 export async function getGmailToken(userId: string): Promise<string | null> {
   const connection = await prisma.userConnection.findFirst({
     where: { userId, provider: "gmail" },
@@ -52,9 +65,9 @@ export async function sendGmailMessage(
     `To: ${to}`,
     `Subject: =?UTF-8?B?${Buffer.from(subject).toString("base64")}?=`,
     "MIME-Version: 1.0",
-    "Content-Type: text/plain; charset=UTF-8",
+    "Content-Type: text/html; charset=UTF-8",
     "",
-    body,
+    markdownToHtml(body),
   ].join("\r\n");
 
   const encoded = Buffer.from(message)
