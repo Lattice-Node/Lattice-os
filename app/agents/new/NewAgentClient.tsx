@@ -10,6 +10,8 @@ type ParsedAgent = {
   triggerCron: string;
   prompt: string;
   connections: { type: string; action: string; config: object }[];
+  outputType?: string;
+  outputConfig?: { discordWebhookUrl?: string; lineNotifyToken?: string };
 };
 
 const TEMPLATE_INPUTS: Record<string, string> = {
@@ -94,6 +96,8 @@ export default function NewAgentClient() {
           trigger: parsed.trigger,
           triggerCron: parsed.triggerCron,
           connections: JSON.stringify(parsed.connections),
+        outputType: parsed.outputType || "app",
+        outputConfig: JSON.stringify(parsed.outputConfig || {}),
         }),
       });
       if (!res.ok) throw new Error("保存に失敗しました");
@@ -258,6 +262,37 @@ export default function NewAgentClient() {
                   style={{ width: "100%", background: "#111318", border: "1px solid #2a2d35", borderRadius: 6, padding: "8px 12px", color: "#9096a8", fontSize: 12, lineHeight: 1.65, fontFamily: "inherit", boxSizing: "border-box" as const, outline: "none", resize: "vertical" }}
                 />
               </div>
+
+            <div>
+              <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 6px" }}>出力先</p>
+              <select
+                value={parsed.outputType || "app"}
+                onChange={(e) => setParsed({ ...parsed, outputType: e.target.value })}
+                style={{ width: "100%", background: "#111318", border: "1px solid #2a2d35", borderRadius: 6, padding: "8px 12px", color: "#9096a8", fontSize: 13, fontFamily: "inherit", outline: "none", marginBottom: 8 }}
+              >
+                <option value="app">アプリ内のみ</option>
+                <option value="discord">Discord</option>
+                <option value="line">LINE Notify</option>
+                <option value="app+discord">アプリ内 + Discord</option>
+                <option value="app+line">アプリ内 + LINE</option>
+              </select>
+              {(parsed.outputType === "discord" || parsed.outputType === "app+discord") && (
+                <input
+                  value={parsed.outputConfig?.discordWebhookUrl || ""}
+                  onChange={(e) => setParsed({ ...parsed, outputConfig: { ...parsed.outputConfig, discordWebhookUrl: e.target.value } })}
+                  placeholder="Discord Webhook URL"
+                  style={{ width: "100%", background: "#111318", border: "1px solid #2a2d35", borderRadius: 6, padding: "8px 12px", color: "#9096a8", fontSize: 12, fontFamily: "inherit", boxSizing: "border-box" as const, outline: "none" }}
+                />
+              )}
+              {(parsed.outputType === "line" || parsed.outputType === "app+line") && (
+                <input
+                  value={parsed.outputConfig?.lineNotifyToken || ""}
+                  onChange={(e) => setParsed({ ...parsed, outputConfig: { ...parsed.outputConfig, lineNotifyToken: e.target.value } })}
+                  placeholder="LINE Notify Token"
+                  style={{ width: "100%", background: "#111318", border: "1px solid #2a2d35", borderRadius: 6, padding: "8px 12px", color: "#9096a8", fontSize: 12, fontFamily: "inherit", boxSizing: "border-box" as const, outline: "none" }}
+                />
+              )}
+            </div>
             </div>
             <div style={{ borderTop: "1px solid #22252f", padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <button

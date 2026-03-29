@@ -28,6 +28,7 @@ type AgentShape = {
   trigger: string | null;
   triggerCron: string | null;
   outputType: string;
+  outputConfig: string;
 };
 
 function getErrorMessage(error: unknown) {
@@ -221,6 +222,7 @@ export async function POST(request: NextRequest) {
         trigger: true,
         triggerCron: true,
         outputType: true,
+        outputConfig: true,
       },
     });
 
@@ -306,6 +308,29 @@ export async function POST(request: NextRequest) {
         where: { id: user.id },
         data: { credits: { decrement: 2 } },
       });
+    }
+
+    // 外部出力先への送信
+    if (finalOutput && agent.outputType !== "app") {
+      try {
+        const config = JSON.parse(agent.outputConfig || "{}");
+        if ((agent.outputType === "discord" || agent.outputType === "app+discord") && config.discordWebhookUrl) {
+          await fetch(config.discordWebhookUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ content: `**${agent.name}**\n${finalOutput}`.slice(0, 2000) }),
+          });
+        }
+        if ((agent.outputType === "line" || agent.outputType === "app+line") && config.lineNotifyToken) {
+          await fetch("https://notify-api.line.me/api/notify", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded", "Authorization": `Bearer ${config.lineNotifyToken}` },
+            body: `message=${encodeURIComponent(`\n${agent.name}\n${finalOutput}`.slice(0, 1000))}`,
+          });
+        }
+      } catch (sendError) {
+        console.error("Output delivery failed:", sendError);
+      }
     }
 
     return NextResponse.json({

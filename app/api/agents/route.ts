@@ -66,7 +66,7 @@ export async function POST(req: Request) {
     });
   }
 
-  const { name, description, prompt, trigger, triggerCron, connections } = await req.json();
+  const { name, description, prompt, trigger, triggerCron, connections, outputType, outputConfig } = await req.json();
   const nextRunAt = trigger === "schedule" && triggerCron
     ? calcNextRunAt(triggerCron)
     : null;
@@ -80,6 +80,8 @@ export async function POST(req: Request) {
       trigger,
       triggerCron: triggerCron ?? "",
       connections: connections ?? "[]",
+      outputType: outputType ?? "app",
+      outputConfig: outputConfig ?? "{}",
       nextRunAt,
     },
   });
