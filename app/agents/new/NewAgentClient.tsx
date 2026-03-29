@@ -92,6 +92,7 @@ export default function NewAgentClient() {
           outputConfig: JSON.stringify(parsed.outputConfig || {}),
         }),
       });
+      if (res.status === 403) throw new Error("フリープランではエージェントは3体までです。アップグレードしてください。");
       if (!res.ok) throw new Error("保存に失敗しました");
       const data = await res.json();
       router.push(`/agents/${data.agent.id}`);

@@ -52,6 +52,7 @@ export default function SettingsClient({ name, email, image, credits, plan, curr
 
   const searchParams = useSearchParams();
   const success = searchParams.get("success");
+  const errorParam = searchParams.get("error");
 
   const handlePurchase = async (planId: string) => {
     setPurchasing(planId);
@@ -174,6 +175,12 @@ export default function SettingsClient({ name, email, image, credits, plan, curr
       <div style={{ maxWidth: 420, margin: "0 auto", padding: "48px 20px 24px" }}>
         <p style={sectionLabel}>設定</p>
 
+        {errorParam === "upgrade" && (
+          <div style={{ background: "#2a1a0f", border: "1px solid #4a3a1a", borderRadius: 10, padding: "12px 16px", marginBottom: 12 }}>
+            <p style={{ fontSize: 13, color: "#fbbf24", margin: 0 }}>外部連携にはパーソナルプラン以上が必要です</p>
+          </div>
+        )}
+
         {success === "credits" && (
           <div style={{ background: "#0f2a1a", border: "1px solid #1a4a2a", borderRadius: 10, padding: "12px 16px", marginBottom: 12 }}>
             <p style={{ fontSize: 13, color: "#4ade80", margin: 0 }}>クレジットを購入しました</p>
@@ -258,13 +265,13 @@ export default function SettingsClient({ name, email, image, credits, plan, curr
             {!connections.find(c => c.provider === "gmail") && (
               <a href="/api/connections/gmail" style={{ display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", borderRadius: 8, border: "1px solid #2e3440", textDecoration: "none", cursor: "pointer" }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 18h-2V9.25L12 13 6 9.25V18H4V6h1.2l6.8 4.25L18.8 6H20v12z" fill="#EA4335"/><rect x="2" y="4" width="20" height="16" rx="2" stroke="#EA4335" strokeWidth="1.5" fill="none"/></svg>
-                <span style={{ fontSize: 14, color: "#c0c4d0" }}>Gmailを連携する</span>
+                <span style={{ fontSize: 14, color: "#c0c4d0" }}>{isPaid ? "Gmailを連携する" : "Gmail連携 (要アップグレード)"}</span>
               </a>
             )}
             {!connections.find(c => c.provider === "discord") && (
               <a href="/api/connections/discord" style={{ display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", borderRadius: 8, border: "1px solid #2e3440", textDecoration: "none", cursor: "pointer" }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="#5865F2"><path d="M20.32 4.37a19.8 19.8 0 00-4.89-1.52.07.07 0 00-.08.04c-.21.38-.44.87-.61 1.26a18.27 18.27 0 00-5.49 0 12.64 12.64 0 00-.62-1.26.08.08 0 00-.08-.04 19.74 19.74 0 00-4.89 1.52.07.07 0 00-.03.03C.53 9.05-.32 13.58.1 18.06a.08.08 0 00.03.06 19.9 19.9 0 005.99 3.03.08.08 0 00.08-.03c.46-.63.87-1.3 1.22-2a.08.08 0 00-.04-.11 13.1 13.1 0 01-1.87-.9.08.08 0 01-.01-.13c.13-.09.25-.19.37-.29a.08.08 0 01.08-.01c3.93 1.79 8.18 1.79 12.07 0a.08.08 0 01.08.01c.12.1.25.2.37.29a.08.08 0 01-.01.13c-.6.35-1.22.65-1.87.9a.08.08 0 00-.04.11c.36.7.77 1.37 1.22 2a.08.08 0 00.08.03 19.83 19.83 0 006-3.03.08.08 0 00.03-.06c.5-5.18-.84-9.68-3.55-13.66a.06.06 0 00-.03-.03zM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.96 2.42-2.16 2.42zm7.97 0c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.95 2.42-2.16 2.42z"/></svg>
-                <span style={{ fontSize: 14, color: "#c0c4d0" }}>Discordを連携する</span>
+                <span style={{ fontSize: 14, color: "#c0c4d0" }}>{isPaid ? "Discordを連携する" : "Discord連携 (要アップグレード)"}</span>
               </a>
             )}
           </div>
