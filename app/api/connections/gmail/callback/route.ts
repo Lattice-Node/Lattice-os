@@ -1,11 +1,28 @@
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-  const code = request.nextUrl.searchParams.get("code");
-  const userId = request.nextUrl.searchParams.get("state");
+  const session = await auth();
+  if (!session?.user?.email) {
+    return NextResponse.redirect(
+      new URL("/settings?error=gmail_failed", process.env.NEXTAUTH_URL)
+    );
+  }
 
-  if (!code || !userId) {
+  const code = request.nextUrl.searchParams.get("code");
+  if (!code) {
+    return NextResponse.redirect(
+      new URL("/settings?error=gmail_failed", process.env.NEXTAUTH_URL)
+    );
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: { id: true },
+  });
+
+  if (!user) {
     return NextResponse.redirect(
       new URL("/settings?error=gmail_failed", process.env.NEXTAUTH_URL)
     );
@@ -40,12 +57,12 @@ export async function GET(request: NextRequest) {
     const profile = await profileRes.json();
 
     await prisma.userConnection.deleteMany({
-      where: { userId, provider: "gmail" },
+      where: { userId: user.id, provider: "gmail" },
     });
 
     await prisma.userConnection.create({
       data: {
-        userId,
+        userId: user.id,
         provider: "gmail",
         accessToken: tokens.access_token,
         refreshToken: tokens.refresh_token || null,

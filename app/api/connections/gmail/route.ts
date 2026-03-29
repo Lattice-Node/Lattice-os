@@ -1,10 +1,10 @@
-import { auth } from "@/lib/auth";
+import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.redirect(new URL("/login", process.env.NEXTAUTH_URL));
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const params = new URLSearchParams({
@@ -14,7 +14,6 @@ export async function GET() {
     scope: "https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send",
     access_type: "offline",
     prompt: "consent",
-    state: session.user.id,
   });
 
   return NextResponse.redirect(
