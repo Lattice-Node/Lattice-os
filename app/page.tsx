@@ -183,7 +183,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Pricing - temporarily hidden
+        {/* Pricing */}
         <section style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px 100px" }}>
           <div style={{ marginBottom: 56, textAlign: "center" }}>
             <p style={{ fontSize: 11, color: DIM, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 14 }}>料金</p>
@@ -193,9 +193,9 @@ export default function HomePage() {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
             {[
-              { name: "Free", price: "無料", desc: "個人利用・試しに使う", features: ["エージェント2個まで", "100クレジット付与", "アプリ内通知"], highlight: false },
-              { name: "Personal", price: "¥980", desc: "個人事業主・フリーランス", features: ["500クレジット", "エージェント10個", "アプリ内通知", "メール通知"], highlight: true },
-              { name: "Business", price: "¥4,980", desc: "チーム・中小企業向け", features: ["5,000クレジット", "エージェント無制限", "全通知対応", "チーム共有", "優先サポート"], highlight: false },
+              { name: "Free", price: "0", desc: "まずは試してみたい方に", features: ["月30クレジット (15回実行)", "エージェント3体まで", "スケジュール実行", "アプリ内出力のみ"], highlight: false },
+              { name: "Personal", price: "980", desc: "個人で本格活用したい方に", features: ["月300クレジット (150回実行)", "エージェント無制限", "Gmail / Discord 連携", "クレジット追加購入"], highlight: true },
+              { name: "Business", price: "4,980", desc: "チーム・ビジネス利用に", features: ["月1,500クレジット (750回実行)", "エージェント無制限", "全連携 (LINE含む)", "優先サポート", "クレジット追加購入"], highlight: false },
             ].map((plan) => (
               <div key={plan.name} className="plan-card" style={{
                 padding: "32px 28px",
@@ -204,15 +204,15 @@ export default function HomePage() {
                 borderRadius: 10, transition: "border-color 0.15s",
               }}>
                 {plan.highlight && (
-                  <span style={{ fontSize: 11, color: ACCENT, fontWeight: 600, letterSpacing: "0.06em", display: "block", marginBottom: 12 }}>人気</span>
+                  <span style={{ fontSize: 11, color: ACCENT, fontWeight: 600, letterSpacing: "0.06em", display: "block", marginBottom: 12 }}>おすすめ</span>
                 )}
                 <p style={{ fontSize: 14, fontWeight: 600, color: MUTED, margin: "0 0 8px" }}>{plan.name}</p>
-                <p style={{ fontSize: 28, fontWeight: 700, color: "#fff", letterSpacing: "-0.03em", margin: "0 0 6px" }}>{plan.price}</p>
+                <div style={{ margin: "0 0 6px" }}><span style={{ fontSize: 14, color: "#9096a8", verticalAlign: "top" }}>&#165;</span><span style={{ fontSize: 28, fontWeight: 700, color: "#fff", letterSpacing: "-0.03em" }}>{plan.price}</span><span style={{ fontSize: 13, color: "#4a5060" }}>/月</span></div>
                 <p style={{ fontSize: 12, color: DIM, margin: "0 0 24px" }}>{plan.desc}</p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {plan.features.map((f) => (
                     <div key={f} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ color: ACCENT, fontSize: 13 }}>✓</span>
+                      <span style={{ color: ACCENT, fontSize: 13 }}>+</span>
                       <span style={{ fontSize: 13, color: MUTED }}>{f}</span>
                     </div>
                   ))}
@@ -225,13 +225,12 @@ export default function HomePage() {
                   border: plan.highlight ? "none" : `1px solid ${BORDER}`,
                   textDecoration: "none",
                 }}>
-                  はじめる
+                  {plan.name === "Free" ? "無料ではじめる" : "アップグレード"}
                 </Link>
               </div>
             ))}
           </div>
         </section>
-        */}
 
         {/* CTA */}
         <section style={{ borderTop: `1px solid ${BORDER}`, padding: "100px 24px", textAlign: "center" }}>

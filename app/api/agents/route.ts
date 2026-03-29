@@ -66,8 +66,8 @@ export async function POST(req: Request) {
     });
   }
 
-  // Free plan: max 3 agents
-  if (user.plan === "free") {
+  // Free plan: max 3 agents (admin bypasses)
+  if (user.plan === "free" && user.role !== "admin") {
     const agentCount = await prisma.userAgent.count({ where: { userId: user.id } });
     if (agentCount >= 3) {
       return NextResponse.json({ error: "Free plan limit: max 3 agents" }, { status: 403 });
