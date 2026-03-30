@@ -31,6 +31,8 @@ const sectionLabel = { fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", 
 export default function SettingsClient({ name, email, image, credits, plan, currentPeriodEnd, role }: Props) {
   const [deleting, setDeleting] = useState(false);
   const [confirm, setConfirm] = useState(false);
+  const [showNews, setShowNews] = useState<number | null>(null);
+  const [showAbout, setShowAbout] = useState<number | null>(null);
   const [purchasing, setPurchasing] = useState<string | null>(null);
   const [showCredit, setShowCredit] = useState(false);
   const [showPlans, setShowPlans] = useState(false);
@@ -316,6 +318,79 @@ const handleLineGenerate = async () => {
           )}
         </div>
 
+        {/* Lattice News */}
+        <div style={cardStyle}>
+          <p style={sectionLabel}>Lattice ニュース</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <button onClick={() => setShowNews(showNews === 1 ? null : 1)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", borderRadius: 8, border: "1px solid #2e3440", background: "#0e1117", color: "#c0c4d0", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+              <span>LINE連携機能を追加しました</span>
+              <span style={{ fontSize: 14, color: "#4a5060", transform: showNews === 1 ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>&rarr;</span>
+            </button>
+            {showNews === 1 && (
+              <div style={{ padding: "12px 14px", borderRadius: 8, background: "#0e1117", fontSize: 12, color: "#6a7080", lineHeight: 1.7 }}>
+                Businessプランのユーザーは、エージェントの実行結果をLINEで受け取れるようになりました。設定画面のサービス連携からLINE Botを友だち追加して連携できます。
+              </div>
+            )}
+            <button onClick={() => setShowNews(showNews === 2 ? null : 2)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", borderRadius: 8, border: "1px solid #2e3440", background: "#0e1117", color: "#c0c4d0", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+              <span>サブスクリプション機能を追加しました</span>
+              <span style={{ fontSize: 14, color: "#4a5060", transform: showNews === 2 ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>&rarr;</span>
+            </button>
+            {showNews === 2 && (
+              <div style={{ padding: "12px 14px", borderRadius: 8, background: "#0e1117", fontSize: 12, color: "#6a7080", lineHeight: 1.7 }}>
+                Personal（¥980/月）とBusiness（¥4,980/月）プランが利用可能になりました。有料プランではクレジット追加購入、Gmail/Discord連携、無制限エージェント作成が使えます。
+              </div>
+            )}
+            <button onClick={() => setShowNews(showNews === 3 ? null : 3)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", borderRadius: 8, border: "1px solid #2e3440", background: "#0e1117", color: "#c0c4d0", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+              <span>テンプレートストアを追加しました</span>
+              <span style={{ fontSize: 14, color: "#4a5060", transform: showNews === 3 ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>&rarr;</span>
+            </button>
+            {showNews === 3 && (
+              <div style={{ padding: "12px 14px", borderRadius: 8, background: "#0e1117", fontSize: 12, color: "#6a7080", lineHeight: 1.7 }}>
+                ストアからテンプレートを選んで、設定項目を入力するだけでエージェントを即作成できるようになりました。AIニュース要約、競合サイト監視、天気予報など8種類のテンプレートを用意しています。
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* About Lattice */}
+        <div style={cardStyle}>
+          <p style={sectionLabel}>Lattice の性能について</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <button onClick={() => setShowAbout(showAbout === 1 ? null : 1)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", borderRadius: 8, border: "1px solid #2e3440", background: "#0e1117", color: "#c0c4d0", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+              <span>できること</span>
+              <span style={{ fontSize: 14, color: "#4a5060", transform: showAbout === 1 ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>&rarr;</span>
+            </button>
+            {showAbout === 1 && (
+              <div style={{ padding: "12px 14px", borderRadius: 8, background: "#0e1117", fontSize: 12, color: "#6a7080", lineHeight: 1.7 }}>
+                ・Web上の最新情報を検索して要約・分析<br/>
+                ・スケジュール実行（毎日・毎週など）で定期的に自動実行<br/>
+                ・結果をアプリ内受信箱・Gmail・Discord・LINEに自動送信<br/>
+                ・日本語の自然文から自動でエージェントを設定
+              </div>
+            )}
+            <button onClick={() => setShowAbout(showAbout === 2 ? null : 2)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", borderRadius: 8, border: "1px solid #2e3440", background: "#0e1117", color: "#c0c4d0", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+              <span>現在できないこと</span>
+              <span style={{ fontSize: 14, color: "#4a5060", transform: showAbout === 2 ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>&rarr;</span>
+            </button>
+            {showAbout === 2 && (
+              <div style={{ padding: "12px 14px", borderRadius: 8, background: "#0e1117", fontSize: 12, color: "#6a7080", lineHeight: 1.7 }}>
+                ・X（Twitter）やInstagramなどSNSのリアルタイム監視（API未連携のため）<br/>
+                ・ファイルのアップロード・処理<br/>
+                ・リアルタイムの即時通知（スケジュール実行ベースです）<br/>
+                ・100%正確な情報の保証（AI生成のため、誤りが含まれる場合があります）
+              </div>
+            )}
+            <button onClick={() => setShowAbout(showAbout === 3 ? null : 3)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", borderRadius: 8, border: "1px solid #2e3440", background: "#0e1117", color: "#c0c4d0", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+              <span>開発者より</span>
+              <span style={{ fontSize: 14, color: "#4a5060", transform: showAbout === 3 ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>&rarr;</span>
+            </button>
+            {showAbout === 3 && (
+              <div style={{ padding: "12px 14px", borderRadius: 8, background: "#0e1117", fontSize: 12, color: "#6a7080", lineHeight: 1.7 }}>
+                Latticeは現在ベータ版です。費用が貯まり次第、順次機能を追加していくのでよろしくお願いします。ご要望やバグ報告は X（@Lattice_Node）までお気軽にどうぞ。
+              </div>
+            )}
+          </div>
+        </div>
         {/* Links */}
         <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
           <a href="/privacy" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid #2e3440", textDecoration: "none" }}>
