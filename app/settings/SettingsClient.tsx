@@ -320,7 +320,7 @@ const handleLineGenerate = async () => {
 
         {/* Lattice News & About - card buttons */}
         <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
-          <button onClick={() => setSubView("news")} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", borderBottom: "1px solid #2e3440", background: "transparent", border: "none", borderBottom: "1px solid #2e3440", cursor: "pointer", fontFamily: "inherit" }}>
+          <button onClick={() => setSubView("news")} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", background: "transparent", border: "none", borderBottom: "1px solid #2e3440", cursor: "pointer", fontFamily: "inherit" }}>
             <div style={{ textAlign: "left" }}>
               <p style={{ fontSize: 15, fontWeight: 600, color: "#e8eaf0", margin: "0 0 4px" }}>Lattice ニュース</p>
               <p style={{ fontSize: 12, color: "#6a7080", margin: 0 }}>新機能・アップデート情報</p>
