@@ -27,8 +27,8 @@ const TEMPLATE_INPUTS: Record<string, string> = {
 
 const EXAMPLES = [
   "毎朝9時にGmailの未読メールを要約して通知する",
-  "Xで自社名が言及されたら即座に通知する",
-  "毎週月曜の朝、先週のタスクをまとめて届ける",
+  "毎日、競合サイトの更新をチェックして通知する",
+  "毎朝8時にAI・テクノロジーの最新ニュースを届ける",
 ];
 
 export default function NewAgentClient() {
