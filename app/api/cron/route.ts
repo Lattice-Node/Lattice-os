@@ -1,67 +1,209 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import Anthropic from "@anthropic-ai/sdk";
+import { extractTextFromClaudeResponse, isDailyAiNewsAgent, normalizeDailyAiNewsOutput, buildDailyAiNewsSystemPrompt, buildDailyAiNewsUserPrompt } from "@/lib/agents/daily-ai-news";
+import { getGmailToken, sendGmailMessage, readGmailMessages } from "@/lib/gmail";
 
-export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const maxDuration = 60;
+
+function getNextRunAt(triggerCron: string | null): Date | null {
+  if (!triggerCron) return null;
+  // triggerCron is HH:MM format (e.g. "08:00")
+  const match = triggerCron.match(/^(\d{1,2}):(\d{2})$/);
+  if (!match) return null;
+  const h = parseInt(match[1], 10);
+  const m = parseInt(match[2], 10);
+  // Calculate next run in JST (UTC+9)
+  const now = new Date();
+  const jstNow = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  const jstNext = new Date(jstNow);
+  jstNext.setUTCHours(h, m, 0, 0);
+  if (jstNext <= jstNow) {
+    jstNext.setUTCDate(jstNext.getUTCDate() + 1);
+  }
+  // Convert back to UTC
+  return new Date(jstNext.getTime() - 9 * 60 * 60 * 1000);
+}
+
+function buildSystemPrompt() {
+  return [
+    "あなたはLattice上で動作する有能なAIエージェントです。",
+    "ユーザーの依頼を正確に処理してください。",
+    "不要な前置きは避け、分かりやすく構造化して出力してください。",
+    "日本語で返答してください。",
+  ].join("\n");
+}
 
 export async function GET(req: NextRequest) {
-  const secret = req.headers.get("x-cron-secret");
-  if (secret !== process.env.CRON_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // Verify cron secret (Vercel cron or manual call)
+  const authHeader = req.headers.get("authorization");
+  const cronSecret = process.env.CRON_SECRET;
+  const isVercelCron = req.headers.get("x-vercel-cron") === "true" || req.headers.get("user-agent")?.includes("vercel-cron");
+  const isSecretValid = cronSecret && (
+    req.headers.get("x-cron-secret") === cronSecret ||
+    authHeader === `Bearer ${cronSecret}`
+  );
+
+  if (!isVercelCron && !isSecretValid) {
+    // Also warm up DB
+    await prisma.$queryRaw`SELECT 1`;
+    return NextResponse.json({ ok: true, message: "warmup only", ts: Date.now() });
   }
 
   const now = new Date();
+
+  // Find all active agents with nextRunAt in the past
   const agents = await prisma.userAgent.findMany({
     where: {
       active: true,
       nextRunAt: { lte: now },
     },
+    include: {
+      user: { select: { id: true, email: true, credits: true, role: true } },
+    },
   });
 
+  if (agents.length === 0) {
+    return NextResponse.json({ ran: 0, message: "No agents to run" });
+  }
+
   const results = [];
+
   for (const agent of agents) {
+    const user = agent.user;
+    if (!user) continue;
+
+    // Check credits (skip for admin)
+    if (user.role !== "admin" && (user.credits ?? 0) < 2) {
+      results.push({ id: agent.id, name: agent.name, status: "skipped", reason: "no credits" });
+      continue;
+    }
+
     try {
-      const res = await fetch(`${process.env.NEXTAUTH_URL}/api/execute`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          agentId: agent.id,
-          agentName: agent.name,
-          agentPrompt: agent.prompt,
-          task: "Run scheduled task",
-        }),
+      const apiKey = process.env.ANTHROPIC_API_KEY;
+      if (!apiKey) throw new Error("ANTHROPIC_API_KEY not set");
+
+      const client = new Anthropic({ apiKey });
+      const isDailyNews = isDailyAiNewsAgent({
+        name: agent.name,
+        description: agent.description,
+        prompt: agent.prompt,
       });
 
+      // Gmail context injection
+      let extraContext = "";
+      const agentText = [agent.name, agent.description, agent.prompt].filter(Boolean).join(" ").toLowerCase();
+      const mentionsGmail = agentText.includes("gmail") || agentText.includes("メール") || agentText.includes("mail");
+      if (mentionsGmail) {
+        try {
+          const gmailToken = await getGmailToken(user.id);
+          if (gmailToken) {
+            const emails = await readGmailMessages(gmailToken, 10);
+            if (emails.length > 0) {
+              extraContext = "--- 取得したGmailの未読メール ---\n" +
+                emails.map((e: { from: string; subject: string; snippet: string; date: string }, i: number) =>
+                  `${i + 1}. 差出人: ${e.from}\n 件名: ${e.subject}\n 概要: ${e.snippet}\n 日時: ${e.date}`
+                ).join("\n\n");
+            }
+          }
+        } catch {}
+      }
+
+      const systemPrompt = isDailyNews ? buildDailyAiNewsSystemPrompt() : buildSystemPrompt();
+      const userPrompt = isDailyNews
+        ? buildDailyAiNewsUserPrompt({ now })
+        : [
+            `エージェント名: ${agent.name}`,
+            agent.description ? `説明: ${agent.description}` : "",
+            agent.prompt ? `指示: ${agent.prompt}` : "",
+          ].filter(Boolean).join("\n\n") + (extraContext ? "\n\n" + extraContext : "");
+
+      const message = await client.messages.create({
+        model: process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001",
+        max_tokens: 1400,
+        system: systemPrompt,
+        messages: [{ role: "user", content: userPrompt }],
+        tools: [{ type: "web_search_20250305", name: "web_search" }],
+      });
+
+      let output = extractTextFromClaudeResponse(message.content) || "";
+      if (isDailyNews) output = normalizeDailyAiNewsOutput(output, now);
+      output = output.trim();
+
+      if (!output) throw new Error("Empty response from AI");
+
+      // Save log
       await prisma.agentLog.create({
-        data: {
-          agentId: agent.id,
-          userId: agent.userId,
-          status: res.ok ? "success" : "error",
-          output: res.ok ? "Executed successfully" : "",
-          error: res.ok ? "" : "Execution failed",
-        },
+        data: { agentId: agent.id, userId: user.id, status: "success", output, error: "" },
       });
 
+      // Update agent
+      const nextRun = getNextRunAt(agent.triggerCron);
       await prisma.userAgent.update({
         where: { id: agent.id },
         data: {
-          lastRunAt: now,
           runCount: { increment: 1 },
+          lastRunAt: now,
+          ...(nextRun ? { nextRunAt: nextRun } : {}),
         },
       });
 
-      results.push({ id: agent.id, status: "ok" });
-    } catch (e) {
+      // Deduct credits
+      if (user.role !== "admin") {
+        await prisma.user.update({ where: { id: user.id }, data: { credits: { decrement: 2 } } });
+      }
+
+      // External output
+      if (agent.outputType !== "app") {
+        try {
+          const config = JSON.parse(agent.outputConfig || "{}");
+          if (agent.outputType === "discord") {
+            const conn = await prisma.userConnection.findFirst({ where: { userId: user.id, provider: "discord" } });
+            const meta = conn ? JSON.parse(conn.metadata || "{}") : {};
+            const webhookUrl = config.discordWebhookUrl || meta.webhookUrl || "";
+            if (webhookUrl) {
+              await fetch(webhookUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ content: `**${agent.name}**\n${output}`.slice(0, 2000) }),
+              });
+            }
+          }
+          if (agent.outputType === "line") {
+            const { sendLineMessage } = await import("@/lib/line");
+            const lineConn = await prisma.userConnection.findFirst({ where: { userId: user.id, provider: "line" } });
+            if (lineConn?.accessToken) {
+              await sendLineMessage(lineConn.accessToken, `${agent.name}\n\n${output}`.slice(0, 5000));
+            }
+          }
+          if (agent.outputType === "gmail") {
+            const gmailToken = await getGmailToken(user.id);
+            if (gmailToken && config.gmailTo) {
+              await sendGmailMessage(gmailToken, config.gmailTo, `[Lattice] ${agent.name}`, output);
+            }
+          }
+        } catch (sendErr) {
+          console.error("Output delivery failed:", sendErr);
+        }
+      }
+
+      results.push({ id: agent.id, name: agent.name, status: "success" });
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
       await prisma.agentLog.create({
-        data: {
-          agentId: agent.id,
-          userId: agent.userId,
-          status: "error",
-          error: String(e),
-        },
+        data: { agentId: agent.id, userId: user.id, status: "error", output: "", error: errMsg },
       });
-      results.push({ id: agent.id, status: "error" });
+
+      // Still update nextRunAt so it doesn't retry forever
+      const nextRun = getNextRunAt(agent.triggerCron);
+      if (nextRun) {
+        await prisma.userAgent.update({ where: { id: agent.id }, data: { nextRunAt: nextRun } });
+      }
+
+      results.push({ id: agent.id, name: agent.name, status: "error", error: errMsg });
     }
   }
 
-  return NextResponse.json({ ran: results.length, results });
+  return NextResponse.json({ ran: results.length, results, ts: Date.now() });
 }

@@ -43,26 +43,36 @@ export default function AgentsList({ agents }: { agents: Agent[] }) {
   }
 
   if (items.length === 0) {
+    const steps = [
+      { num: "1", title: "ストアからテンプレートを選ぶ", desc: "すぐに使えるAIエージェントのテンプレートが揃っています。" },
+      { num: "2", title: "カスタマイズする", desc: "対象サイトやキーワードなど、あなたの用途に合わせて設定。" },
+      { num: "3", title: "自動で動き続ける", desc: "スケジュール通りにAIが実行。結果はアプリに届きます。" },
+    ];
     return (
-      <div style={{ textAlign: "center", padding: "48px 24px" }}>
-        <div style={{ width: 56, height: 56, borderRadius: 16, background: "rgba(108,113,232,0.1)", border: "1px solid rgba(108,113,232,0.2)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px" }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6c71e8" strokeWidth="1.5">
-            <rect x="3" y="4" width="18" height="15" rx="2" />
-            <path d="M3 9h18M9 9v10" />
-          </svg>
+      <div style={{ padding: "16px 0" }}>
+        <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 14, padding: "28px 20px", marginBottom: 16 }}>
+          <p style={{ fontSize: 18, fontWeight: 700, color: "#e8eaf0", margin: "0 0 6px" }}>Lattice へようこそ</p>
+          <p style={{ fontSize: 13, color: "#6a7080", margin: "0 0 20px", lineHeight: 1.6 }}>
+            AIエージェントがあなたの代わりに情報収集や通知を自動で行います。
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {steps.map((s) => (
+              <div key={s.num} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <div style={{ width: 28, height: 28, borderRadius: 8, background: "rgba(108,113,232,0.12)", border: "1px solid rgba(108,113,232,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 13, fontWeight: 600, color: "#6c71e8" }}>{s.num}</div>
+                <div>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#e8eaf0", margin: "0 0 2px" }}>{s.title}</p>
+                  <p style={{ fontSize: 12, color: "#6a7080", margin: 0, lineHeight: 1.5 }}>{s.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-        <p style={{ fontSize: 16, fontWeight: 600, color: "#e8eaf0", margin: "0 0 8px" }}>
-          エージェントがありません
-        </p>
-        <p style={{ fontSize: 13, color: "#6a7080", margin: "0 0 24px", lineHeight: 1.6 }}>
-          ストアからテンプレートを追加するか、<br />自分でエージェントを作成してください
-        </p>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <Link href="/store" style={{ display: "block", padding: "12px", borderRadius: 10, background: "#6c71e8", color: "#fff", fontSize: 14, fontWeight: 600, textDecoration: "none" }}>
-            ストアを見る
+          <Link href="/store" style={{ display: "block", padding: "14px", borderRadius: 10, background: "#6c71e8", color: "#fff", fontSize: 14, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>
+            ストアからエージェントを追加
           </Link>
-          <Link href="/agents/new" style={{ display: "block", padding: "12px", borderRadius: 10, border: "1px solid #2e3440", background: "transparent", color: "#9096a8", fontSize: 14, textDecoration: "none" }}>
-            自分で作成する
+          <Link href="/agents/new" style={{ display: "block", padding: "14px", borderRadius: 10, border: "1px solid #2e3440", background: "#1c2028", color: "#9096a8", fontSize: 14, textDecoration: "none", textAlign: "center" }}>
+            自分でエージェントを作成する
           </Link>
         </div>
       </div>
