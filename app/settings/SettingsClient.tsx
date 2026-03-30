@@ -31,8 +31,8 @@ const sectionLabel = { fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", 
 export default function SettingsClient({ name, email, image, credits, plan, currentPeriodEnd, role }: Props) {
   const [deleting, setDeleting] = useState(false);
   const [confirm, setConfirm] = useState(false);
-  const [showNews, setShowNews] = useState<number | null>(null);
-  const [showAbout, setShowAbout] = useState<number | null>(null);
+  const [subView, setSubView] = useState<string | null>(null);
+  const [newsDetail, setNewsDetail] = useState<number | null>(null);
   const [purchasing, setPurchasing] = useState<string | null>(null);
   const [showCredit, setShowCredit] = useState(false);
   const [showPlans, setShowPlans] = useState(false);
@@ -318,79 +318,111 @@ const handleLineGenerate = async () => {
           )}
         </div>
 
-        {/* Lattice News */}
-        <div style={cardStyle}>
-          <p style={sectionLabel}>Lattice ニュース</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <button onClick={() => setShowNews(showNews === 1 ? null : 1)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", borderRadius: 8, border: "1px solid #2e3440", background: "#0e1117", color: "#c0c4d0", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
-              <span>LINE連携機能を追加しました</span>
-              <span style={{ fontSize: 14, color: "#4a5060", transform: showNews === 1 ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>&rarr;</span>
-            </button>
-            {showNews === 1 && (
-              <div style={{ padding: "12px 14px", borderRadius: 8, background: "#0e1117", fontSize: 12, color: "#6a7080", lineHeight: 1.7 }}>
-                Businessプランのユーザーは、エージェントの実行結果をLINEで受け取れるようになりました。設定画面のサービス連携からLINE Botを友だち追加して連携できます。
-              </div>
-            )}
-            <button onClick={() => setShowNews(showNews === 2 ? null : 2)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", borderRadius: 8, border: "1px solid #2e3440", background: "#0e1117", color: "#c0c4d0", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
-              <span>サブスクリプション機能を追加しました</span>
-              <span style={{ fontSize: 14, color: "#4a5060", transform: showNews === 2 ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>&rarr;</span>
-            </button>
-            {showNews === 2 && (
-              <div style={{ padding: "12px 14px", borderRadius: 8, background: "#0e1117", fontSize: 12, color: "#6a7080", lineHeight: 1.7 }}>
-                Personal（¥980/月）とBusiness（¥4,980/月）プランが利用可能になりました。有料プランではクレジット追加購入、Gmail/Discord連携、無制限エージェント作成が使えます。
-              </div>
-            )}
-            <button onClick={() => setShowNews(showNews === 3 ? null : 3)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", borderRadius: 8, border: "1px solid #2e3440", background: "#0e1117", color: "#c0c4d0", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
-              <span>テンプレートストアを追加しました</span>
-              <span style={{ fontSize: 14, color: "#4a5060", transform: showNews === 3 ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>&rarr;</span>
-            </button>
-            {showNews === 3 && (
-              <div style={{ padding: "12px 14px", borderRadius: 8, background: "#0e1117", fontSize: 12, color: "#6a7080", lineHeight: 1.7 }}>
-                ストアからテンプレートを選んで、設定項目を入力するだけでエージェントを即作成できるようになりました。AIニュース要約、競合サイト監視、天気予報など8種類のテンプレートを用意しています。
-              </div>
-            )}
-          </div>
+        {/* Lattice News & About - card buttons */}
+        <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
+          <button onClick={() => setSubView("news")} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", borderBottom: "1px solid #2e3440", background: "transparent", border: "none", borderBottom: "1px solid #2e3440", cursor: "pointer", fontFamily: "inherit" }}>
+            <div style={{ textAlign: "left" }}>
+              <p style={{ fontSize: 15, fontWeight: 600, color: "#e8eaf0", margin: "0 0 4px" }}>Lattice ニュース</p>
+              <p style={{ fontSize: 12, color: "#6a7080", margin: 0 }}>新機能・アップデート情報</p>
+            </div>
+            <span style={{ fontSize: 16, color: "#4a5060" }}>&rsaquo;</span>
+          </button>
+          <button onClick={() => setSubView("about")} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", background: "transparent", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
+            <div style={{ textAlign: "left" }}>
+              <p style={{ fontSize: 15, fontWeight: 600, color: "#e8eaf0", margin: "0 0 4px" }}>Lattice の性能について</p>
+              <p style={{ fontSize: 12, color: "#6a7080", margin: 0 }}>できること・できないこと</p>
+            </div>
+            <span style={{ fontSize: 16, color: "#4a5060" }}>&rsaquo;</span>
+          </button>
         </div>
 
-        {/* About Lattice */}
-        <div style={cardStyle}>
-          <p style={sectionLabel}>Lattice の性能について</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <button onClick={() => setShowAbout(showAbout === 1 ? null : 1)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", borderRadius: 8, border: "1px solid #2e3440", background: "#0e1117", color: "#c0c4d0", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
-              <span>できること</span>
-              <span style={{ fontSize: 14, color: "#4a5060", transform: showAbout === 1 ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>&rarr;</span>
-            </button>
-            {showAbout === 1 && (
-              <div style={{ padding: "12px 14px", borderRadius: 8, background: "#0e1117", fontSize: 12, color: "#6a7080", lineHeight: 1.7 }}>
-                ・Web上の最新情報を検索して要約・分析<br/>
-                ・スケジュール実行（毎日・毎週など）で定期的に自動実行<br/>
-                ・結果をアプリ内受信箱・Gmail・Discord・LINEに自動送信<br/>
-                ・日本語の自然文から自動でエージェントを設定
-              </div>
-            )}
-            <button onClick={() => setShowAbout(showAbout === 2 ? null : 2)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", borderRadius: 8, border: "1px solid #2e3440", background: "#0e1117", color: "#c0c4d0", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
-              <span>現在できないこと</span>
-              <span style={{ fontSize: 14, color: "#4a5060", transform: showAbout === 2 ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>&rarr;</span>
-            </button>
-            {showAbout === 2 && (
-              <div style={{ padding: "12px 14px", borderRadius: 8, background: "#0e1117", fontSize: 12, color: "#6a7080", lineHeight: 1.7 }}>
-                ・X（Twitter）やInstagramなどSNSのリアルタイム監視（API未連携のため）<br/>
-                ・ファイルのアップロード・処理<br/>
-                ・リアルタイムの即時通知（スケジュール実行ベースです）<br/>
-                ・100%正確な情報の保証（AI生成のため、誤りが含まれる場合があります）
-              </div>
-            )}
-            <button onClick={() => setShowAbout(showAbout === 3 ? null : 3)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", borderRadius: 8, border: "1px solid #2e3440", background: "#0e1117", color: "#c0c4d0", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
-              <span>開発者より</span>
-              <span style={{ fontSize: 14, color: "#4a5060", transform: showAbout === 3 ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>&rarr;</span>
-            </button>
-            {showAbout === 3 && (
-              <div style={{ padding: "12px 14px", borderRadius: 8, background: "#0e1117", fontSize: 12, color: "#6a7080", lineHeight: 1.7 }}>
-                Latticeは現在ベータ版です。費用が貯まり次第、順次機能を追加していくのでよろしくお願いします。ご要望やバグ報告は X（@Lattice_Node）までお気軽にどうぞ。
-              </div>
-            )}
+        {/* News Sub View */}
+        {subView === "news" && (
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "#0e1117", zIndex: 100, overflowY: "auto", paddingBottom: 100 }}>
+            <div style={{ maxWidth: 420, margin: "0 auto", padding: "20px 16px" }}>
+              <button onClick={() => { setSubView(null); setNewsDetail(null); }} style={{ background: "none", border: "none", color: "#6c71e8", fontSize: 14, cursor: "pointer", fontFamily: "inherit", marginBottom: 16, padding: 0 }}>&#8592; 戻る</button>
+              {newsDetail === null ? (
+                <>
+                  <h2 style={{ fontSize: 22, fontWeight: 700, color: "#e8eaf0", margin: "0 0 20px" }}>Lattice ニュース</h2>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    {[
+                      { id: 1, title: "LINE連携機能を追加しました", date: "2026/3/29" },
+                      { id: 2, title: "サブスクリプション機能を追加しました", date: "2026/3/28" },
+                      { id: 3, title: "テンプレートストアを追加しました", date: "2026/3/28" },
+                    ].map(item => (
+                      <button key={item.id} onClick={() => setNewsDetail(item.id)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 18px", borderRadius: 12, border: "1px solid #2e3440", background: "#1c2028", cursor: "pointer", fontFamily: "inherit" }}>
+                        <div style={{ textAlign: "left" }}>
+                          <p style={{ fontSize: 14, fontWeight: 600, color: "#e8eaf0", margin: "0 0 4px" }}>{item.title}</p>
+                          <p style={{ fontSize: 11, color: "#6a7080", margin: 0 }}>{item.date}</p>
+                        </div>
+                        <span style={{ fontSize: 16, color: "#4a5060" }}>&rsaquo;</span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <button onClick={() => setNewsDetail(null)} style={{ background: "none", border: "none", color: "#6c71e8", fontSize: 13, cursor: "pointer", fontFamily: "inherit", marginBottom: 12, padding: 0 }}>&#8592; 一覧に戻る</button>
+                  {newsDetail === 1 && (
+                    <div>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "#e8eaf0", margin: "0 0 6px" }}>LINE連携機能を追加しました</h3>
+                      <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 16px" }}>2026/3/29</p>
+                      <p style={{ fontSize: 13, color: "#c0c4d0", lineHeight: 1.8 }}>Businessプランのユーザーは、エージェントの実行結果をLINEで受け取れるようになりました。設定画面のサービス連携からLINE Botを友だち追加して、6桁の連携コードを送信するだけで設定できます。</p>
+                    </div>
+                  )}
+                  {newsDetail === 2 && (
+                    <div>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "#e8eaf0", margin: "0 0 6px" }}>サブスクリプション機能を追加しました</h3>
+                      <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 16px" }}>2026/3/28</p>
+                      <p style={{ fontSize: 13, color: "#c0c4d0", lineHeight: 1.8 }}>Personal（¥980/月）とBusiness（¥4,980/月）プランが利用可能になりました。有料プランではクレジット追加購入、Gmail/Discord連携、無制限エージェント作成が使えます。</p>
+                    </div>
+                  )}
+                  {newsDetail === 3 && (
+                    <div>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "#e8eaf0", margin: "0 0 6px" }}>テンプレートストアを追加しました</h3>
+                      <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 16px" }}>2026/3/28</p>
+                      <p style={{ fontSize: 13, color: "#c0c4d0", lineHeight: 1.8 }}>ストアからテンプレートを選んで、設定項目を入力するだけでエージェントを即作成できるようになりました。AIニュース要約、競合サイト監視、天気予報など8種類のテンプレートを用意しています。</p>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* About Sub View */}
+        {subView === "about" && (
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "#0e1117", zIndex: 100, overflowY: "auto", paddingBottom: 100 }}>
+            <div style={{ maxWidth: 420, margin: "0 auto", padding: "20px 16px" }}>
+              <button onClick={() => setSubView(null)} style={{ background: "none", border: "none", color: "#6c71e8", fontSize: 14, cursor: "pointer", fontFamily: "inherit", marginBottom: 16, padding: 0 }}>&#8592; 戻る</button>
+              <h2 style={{ fontSize: 22, fontWeight: 700, color: "#e8eaf0", margin: "0 0 20px" }}>Lattice の性能について</h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <div style={{ padding: "18px", borderRadius: 12, border: "1px solid #2e3440", background: "#1c2028" }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#e8eaf0", margin: "0 0 10px" }}>できること</p>
+                  <p style={{ fontSize: 13, color: "#c0c4d0", lineHeight: 1.8, margin: 0 }}>
+                    ・Web上の最新情報を検索して要約・分析<br/>
+                    ・スケジュール実行（毎日・毎週など）で定期自動実行<br/>
+                    ・結果をアプリ内・Gmail・Discord・LINEに自動送信<br/>
+                    ・日本語の自然文から自動でエージェントを設定
+                  </p>
+                </div>
+                <div style={{ padding: "18px", borderRadius: 12, border: "1px solid #2e3440", background: "#1c2028" }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#e8eaf0", margin: "0 0 10px" }}>現在できないこと</p>
+                  <p style={{ fontSize: 13, color: "#c0c4d0", lineHeight: 1.8, margin: 0 }}>
+                    ・SNSのリアルタイム監視（API未連携のため）<br/>
+                    ・ファイルのアップロード・処理<br/>
+                    ・リアルタイムの即時通知（スケジュール実行ベース）<br/>
+                    ・100%正確な情報の保証（AI生成のため誤りの可能性あり）
+                  </p>
+                </div>
+                <div style={{ padding: "18px", borderRadius: 12, border: "1px solid #2e3440", background: "#1c2028" }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#e8eaf0", margin: "0 0 10px" }}>開発者より</p>
+                  <p style={{ fontSize: 13, color: "#c0c4d0", lineHeight: 1.8, margin: 0 }}>Latticeは現在ベータ版です。費用が貯まり次第、順次機能を追加していくのでよろしくお願いします。ご要望やバグ報告は X（@Lattice_Node）までお気軽にどうぞ。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Links */}
         <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
           <a href="/privacy" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid #2e3440", textDecoration: "none" }}>
