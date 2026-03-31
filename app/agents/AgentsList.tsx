@@ -22,8 +22,8 @@ function formatNextRun(next: string | null): string {
   const diff = d.getTime() - now.getTime();
   if (diff < 0) return "実行待ち";
   if (diff < 3600000) return Math.round(diff / 60000) + "分後";
-  if (diff < 86400000) return "今日 " + d.getHours() + ":" + String(d.getMinutes()).padStart(2, "0");
-  return "明日 " + d.getHours() + ":" + String(d.getMinutes()).padStart(2, "0");
+  const hm = d.getHours() + ":" + String(d.getMinutes()).padStart(2, "0"); const todayEnd = new Date(now); todayEnd.setHours(23,59,59,999); if (d <= todayEnd) return "\u4eca\u65e5 " + hm; const tomorrowEnd = new Date(now); tomorrowEnd.setDate(tomorrowEnd.getDate() + 1); tomorrowEnd.setHours(23,59,59,999); if (d <= tomorrowEnd) return "\u660e\u65e5 " + hm; return (d.getMonth()+1) + "/" + d.getDate() + " " + hm;
+  return "--";
 }
 
 export default function AgentsList({ agents }: { agents: Agent[] }) {
