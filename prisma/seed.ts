@@ -98,6 +98,68 @@ async function main() {
         { key: "件数", label: "要約する件数", placeholder: "5", type: "text" },
       ]),
     },
+    // --- Phase 2: Tool Use対応テンプレート ---
+    {
+      name: "Webページ要約レポート",
+      description: "指定したURLのページを読み込み、内容を要約してレポートにします（Tool Use）",
+      prompt: "以下のURLのWebページの内容をfetch_urlツールで取得して、重要なポイントを{{形式}}で要約してください。日本語で出力してください。\n\nURL: {{対象URL}}",
+      trigger: "schedule",
+      triggerCron: "0 9 * * *",
+      category: "リサーチ",
+      variables: JSON.stringify([
+        { key: "対象URL", label: "要約したいページのURL", placeholder: "https://example.com/blog/latest", type: "text" },
+        { key: "形式", label: "出力形式", placeholder: "箇条書き5つ以内", type: "text" },
+      ]),
+    },
+    {
+      name: "複数サイト比較分析",
+      description: "最大3つのWebサイトを読み込んで、内容を比較分析します（Tool Use）",
+      prompt: "以下のWebサイトをfetch_urlツールでそれぞれ読み込み、共通点と相違点を分析して比較レポートを作成してください。日本語で出力してください。\n\nサイト1: {{URL1}}\nサイト2: {{URL2}}\nサイト3: {{URL3}}",
+      trigger: "manual",
+      triggerCron: "",
+      category: "リサーチ",
+      variables: JSON.stringify([
+        { key: "URL1", label: "サイト1のURL", placeholder: "https://example1.com", type: "text" },
+        { key: "URL2", label: "サイト2のURL", placeholder: "https://example2.com", type: "text" },
+        { key: "URL3", label: "サイト3のURL（空欄可）", placeholder: "", type: "text" },
+      ]),
+    },
+    {
+      name: "ブログ記事→メール配信",
+      description: "指定URLの記事を読んで要約し、Gmailで自動配信します（Tool Use）",
+      prompt: "以下のURLの記事をfetch_urlツールで取得して要約し、send_gmailツールで{{宛先}}にメール送信してください。\n件名は「[Lattice配信] 記事要約」としてください。\n\nURL: {{記事URL}}",
+      trigger: "schedule",
+      triggerCron: "0 8 * * *",
+      category: "SNS",
+      variables: JSON.stringify([
+        { key: "記事URL", label: "配信したい記事のURL", placeholder: "https://example.com/article", type: "text" },
+        { key: "宛先", label: "送信先メールアドレス", placeholder: "team@example.com", type: "text" },
+      ]),
+    },
+    {
+      name: "求人情報モニタリング",
+      description: "指定した企業の採用ページを監視して、新しい求人があれば通知します（Tool Use）",
+      prompt: "以下の採用ページをfetch_urlツールで取得し、現在の求人情報をリストアップしてください。特に{{職種}}に関連する求人があれば詳しく分析してください。日本語で出力してください。\n\nURL: {{採用ページURL}}",
+      trigger: "schedule",
+      triggerCron: "0 10 * * 1",
+      category: "営業",
+      variables: JSON.stringify([
+        { key: "採用ページURL", label: "企業の採用ページURL", placeholder: "https://example.com/careers", type: "text" },
+        { key: "職種", label: "気になる職種", placeholder: "エンジニア", type: "text" },
+      ]),
+    },
+    {
+      name: "商品レビュー収集",
+      description: "指定商品のレビューページを読み込み、評価傾向をまとめます（Tool Use）",
+      prompt: "以下のURLから商品レビュー情報をfetch_urlツールで取得し、ポジティブ・ネガティブな意見をそれぞれ{{件数}}つずつまとめてください。全体の評価傾向と購入すべきかのアドバイスも添えてください。日本語で出力してください。\n\nURL: {{レビューページURL}}",
+      trigger: "manual",
+      triggerCron: "",
+      category: "リサーチ",
+      variables: JSON.stringify([
+        { key: "レビューページURL", label: "商品レビューページのURL", placeholder: "https://amazon.co.jp/dp/...", type: "text" },
+        { key: "件数", label: "まとめる件数", placeholder: "3", type: "text" },
+      ]),
+    },
   ];
 
   for (const t of templates) {
