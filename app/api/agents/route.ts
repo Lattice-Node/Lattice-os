@@ -66,11 +66,14 @@ export async function POST(req: Request) {
     });
   }
 
-  // Free plan: max 3 agents (admin bypasses)
-  if (user.plan === "free" && user.role !== "admin") {
+  // Free plan: max 3 agents, Starter: max 10 (admin bypasses)
+  if (user.role !== "admin") {
     const agentCount = await prisma.userAgent.count({ where: { userId: user.id } });
-    if (agentCount >= 3) {
+    if (user.plan === "free" && agentCount >= 3) {
       return NextResponse.json({ error: "Free plan limit: max 3 agents" }, { status: 403 });
+    }
+    if ((user.plan === "starter" || user.plan === "personal") && agentCount >= 10) {
+      return NextResponse.json({ error: "Starter plan limit: max 10 agents" }, { status: 403 });
     }
   }
 

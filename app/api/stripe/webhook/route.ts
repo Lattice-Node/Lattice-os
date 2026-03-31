@@ -5,8 +5,10 @@ import { prisma } from "@/lib/prisma";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 const PLAN_CREDITS: Record<string, number> = {
-  personal: 300,
-  business: 1500,
+  starter: 100,
+  pro: 500,
+  business: 2000,
+  personal: 100,  // legacy → starter equivalent
 };
 
 export async function POST(req: Request) {

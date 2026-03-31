@@ -152,7 +152,7 @@ const handleLineGenerate = async () => {
   const planLabel = plan === "business" ? "Business" : plan === "pro" ? "Pro" : plan === "starter" ? "Starter" : plan === "personal" ? "Starter" : "Free";
   const periodEnd = currentPeriodEnd ? new Date(currentPeriodEnd).toLocaleDateString("ja-JP") : null;
   const isAdmin = role === "admin";
-  const isPaid = isAdmin || plan === "personal" || plan === "business";
+  const isPaid = isAdmin || plan === "starter" || plan === "personal" || plan === "pro" || plan === "business";
 
   // Credit purchase view
   if (showCredit) {

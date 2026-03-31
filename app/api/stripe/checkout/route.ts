@@ -12,15 +12,43 @@ const CREDIT_PLANS = {
 };
 
 const SUB_PLANS: Record<string, { priceId: string; plan: string; credits: number }> = {
-  personal: {
-    priceId: "price_1TGH0yLgj4qYNhTIoWkdjM2E",
-    plan: "personal",
-    credits: 300,
+  // Monthly
+  starter: {
+    priceId: "price_1TGH0yLgj4qYNhTIoWkdjM2E",  // Starter ¥980/mo (existing)
+    plan: "starter",
+    credits: 100,
+  },
+  pro: {
+    priceId: "price_1TGsCrLgj4qYNhTIFWLjBQUj",  // Pro ¥2,480/mo
+    plan: "pro",
+    credits: 500,
   },
   business: {
-    priceId: "price_1TGH0yLgj4qYNhTIlrB3sbJ2",
+    priceId: "price_1TGsEILgj4qYNhTI3omZvsC4",  // Business ¥6,980/mo
     plan: "business",
-    credits: 1500,
+    credits: 2000,
+  },
+  // Yearly
+  starter_yearly: {
+    priceId: "price_1TGsFfLgj4qYNhTIdcZwfi0N",  // Starter ¥9,800/yr
+    plan: "starter",
+    credits: 100,
+  },
+  pro_yearly: {
+    priceId: "price_1TGsDkLgj4qYNhTIjsxR5cdd",  // Pro ¥24,800/yr
+    plan: "pro",
+    credits: 500,
+  },
+  business_yearly: {
+    priceId: "price_1TGsFALgj4qYNhTIXwV2uOyK",  // Business ¥69,800/yr
+    plan: "business",
+    credits: 2000,
+  },
+  // Legacy support
+  personal: {
+    priceId: "price_1TGH0yLgj4qYNhTIoWkdjM2E",
+    plan: "starter",
+    credits: 100,
   },
 };
 
