@@ -9,21 +9,38 @@ export const maxDuration = 60;
 
 function getNextRunAt(triggerCron: string | null): Date | null {
   if (!triggerCron) return null;
-  // triggerCron is HH:MM format (e.g. "08:00")
-  const match = triggerCron.match(/^(\d{1,2}):(\d{2})$/);
-  if (!match) return null;
-  const h = parseInt(match[1], 10);
-  const m = parseInt(match[2], 10);
-  // Calculate next run in JST (UTC+9)
-  const now = new Date();
-  const jstNow = new Date(now.getTime() + 9 * 60 * 60 * 1000);
-  const jstNext = new Date(jstNow);
-  jstNext.setUTCHours(h, m, 0, 0);
-  if (jstNext <= jstNow) {
-    jstNext.setUTCDate(jstNext.getUTCDate() + 1);
+  let h: number, m: number;
+  // Support both "HH:MM" and cron "M H * * *" formats
+  const hmMatch = triggerCron.match(/^(\d{1,2}):(\d{2})$/);
+  if (hmMatch) {
+    h = parseInt(hmMatch[1], 10);
+    m = parseInt(hmMatch[2], 10);
+  } else {
+    const parts = triggerCron.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      m = parseInt(parts[0], 10);
+      h = parseInt(parts[1], 10);
+    } else {
+      return null;
+    }
   }
-  // Convert back to UTC
-  return new Date(jstNext.getTime() - 9 * 60 * 60 * 1000);
+  if (isNaN(h) || isNaN(m) || h < 0 || h > 23 || m < 0 || m > 59) return null;
+  // JST hour h:m → UTC = h-9 (handle day rollover)
+  const now = new Date();
+  const utcH = h - 9;
+  // Get today's date in JST
+  const jstNow = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  const year = jstNow.getUTCFullYear();
+  const month = jstNow.getUTCMonth();
+  const day = jstNow.getUTCDate();
+  // Build target time in UTC
+  let next = new Date(Date.UTC(year, month, day, utcH, m, 0, 0));
+  // If utcH is negative, Date.UTC handles it by going to previous day, which is correct
+  // If this time has already passed, move to tomorrow
+  if (next.getTime() <= now.getTime()) {
+    next = new Date(next.getTime() + 24 * 60 * 60 * 1000);
+  }
+  return next;
 }
 
 function buildSystemPrompt() {

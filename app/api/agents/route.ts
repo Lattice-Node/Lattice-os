@@ -3,31 +3,29 @@ import { NextResponse } from "next/server";
 function calcNextRunAt(cronExpr: string): Date | null {
   if (!cronExpr) return null;
   try {
-    const parts = cronExpr.trim().split(" ");
-    if (parts.length !== 5) return null;
-    const [min, hour] = parts;
-    const m = parseInt(min);
-    const h = parseInt(hour);
-    if (isNaN(h) || isNaN(m)) return null;
-    // 現在時刻をUTCで取得
+    let h: number, m: number;
+    // Support both "HH:MM" and cron "M H * * *" formats
+    const hmMatch = cronExpr.match(/^(\d{1,2}):(\d{2})$/);
+    if (hmMatch) {
+      h = parseInt(hmMatch[1], 10);
+      m = parseInt(hmMatch[2], 10);
+    } else {
+      const parts = cronExpr.trim().split(/\s+/);
+      if (parts.length >= 2) {
+        m = parseInt(parts[0], 10);
+        h = parseInt(parts[1], 10);
+      } else {
+        return null;
+      }
+    }
+    if (isNaN(h) || isNaN(m) || h < 0 || h > 23 || m < 0 || m > 59) return null;
+    // JST hour h:m → UTC = h-9 (handle day rollover)
     const now = new Date();
-    // JSTで今日のh:mを作る（UTCで表現）
-    const todayJST = new Date(now);
-    // JSTオフセット: UTC+9
-    const jstOffsetMs = 9 * 60 * 60 * 1000;
-    // JSTの今日の指定時刻をUTCに変換
-    const jstNowMs = now.getTime() + jstOffsetMs;
-    const jstDay = new Date(jstNowMs);
-    // JST日付のmidnight UTC
-    const jstMidnightUTC = new Date(Date.UTC(
-      jstDay.getUTCFullYear(),
-      jstDay.getUTCMonth(),
-      jstDay.getUTCDate(),
-      h - 9, m, 0, 0  // JSTのh時をUTCに変換
-    ));
-    // もし変換結果が負の時間になる場合（h<9）は翌日扱い
-    let next = new Date(jstMidnightUTC);
-    // 既に過ぎていたら翌日
+    const jstNow = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+    const year = jstNow.getUTCFullYear();
+    const month = jstNow.getUTCMonth();
+    const day = jstNow.getUTCDate();
+    let next = new Date(Date.UTC(year, month, day, h - 9, m, 0, 0));
     if (next.getTime() <= now.getTime()) {
       next = new Date(next.getTime() + 24 * 60 * 60 * 1000);
     }
