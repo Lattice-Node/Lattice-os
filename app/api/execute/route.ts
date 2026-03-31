@@ -131,7 +131,7 @@ async function runWithAnthropic(
 
     // Execute each client tool and build tool_result messages
     const toolResults: any[] = [];
-    for (const block of toolUseBlocks) {
+    for (const block of toolUseBlocks as any[]) {
       const { executeTool } = await import("@/lib/agent-tools");
       const result = await executeTool(
         block.name,
