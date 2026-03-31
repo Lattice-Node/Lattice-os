@@ -485,6 +485,9 @@ const handleLineGenerate = async () => {
                   <h2 style={{ fontSize: 22, fontWeight: 700, color: "#e8eaf0", margin: "0 0 20px" }}>Lattice ニュース</h2>
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                     {[
+                       { id: 4, title: "Tool Useの自律実行機能を追加しました", date: "2026/3/31" },
+                       { id: 5, title: "AI記憶 / AI学習機能を追加しました", date: "2026/3/31" },
+                       { id: 6, title: "エージェント編集・次回実行表示を改善しました", date: "2026/3/31" },
                       { id: 1, title: "LINE連携機能を追加しました", date: "2026/3/29" },
                       { id: 2, title: "サブスクリプション機能を追加しました", date: "2026/3/28" },
                       { id: 3, title: "テンプレートストアを追加しました", date: "2026/3/28" },
@@ -521,6 +524,27 @@ const handleLineGenerate = async () => {
                       <h3 style={{ fontSize: 18, fontWeight: 700, color: "#e8eaf0", margin: "0 0 6px" }}>テンプレートストアを追加しました</h3>
                       <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 16px" }}>2026/3/28</p>
                       <p style={{ fontSize: 13, color: "#c0c4d0", lineHeight: 1.8 }}>ストアからテンプレートを選んで、設定項目を入力するだけでエージェントを即作成できるようになりました。AIニュース要約、競合サイト監視、天気予報など8種類のテンプレートを用意しています。</p>
+                    </div>
+                  )}
+                  {newsDetail === 4 && (
+                    <div>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "#e8eaf0", margin: "0 0 6px" }}>Tool Useの自律実行機能を追加しました</h3>
+                      <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 16px" }}>2026/3/31</p>
+                      <p style={{ fontSize: 13, color: "#c0c4d0", lineHeight: 1.8 }}>エージェントがWebページの取得やGmail送信を自分で判断して実行するTool Use機能を追加しました。Pro/Businessプランで利用可能です。</p>
+                    </div>
+                  )}
+                  {newsDetail === 5 && (
+                    <div>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "#e8eaf0", margin: "0 0 6px" }}>AI記憶 / AI学習機能を追加しました</h3>
+                      <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 16px" }}>2026/3/31</p>
+                      <p style={{ fontSize: 13, color: "#c0c4d0", lineHeight: 1.8 }}>エージェントが過去の実行結果を覚えて、次回の出力を改善するAI記憶機能を実装しました。直近5件の成功ログを参照し、同じ内容の繰り返しを避け変化点を強調します。Pro/Business限定。</p>
+                    </div>
+                  )}
+                  {newsDetail === 6 && (
+                    <div>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "#e8eaf0", margin: "0 0 6px" }}>エージェント編集・次回実行表示を改嚄しました</h3>
+                      <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 16px" }}>2026/3/31</p>
+                      <p style={{ fontSize: 13, color: "#c0c4d0", lineHeight: 1.8 }}>エージェントの詳細画面から名前や説明を直接編集できるようになりました。また、次回実行日時が「今日」「明日」「4/2」など正確に表示されるようになりました。</p>
                     </div>
                   )}
                 </>
