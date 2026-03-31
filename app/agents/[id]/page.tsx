@@ -232,10 +232,10 @@ export default function AgentDetailPage() {
           <p className="stat-label">最終実行</p>
         </div>
         <div className="stat-box">
+          <p className="stat-number" style={{ fontSize: 14 }}>
               {agent.nextRunAt ? (() => { const d = new Date(agent.nextRunAt!); const now = new Date(); const diff = d.getTime() - now.getTime(); const hm = d.getHours() + ":" + String(d.getMinutes()).padStart(2, "0"); const todayEnd = new Date(now); todayEnd.setHours(23,59,59,999); const tomorrowEnd = new Date(now); tomorrowEnd.setDate(tomorrowEnd.getDate()+1); tomorrowEnd.setHours(23,59,59,999); if (diff < 0) return "実行待ち"; if (d <= todayEnd) return "今日 "+hm; if (d <= tomorrowEnd) return "明日 "+hm; return (d.getMonth()+1)+"/"+d.getDate()+" "+hm; })() : "--"}
-            </p>
-            <p className="stat-label">次回実行</p>
-          <p className="stat-label">トリガー</p>
+          </p>
+          <p className="stat-label">次回実行</p>
         </div>
       </div>
 
