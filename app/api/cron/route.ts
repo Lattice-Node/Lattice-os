@@ -77,7 +77,7 @@ export async function GET(req: NextRequest) {
       nextRunAt: { lte: now },
     },
     include: {
-      user: { select: { id: true, email: true, credits: true, role: true } },
+      user: { select: { id: true, email: true, credits: true, role: true, plan: true } },
     },
   });
 
@@ -136,15 +136,78 @@ export async function GET(req: NextRequest) {
             agent.prompt ? `指示: ${agent.prompt}` : "",
           ].filter(Boolean).join("\n\n") + (extraContext ? "\n\n" + extraContext : "");
 
-      const message = await client.messages.create({
-        model: process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001",
-        max_tokens: 1400,
-        system: systemPrompt,
-        messages: [{ role: "user", content: userPrompt }],
-        tools: [{ type: "web_search_20250305", name: "web_search" }],
+      // Build tools: web_search (always) + client tools (paid plans only)
+      const { getAvailableTools, executeTool } = await import("@/lib/agent-tools");
+      const userConnections = await prisma.userConnection.findMany({
+        where: { userId: user.id },
+        select: { provider: true },
       });
+      const connProviders = userConnections.map((c: { provider: string }) => c.provider);
+      const clientTools = getAvailableTools(user.plan, user.role, connProviders);
+      let gmailToken: string | null = null;
+      if (connProviders.includes("gmail")) {
+        try { gmailToken = await getGmailToken(user.id); } catch {}
+      }
 
-      let output = extractTextFromClaudeResponse(message.content) || "";
+      const tools: any[] = [
+        { type: "web_search_20250305", name: "web_search" },
+        ...clientTools,
+      ];
+
+      const messages: any[] = [{ role: "user", content: userPrompt }];
+      const MAX_TOOL_LOOPS = 5;
+      let loopCount = 0;
+      let output = "";
+
+      while (loopCount < MAX_TOOL_LOOPS) {
+        loopCount++;
+
+        const message = await client.messages.create({
+          model: process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001",
+          max_tokens: 1400,
+          system: systemPrompt,
+          messages,
+          tools,
+        });
+
+        if (message.stop_reason !== "tool_use") {
+          output = extractTextFromClaudeResponse(message.content) || "";
+          break;
+        }
+
+        // Find client tool_use blocks
+        const toolUseBlocks = message.content.filter(
+          (b: any) => b.type === "tool_use"
+        );
+
+        if (toolUseBlocks.length === 0) {
+          output = extractTextFromClaudeResponse(message.content) || "";
+          break;
+        }
+
+        // Execute tools
+        const toolResults: any[] = [];
+        for (const block of toolUseBlocks as any[]) {
+          const result = await executeTool(
+            block.name,
+            block.input as Record<string, string>,
+            {
+              userId: user.id,
+              gmailToken,
+              sendGmailFn: sendGmailMessage as any,
+            }
+          );
+          toolResults.push({
+            type: "tool_result",
+            tool_use_id: block.id,
+            content: result,
+          });
+        }
+
+        messages.push({ role: "assistant", content: message.content });
+        messages.push({ role: "user", content: toolResults });
+      }
+
       if (isDailyNews) output = normalizeDailyAiNewsOutput(output, now);
       output = output.trim();
 
