@@ -14,6 +14,7 @@ type Agent = {
   active: boolean;
   runCount: number;
   lastRunAt: string | null;
+  nextRunAt: string | null;
   createdAt: string;
 };
 
@@ -32,6 +33,9 @@ export default function AgentDetailPage() {
   const [logs, setLogs] = useState<Log[]>([]);
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editDesc, setEditDesc] = useState("");
   const [output, setOutput] = useState("");
   const [outputStatus, setOutputStatus] = useState<"success" | "error" | "">(
     ""
@@ -90,6 +94,21 @@ export default function AgentDetailPage() {
     }
   }
 
+  async function handleEdit() {
+    setEditName(agent!.name);
+    setEditDesc(agent!.description || "");
+    setEditing(true);
+  }
+  async function handleSave() {
+    const res = await fetch(`/api/agents/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: editName, description: editDesc }),
+    });
+    const data = await res.json();
+    setAgent(data.agent);
+    setEditing(false);
+  }
   async function handleDelete() {
     if (!confirm("このエージェントを削除しますか？")) return;
     await fetch(`/api/agents/${id}`, { method: "DELETE" });
@@ -116,6 +135,20 @@ export default function AgentDetailPage() {
         >
           戻る
         </Link>
+      </div>
+    );
+  }
+
+  if (editing) {
+    return (
+      <div className="page" style={{ paddingTop: 16 }}>
+        <button onClick={() => setEditing(false)} style={{ fontSize: 13, color: "#4a5060", background: "transparent", border: "none", cursor: "pointer", padding: 0, marginBottom: 16, fontFamily: "inherit" }}>&larr; キャンセル</button>
+        <h2 style={{ fontSize: 18, fontWeight: 600, color: "#e8eaf0", margin: "0 0 20px" }}>エージェントを編集</h2>
+        <p style={{ fontSize: 12, color: "#9096a8", margin: "0 0 6px" }}>名前</p>
+        <input value={editName} onChange={e => setEditName(e.target.value)} style={{ width: "100%", background: "#1c2028", border: "1px solid #2e3440", borderRadius: 10, padding: "12px 14px", fontSize: 14, color: "#e8eaf0", fontFamily: "inherit", boxSizing: "border-box", marginBottom: 16, outline: "none" }} />
+        <p style={{ fontSize: 12, color: "#9096a8", margin: "0 0 6px" }}>説明</p>
+        <textarea value={editDesc} onChange={e => setEditDesc(e.target.value)} rows={3} style={{ width: "100%", background: "#1c2028", border: "1px solid #2e3440", borderRadius: 10, padding: "12px 14px", fontSize: 14, color: "#e8eaf0", fontFamily: "inherit", boxSizing: "border-box", marginBottom: 20, outline: "none", resize: "none" }} />
+        <button onClick={handleSave} style={{ width: "100%", padding: 14, borderRadius: 10, background: "#6c71e8", color: "#fff", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", fontFamily: "inherit" }}>保存する</button>
       </div>
     );
   }
