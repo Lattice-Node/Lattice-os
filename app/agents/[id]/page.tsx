@@ -83,11 +83,11 @@ export default function AgentDetailPage() {
         body: JSON.stringify({ agentId: id }),
       });
       const data = await res.json();
-      setOutput(data.output || data.error || "螳御ｺ・);
+      setOutput(data.output || data.error || "完了");
       setOutputStatus(data.ok ? "success" : "error");
       fetchLogs();
     } catch {
-      setOutput("繧ｨ繝ｩ繝ｼ");
+      setOutput("エラー");
       setOutputStatus("error");
     } finally {
       setRunning(false);
@@ -110,7 +110,7 @@ export default function AgentDetailPage() {
     setEditing(false);
   }
   async function handleDelete() {
-    if (!confirm("縺薙・繧ｨ繝ｼ繧ｸ繧ｧ繝ｳ繝医ｒ蜑企勁縺励∪縺吶°・・)) return;
+    if (!confirm("このエージェントを削除しますか？")) return;
     await fetch(`/api/agents/${id}`, { method: "DELETE" });
     router.push("/agents");
   }
@@ -118,7 +118,7 @@ export default function AgentDetailPage() {
   if (loading) {
     return (
       <div className="page" style={{ paddingTop: 24 }}>
-        <p style={{ color: "#4a5060", fontSize: 13 }}>隱ｭ縺ｿ霎ｼ縺ｿ荳ｭ...</p>
+        <p style={{ color: "#4a5060", fontSize: 13 }}>読み込み中...</p>
       </div>
     );
   }
@@ -127,13 +127,13 @@ export default function AgentDetailPage() {
     return (
       <div className="page" style={{ paddingTop: 24 }}>
         <p style={{ color: "#9096a8", fontSize: 14, marginBottom: 12 }}>
-          繧ｨ繝ｼ繧ｸ繧ｧ繝ｳ繝医′隕九▽縺九ｊ縺ｾ縺帙ｓ
+          エージェントが見つかりません
         </p>
         <Link
           href="/agents"
           style={{ color: "#6c71e8", fontSize: 13, textDecoration: "none" }}
         >
-          謌ｻ繧・
+          戻る
         </Link>
       </div>
     );
@@ -142,13 +142,13 @@ export default function AgentDetailPage() {
   if (editing) {
     return (
       <div className="page" style={{ paddingTop: 16 }}>
-        <button onClick={() => setEditing(false)} style={{ fontSize: 13, color: "#4a5060", background: "transparent", border: "none", cursor: "pointer", padding: 0, marginBottom: 16, fontFamily: "inherit" }}>&larr; 繧ｭ繝｣繝ｳ繧ｻ繝ｫ</button>
-        <h2 style={{ fontSize: 18, fontWeight: 600, color: "#e8eaf0", margin: "0 0 20px" }}>繧ｨ繝ｼ繧ｸ繧ｧ繝ｳ繝医ｒ邱ｨ髮・/h2>
-        <p style={{ fontSize: 12, color: "#9096a8", margin: "0 0 6px" }}>蜷榊燕</p>
+        <button onClick={() => setEditing(false)} style={{ fontSize: 13, color: "#4a5060", background: "transparent", border: "none", cursor: "pointer", padding: 0, marginBottom: 16, fontFamily: "inherit" }}>&larr; キャンセル</button>
+        <h2 style={{ fontSize: 18, fontWeight: 600, color: "#e8eaf0", margin: "0 0 20px" }}>エージェントを編集</h2>
+        <p style={{ fontSize: 12, color: "#9096a8", margin: "0 0 6px" }}>名前</p>
         <input value={editName} onChange={e => setEditName(e.target.value)} style={{ width: "100%", background: "#1c2028", border: "1px solid #2e3440", borderRadius: 10, padding: "12px 14px", fontSize: 14, color: "#e8eaf0", fontFamily: "inherit", boxSizing: "border-box", marginBottom: 16, outline: "none" }} />
-        <p style={{ fontSize: 12, color: "#9096a8", margin: "0 0 6px" }}>隱ｬ譏・/p>
+        <p style={{ fontSize: 12, color: "#9096a8", margin: "0 0 6px" }}>説明</p>
         <textarea value={editDesc} onChange={e => setEditDesc(e.target.value)} rows={3} style={{ width: "100%", background: "#1c2028", border: "1px solid #2e3440", borderRadius: 10, padding: "12px 14px", fontSize: 14, color: "#e8eaf0", fontFamily: "inherit", boxSizing: "border-box", marginBottom: 20, outline: "none", resize: "none" }} />
-        <button onClick={handleSave} style={{ width: "100%", padding: 14, borderRadius: 10, background: "#6c71e8", color: "#fff", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", fontFamily: "inherit" }}>菫晏ｭ倥☆繧・/button>
+        <button onClick={handleSave} style={{ width: "100%", padding: 14, borderRadius: 10, background: "#6c71e8", color: "#fff", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", fontFamily: "inherit" }}>保存する</button>
       </div>
     );
   }
@@ -165,7 +165,7 @@ export default function AgentDetailPage() {
           marginBottom: 16,
         }}
       >
-        &larr; 謌ｻ繧・
+        &larr; 戻る
       </Link>
 
       <div
@@ -192,10 +192,11 @@ export default function AgentDetailPage() {
           {agent.name}
         </h1>
         <button onClick={handleEdit} style={{ background: "transparent", border: "1px solid #2e3440", borderRadius: 8, padding: "5px 10px", fontSize: 12, color: "#9096a8", cursor: "pointer", marginLeft: 8, fontFamily: "inherit", flexShrink: 0 }}>編集</button>
+        <button onClick={handleEdit} style={{ background: "transparent", border: "1px solid #2e3440", borderRadius: 8, padding: "5px 10px", fontSize: 12, color: "#9096a8", cursor: "pointer", marginLeft: 8, fontFamily: "inherit", flexShrink: 0 }}>\u7de8\u96c6</button>
         <button
           className={"toggle " + (agent.active ? "on" : "off")}
-          onClick={handleToggleActive}
           style={{ flexShrink: 0, marginLeft: 8 }}
+          style={{ flexShrink: 0, marginLeft: 12 }}
         >
           <div className="toggle-knob" />
         </button>
@@ -217,7 +218,7 @@ export default function AgentDetailPage() {
       <div className="stat-row" style={{ marginBottom: 16 }}>
         <div className="stat-box">
           <p className="stat-number">{agent.runCount}</p>
-          <p className="stat-label">螳溯｡悟屓謨ｰ</p>
+          <p className="stat-label">実行回数</p>
         </div>
         <div className="stat-box">
           <p className="stat-number" style={{ fontSize: 16 }}>
@@ -228,14 +229,14 @@ export default function AgentDetailPage() {
                 })
               : "--"}
           </p>
-          <p className="stat-label">譛邨ょｮ溯｡・/p>
+          <p className="stat-label">最終実行</p>
         </div>
         <div className="stat-box">
-          <p className="stat-number" style={{ fontSize: 16 }}>
-            {agent.trigger || "manual"}
-              {agent.nextRunAt ? (() => { const d = new Date(agent.nextRunAt!); const now = new Date(); const diff = d.getTime() - now.getTime(); const hm = d.getHours() + ":" + String(d.getMinutes()).padStart(2, "0"); const todayEnd = new Date(now); todayEnd.setHours(23,59,59,999); const tomorrowEnd = new Date(now); tomorrowEnd.setDate(tomorrowEnd.getDate()+1); tomorrowEnd.setHours(23,59,59,999); if (diff < 0) return "\u5b9f\u884c\u5f85\u3061"; if (d <= todayEnd) return "\u4eca\u65e5 "+hm; if (d <= tomorrowEnd) return "\u660e\u65e5 "+hm; return (d.getMonth()+1)+"/"+d.getDate()+" "+hm; })() : "--"}
-          <p className="stat-label">繝医Μ繧ｬ繝ｼ</p>
-              次回実行
+              {agent.nextRunAt ? (() => { const d = new Date(agent.nextRunAt!); const now = new Date(); const diff = d.getTime() - now.getTime(); const hm = d.getHours() + ":" + String(d.getMinutes()).padStart(2, "0"); const todayEnd = new Date(now); todayEnd.setHours(23,59,59,999); const tomorrowEnd = new Date(now); tomorrowEnd.setDate(tomorrowEnd.getDate()+1); tomorrowEnd.setHours(23,59,59,999); if (diff < 0) return "実行待ち"; if (d <= todayEnd) return "今日 "+hm; if (d <= tomorrowEnd) return "明日 "+hm; return (d.getMonth()+1)+"/"+d.getDate()+" "+hm; })() : "--"}
+            </p>
+            <p className="stat-label">次回実行</p>
+          <p className="stat-label">トリガー</p>
+        </div>
       </div>
 
       <button
@@ -251,7 +252,7 @@ export default function AgentDetailPage() {
           opacity: running ? 0.5 : 1,
         }}
       >
-        {running ? "螳溯｡御ｸｭ..." : "莉翫☆縺仙ｮ溯｡・}
+        {running ? "実行中..." : "今すぐ実行"}
       </button>
 
       {output && (
@@ -274,7 +275,7 @@ export default function AgentDetailPage() {
               fontWeight: 500,
             }}
           >
-            {outputStatus === "error" ? "繧ｨ繝ｩ繝ｼ" : "螳御ｺ・}
+            {outputStatus === "error" ? "エラー" : "完了"}
           </p>
           <p
             style={{
@@ -295,13 +296,13 @@ export default function AgentDetailPage() {
         className="section-label"
         style={{ marginTop: 8, marginBottom: 8 }}
       >
-        螳溯｡後Ο繧ｰ
+        実行ログ
       </p>
 
       {logs.length === 0 ? (
         <div className="card" style={{ textAlign: "center", padding: 24 }}>
           <p style={{ color: "#4a5060", fontSize: 13, margin: 0 }}>
-            縺ｾ縺繝ｭ繧ｰ縺後≠繧翫∪縺帙ｓ
+            まだログがありません
           </p>
         </div>
       ) : (
@@ -373,7 +374,7 @@ export default function AgentDetailPage() {
           fontFamily: "inherit",
         }}
       >
-        繧ｨ繝ｼ繧ｸ繧ｧ繝ｳ繝医ｒ蜑企勁
+        エージェントを削除
       </button>
     </div>
   );
