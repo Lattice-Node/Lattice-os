@@ -192,15 +192,15 @@ export default function AgentDetailPage() {
           {agent.name}
         </h1>
         <button onClick={handleEdit} style={{ background: "transparent", border: "1px solid #2e3440", borderRadius: 8, padding: "5px 10px", fontSize: 12, color: "#9096a8", cursor: "pointer", marginLeft: 8, fontFamily: "inherit", flexShrink: 0 }}>編集</button>
-        <button onClick={handleEdit} style={{ background: "transparent", border: "1px solid #2e3440", borderRadius: 8, padding: "5px 10px", fontSize: 12, color: "#9096a8", cursor: "pointer", marginLeft: 8, fontFamily: "inherit", flexShrink: 0 }}>\u7de8\u96c6</button>
         <button
           className={"toggle " + (agent.active ? "on" : "off")}
+          onClick={handleToggleActive}
           style={{ flexShrink: 0, marginLeft: 8 }}
-          style={{ flexShrink: 0, marginLeft: 12 }}
         >
           <div className="toggle-knob" />
         </button>
       </div>
+
 
       {agent.description && (
         <p
