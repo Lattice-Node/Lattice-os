@@ -40,8 +40,8 @@ export async function POST(req: Request) {
     }
 
     if (type === "subscription") {
-      const plan = session.metadata?.plan ?? "personal";
-      const credits = PLAN_CREDITS[plan] ?? 300;
+      const plan = session.metadata?.plan ?? "starter";
+      const credits = PLAN_CREDITS[plan] ?? 100;
       const subscriptionId = session.subscription as string;
 
       const subscription = await stripe.subscriptions.retrieve(subscriptionId) as any;
