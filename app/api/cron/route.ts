@@ -53,13 +53,15 @@ function buildSystemPrompt() {
 }
 
 export async function GET(req: NextRequest) {
-  // Verify cron secret (Vercel cron or manual call)
+  // Verify cron secret (Vercel cron, header, or query param)
   const authHeader = req.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
+  const urlSecret = new URL(req.url).searchParams.get("secret");
   const isVercelCron = req.headers.get("x-vercel-cron") === "true" || req.headers.get("user-agent")?.includes("vercel-cron");
   const isSecretValid = cronSecret && (
     req.headers.get("x-cron-secret") === cronSecret ||
-    authHeader === `Bearer ${cronSecret}`
+    authHeader === `Bearer ${cronSecret}` ||
+    urlSecret === cronSecret
   );
 
   if (!isVercelCron && !isSecretValid) {
