@@ -59,7 +59,17 @@ function buildGenericUserPrompt(agent: AgentShape, extraContext?: string) {
     + (extraContext ? "\n\n" + extraContext : "");
 }
 
-async function runWithAnthropic(agent: AgentShape, now: Date, isDailyNews: boolean, extraContext?: string) {
+async function runWithAnthropic(
+  agent: AgentShape,
+  now: Date,
+  isDailyNews: boolean,
+  extraContext?: string,
+  toolContext?: {
+    clientTools: import("@/lib/agent-tools").ToolDefinition[];
+    userId: string;
+    gmailToken?: string | null;
+  }
+) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     throw new Error("ANTHROPIC_API_KEY is not set.");
@@ -75,51 +85,77 @@ async function runWithAnthropic(agent: AgentShape, now: Date, isDailyNews: boole
     ? buildDailyAiNewsUserPrompt({ now })
     : buildGenericUserPrompt(agent, extraContext);
 
-  const message = isDailyNews
-    ? await client.messages.create({
-        model: process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001",
-        max_tokens: 1400,
-        system: systemPrompt,
-        messages: [
-          {
-            role: "user",
-            content: userPrompt,
-          },
-        ],
-        tools: [
-          {
-            type: "web_search_20250305",
-            name: "web_search",
-          },
-        ],
-      })
-    : await client.messages.create({
-        model: process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001",
-        max_tokens: 1400,
-        system: systemPrompt,
-        messages: [
-          {
-            role: "user",
-            content: userPrompt,
-          },
-        ],
-        tools: [
-          {
-            type: "web_search_20250305",
-            name: "web_search",
-          },
-        ],
-      });
-
-  const rawText = extractTextFromClaudeResponse(message.content);
-
-  if (!rawText) {
-    throw new Error("Anthropic returned an empty response.");
+  // Build tools array: web_search (server) + client tools
+  const tools: any[] = [
+    { type: "web_search_20250305", name: "web_search" },
+  ];
+  if (toolContext?.clientTools) {
+    for (const t of toolContext.clientTools) {
+      tools.push(t);
+    }
   }
 
-  return isDailyNews
-    ? normalizeDailyAiNewsOutput(rawText, now)
-    : rawText.trim();
+  const messages: any[] = [{ role: "user", content: userPrompt }];
+  const MAX_TOOL_LOOPS = 5;
+  let loopCount = 0;
+
+  while (loopCount < MAX_TOOL_LOOPS) {
+    loopCount++;
+
+    const message = await client.messages.create({
+      model: process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001",
+      max_tokens: 1400,
+      system: systemPrompt,
+      messages,
+      tools,
+    });
+
+    // If stop_reason is "end_turn" or no tool_use, we're done
+    if (message.stop_reason !== "tool_use") {
+      const rawText = extractTextFromClaudeResponse(message.content);
+      if (!rawText) throw new Error("Anthropic returned an empty response.");
+      return isDailyNews ? normalizeDailyAiNewsOutput(rawText, now) : rawText.trim();
+    }
+
+    // Find tool_use blocks (client tools only, server tools are handled automatically)
+    const toolUseBlocks = message.content.filter(
+      (b: any) => b.type === "tool_use"
+    );
+
+    if (toolUseBlocks.length === 0) {
+      // Only server tool results, extract text
+      const rawText = extractTextFromClaudeResponse(message.content);
+      if (!rawText) throw new Error("Anthropic returned an empty response.");
+      return isDailyNews ? normalizeDailyAiNewsOutput(rawText, now) : rawText.trim();
+    }
+
+    // Execute each client tool and build tool_result messages
+    const toolResults: any[] = [];
+    for (const block of toolUseBlocks) {
+      const { executeTool } = await import("@/lib/agent-tools");
+      const result = await executeTool(
+        block.name,
+        block.input as Record<string, string>,
+        {
+          userId: toolContext?.userId || "",
+          gmailToken: toolContext?.gmailToken,
+          sendGmailFn: sendGmailMessage,
+        }
+      );
+      toolResults.push({
+        type: "tool_result",
+        tool_use_id: block.id,
+        content: result,
+      });
+    }
+
+    // Add assistant response + tool results to messages for next loop
+    messages.push({ role: "assistant", content: message.content });
+    messages.push({ role: "user", content: toolResults });
+  }
+
+  // Max loops reached, extract whatever text we have
+  throw new Error("Tool use loop exceeded maximum iterations.");
 }
 
 async function runWithGroq(agent: AgentShape, now: Date, isDailyNews: boolean, extraContext?: string) {
@@ -199,7 +235,7 @@ export async function POST(request: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { email },
-      select: { id: true, credits: true, role: true },
+      select: { id: true, credits: true, role: true, plan: true },
     });
 
     if (!user) {
@@ -287,8 +323,25 @@ export async function POST(request: NextRequest) {
     let finalOutput = "";
     let finalError = "";
 
+    // Build tool context for Phase 2 Tool Use
+    const { getAvailableTools } = await import("@/lib/agent-tools");
+    const userConnections = await prisma.userConnection.findMany({
+      where: { userId: user.id },
+      select: { provider: true },
+    });
+    const connProviders = userConnections.map(c => c.provider);
+    const clientTools = getAvailableTools(user.plan, user.role, connProviders);
+    let gmailToken: string | null = null;
+    if (connProviders.includes("gmail")) {
+      try { gmailToken = await getGmailToken(user.id); } catch {}
+    }
+
     try {
-      finalOutput = await runWithAnthropic(agent, now, isDailyNews, extraContext);
+      finalOutput = await runWithAnthropic(agent, now, isDailyNews, extraContext, {
+        clientTools,
+        userId: user.id,
+        gmailToken,
+      });
     } catch (anthropicError) {
       const anthropicMessage = getErrorMessage(anthropicError);
 
