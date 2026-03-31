@@ -286,23 +286,44 @@ export default function StoreList({ templates }: { templates: Template[] }) {
           <p style={{ color: "var(--muted)", fontSize: "14px" }}>該当するエージェントが見つかりません</p>
         </div>
       ) : (
-        filtered.map((t, i) => (
+        filtered.map((t, i) => {
+          const isToolUse = (t.description || "").includes("Tool Use") || (t.prompt || "").includes("fetch_url") || (t.prompt || "").includes("send_gmail");
+          return (
           <div
             key={t.id}
             className="store-card animate-in"
-            style={{ animationDelay: i * 50 + "ms", cursor: "pointer" }}
+            style={{
+              animationDelay: i * 50 + "ms",
+              cursor: "pointer",
+              ...(isToolUse ? { border: "1px solid rgba(168,85,247,0.4)", background: "linear-gradient(135deg, rgba(168,85,247,0.06), rgba(108,113,232,0.04))" } : {}),
+            }}
             onClick={() => handleSelect(t)}
           >
             <div className="store-card-top">
               <div style={{ flex: 1, minWidth: 0, marginRight: 12 }}>
-                <p className="store-card-title">{t.name}</p>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                  <p className="store-card-title" style={{ margin: 0 }}>{t.name}</p>
+                  {isToolUse && (
+                    <span style={{ fontSize: 10, fontWeight: 700, color: "#a855f7", background: "rgba(168,85,247,0.15)", padding: "2px 7px", borderRadius: 4, whiteSpace: "nowrap", letterSpacing: "0.02em" }}>
+                      Tool Use
+                    </span>
+                  )}
+                </div>
                 <p className="store-card-desc">{t.description || "AIエージェントテンプレート"}</p>
               </div>
-              <div style={{ background: "rgba(108, 113, 232, 0.12)", padding: 7, borderRadius: 8, flexShrink: 0 }}>
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#6c71e8" strokeWidth="1.6">
-                  <rect x="2" y="3" width="14" height="12" rx="2" />
-                  <path d="M2 7h14M7 7v8" />
-                </svg>
+              <div style={{ background: isToolUse ? "rgba(168,85,247,0.15)" : "rgba(108, 113, 232, 0.12)", padding: 7, borderRadius: 8, flexShrink: 0 }}>
+                {isToolUse ? (
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#a855f7" strokeWidth="1.6">
+                    <path d="M9 2v4l2 1" />
+                    <circle cx="9" cy="9" r="7" />
+                    <path d="M13 13l2 2" />
+                  </svg>
+                ) : (
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#6c71e8" strokeWidth="1.6">
+                    <rect x="2" y="3" width="14" height="12" rx="2" />
+                    <path d="M2 7h14M7 7v8" />
+                  </svg>
+                )}
               </div>
             </div>
             <div className="store-card-bottom">
@@ -312,10 +333,11 @@ export default function StoreList({ templates }: { templates: Template[] }) {
                   <span className="store-card-stat" style={{ color: "var(--muted)" }}>{t.category}</span>
                 )}
               </div>
-              <span style={{ fontSize: 12, color: "#4a5060" }}>詳細 ›</span>
+              <span style={{ fontSize: 12, color: isToolUse ? "#a855f7" : "#4a5060" }}>{isToolUse ? "Tool Use ›" : "詳細 ›"}</span>
             </div>
           </div>
-        ))
+          );
+        })
       )}
     </>
   );

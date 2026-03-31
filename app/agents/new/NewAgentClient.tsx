@@ -31,6 +31,12 @@ const EXAMPLES = [
   "毎朝8時にAI・テクノロジーの最新ニュースを届ける",
 ];
 
+const TOOLUSE_EXAMPLES = [
+  "https://example.com のページを読み込んで、内容を箇条書きで要約する",
+  "3つのニュースサイトを比較して、共通のトレンドを分析する",
+  "指定URLの記事を読んで、Gmailで自動配信する",
+];
+
 export default function NewAgentClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -147,6 +153,30 @@ export default function NewAgentClient() {
                 {ex}
               </button>
             ))}
+            <div style={{ marginTop: 16, padding: "14px 16px", background: "rgba(168,85,247,0.06)", border: "1px solid rgba(168,85,247,0.25)", borderRadius: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="#a855f7" strokeWidth="1.8">
+                  <path d="M9 2v4l2 1" />
+                  <circle cx="9" cy="9" r="7" />
+                  <path d="M13 13l2 2" />
+                </svg>
+                <span style={{ fontSize: 13, fontWeight: 700, color: "#a855f7" }}>Tool Use（有料プラン）</span>
+              </div>
+              <p style={{ fontSize: 12, color: "#9096a8", margin: "0 0 10px", lineHeight: 1.5 }}>
+                AIがWebページを読み込み、メールを送るなど、自律的にアクション実行します
+              </p>
+              {TOOLUSE_EXAMPLES.map((ex) => (
+                <button
+                  key={ex}
+                  className="create-example-btn"
+                  style={{ borderColor: "rgba(168,85,247,0.2)", marginBottom: 6 }}
+                  onClick={() => { setInput(ex); setParsed(null); }}
+                >
+                  <span style={{ color: "#a855f7", marginRight: 6, fontSize: 11 }}>⚡</span>
+                  {ex}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
