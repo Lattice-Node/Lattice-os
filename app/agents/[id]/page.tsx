@@ -191,10 +191,11 @@ export default function AgentDetailPage() {
         >
           {agent.name}
         </h1>
+        <button onClick={handleEdit} style={{ background: "transparent", border: "1px solid #2e3440", borderRadius: 8, padding: "5px 10px", fontSize: 12, color: "#9096a8", cursor: "pointer", marginLeft: 8, fontFamily: "inherit", flexShrink: 0 }}>編集</button>
         <button
           className={"toggle " + (agent.active ? "on" : "off")}
           onClick={handleToggleActive}
-          style={{ flexShrink: 0, marginLeft: 12 }}
+          style={{ flexShrink: 0, marginLeft: 8 }}
         >
           <div className="toggle-knob" />
         </button>
@@ -232,9 +233,9 @@ export default function AgentDetailPage() {
         <div className="stat-box">
           <p className="stat-number" style={{ fontSize: 16 }}>
             {agent.trigger || "manual"}
-          </p>
+              {agent.nextRunAt ? (() => { const d = new Date(agent.nextRunAt!); const now = new Date(); const diff = d.getTime() - now.getTime(); const hm = d.getHours() + ":" + String(d.getMinutes()).padStart(2, "0"); const todayEnd = new Date(now); todayEnd.setHours(23,59,59,999); const tomorrowEnd = new Date(now); tomorrowEnd.setDate(tomorrowEnd.getDate()+1); tomorrowEnd.setHours(23,59,59,999); if (diff < 0) return "\u5b9f\u884c\u5f85\u3061"; if (d <= todayEnd) return "\u4eca\u65e5 "+hm; if (d <= tomorrowEnd) return "\u660e\u65e5 "+hm; return (d.getMonth()+1)+"/"+d.getDate()+" "+hm; })() : "--"}
           <p className="stat-label">トリガー</p>
-        </div>
+              次回実行
       </div>
 
       <button
