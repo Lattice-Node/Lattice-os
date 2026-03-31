@@ -68,7 +68,7 @@ export async function executeTool(
   context: {
     userId: string;
     gmailToken?: string | null;
-    sendGmailFn?: (token: string, to: string, subject: string, body: string) => Promise<void>;
+    sendGmailFn?: (token: string, to: string, subject: string, body: string) => Promise<unknown>;
   }
 ): Promise<string> {
   switch (toolName) {
