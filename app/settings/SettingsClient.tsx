@@ -20,9 +20,58 @@ const CREDIT_PLANS = [
 ];
 
 const SUB_PLANS = [
-  { id: "free", label: "フリー", price: "0", features: ["月30クレジット (15回実行)", "エージェント3体まで", "スケジュール実行", "アプリ内出力のみ"] },
-  { id: "personal", label: "パーソナル", price: "980", features: ["月300クレジット (150回実行)", "エージェント無制限", "Gmail / Discord 連携", "スケジュール実行"] },
-  { id: "business", label: "ビジネス", price: "4,980", features: ["月1,500クレジット (750回実行)", "エージェント無制限", "全連携 (LINE含む)", "優先サポート"] },
+  {
+    id: "free", label: "Free", price: 0, yearlyPrice: 0,
+    runs: 15, agents: 3, badge: "",
+    features: [
+      { text: "AIエージェント 3体まで", ok: true },
+      { text: "月15回の自動実行", ok: true },
+      { text: "Web検索 + AI要約", ok: true },
+      { text: "テンプレートストア", ok: true },
+      { text: "Gmail / Discord連携", ok: false },
+      { text: "Tool Use（自律実行）", ok: false },
+      { text: "LINE連携", ok: false },
+    ],
+  },
+  {
+    id: "starter", label: "Starter", price: 980, yearlyPrice: 9800,
+    runs: 50, agents: 10, badge: "",
+    features: [
+      { text: "AIエージェント 10体まで", ok: true },
+      { text: "月50回の自動実行", ok: true },
+      { text: "Web検索 + AI要約", ok: true },
+      { text: "テンプレートストア", ok: true },
+      { text: "Gmail / Discord連携", ok: true },
+      { text: "Tool Use（自律実行）", ok: false },
+      { text: "LINE連携", ok: false },
+    ],
+  },
+  {
+    id: "pro", label: "Pro", price: 2480, yearlyPrice: 24800,
+    runs: 250, agents: -1, badge: "人気",
+    features: [
+      { text: "AIエージェント 無制限", ok: true },
+      { text: "月250回の自動実行", ok: true },
+      { text: "Web検索 + AI要約", ok: true },
+      { text: "テンプレートストア", ok: true },
+      { text: "Gmail / Discord連携", ok: true },
+      { text: "Tool Use（自律実行）", ok: true },
+      { text: "LINE連携", ok: false },
+    ],
+  },
+  {
+    id: "business", label: "Business", price: 6980, yearlyPrice: 69800,
+    runs: 1000, agents: -1, badge: "",
+    features: [
+      { text: "AIエージェント 無制限", ok: true },
+      { text: "月1,000回の自動実行", ok: true },
+      { text: "Web検索 + AI要約", ok: true },
+      { text: "テンプレートストア", ok: true },
+      { text: "Gmail / Discord連携", ok: true },
+      { text: "Tool Use（自律実行）", ok: true },
+      { text: "LINE連携 + 優先サポート", ok: true },
+    ],
+  },
 ];
 
 const cardStyle = { background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, padding: "20px", marginBottom: 12 };
@@ -100,7 +149,7 @@ const handleLineGenerate = async () => {
     } catch { setCanceling(false); setCancelConfirm(false); }
   };
 
-  const planLabel = plan === "business" ? "ビジネス" : plan === "personal" ? "パーソナル" : "フリー";
+  const planLabel = plan === "business" ? "Business" : plan === "pro" ? "Pro" : plan === "starter" ? "Starter" : plan === "personal" ? "Starter" : "Free";
   const periodEnd = currentPeriodEnd ? new Date(currentPeriodEnd).toLocaleDateString("ja-JP") : null;
   const isAdmin = role === "admin";
   const isPaid = isAdmin || plan === "personal" || plan === "business";
@@ -140,6 +189,8 @@ const handleLineGenerate = async () => {
   }
 
   // Plan selection view
+  const [isYearly, setIsYearly] = useState(false);
+
   if (showPlans) {
     return (
       <main style={{ minHeight: "100vh", backgroundColor: "#0e1117", color: "#e8eaf0", paddingBottom: 100 }}>
@@ -149,36 +200,125 @@ const handleLineGenerate = async () => {
           </button>
           <p style={sectionLabel}>プラン</p>
           <h1 style={{ fontSize: 24, fontWeight: 700, color: "#f0f2f8", margin: "0 0 6px", letterSpacing: "-0.02em" }}>
-            プランをアップグレード
+            プランを選ぶ
           </h1>
-          <p style={{ fontSize: 13, color: "#6a7080", margin: "0 0 28px" }}>
-            現在のプラン: <span style={{ color: "#e8eaf0", fontWeight: 600 }}>{planLabel}</span>
+          <p style={{ fontSize: 13, color: "#6a7080", margin: "0 0 20px" }}>
+            AIエージェントが、あなたの代わりに働きます
           </p>
+
+          {/* Yearly/Monthly toggle */}
+          <div style={{ display: "flex", background: "#1c2028", borderRadius: 12, padding: 4, marginBottom: 20 }}>
+            <button onClick={() => setIsYearly(false)} style={{ flex: 1, padding: "10px 0", background: !isYearly ? "#2e3440" : "transparent", color: !isYearly ? "#fff" : "#6a7080", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s" }}>
+              月額
+            </button>
+            <button onClick={() => setIsYearly(true)} style={{ flex: 1, padding: "10px 0", background: isYearly ? "#2e3440" : "transparent", color: isYearly ? "#fff" : "#6a7080", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s", position: "relative" }}>
+              年額
+              <span style={{ position: "absolute", top: -8, right: 12, background: "#22c55e", color: "#fff", fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 6 }}>2ヶ月無料</span>
+            </button>
+          </div>
+
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {SUB_PLANS.map((p) => {
-              const isCurrent = plan === p.id;
+              const isCurrent = plan === p.id || (plan === "personal" && p.id === "starter");
+              const isPro = p.id === "pro";
+              const monthlyEquiv = isYearly && p.yearlyPrice > 0 ? Math.round(p.yearlyPrice / 12) : p.price;
+              const savings = isYearly && p.price > 0 ? p.price * 12 - p.yearlyPrice : 0;
+              const costPerRun = p.price > 0 ? Math.round(monthlyEquiv / p.runs) : 0;
+
               return (
-                <div key={p.id} style={{ background: p.id === "business" ? "#14163a" : "#1c2028", border: `1px solid ${p.id === "business" ? "#6c71e8" : "#2e3440"}`, borderRadius: 16, padding: "24px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 16 }}>
-                    <h2 style={{ fontSize: 20, fontWeight: 700, color: "#f0f2f8", margin: 0 }}>{p.label}</h2>
-                    <div style={{ textAlign: "right" }}>
-                      <span style={{ fontSize: 28, fontWeight: 700, color: "#f0f2f8" }}>{p.price}</span>
-                      <span style={{ fontSize: 13, color: "#6a7080" }}> /月</span>
+                <div key={p.id} style={{
+                  background: isPro ? "#14163a" : "#1c2028",
+                  border: `${isPro ? "2px" : "1px"} solid ${isPro ? "#6c71e8" : "#2e3440"}`,
+                  borderRadius: 16, padding: "20px", position: "relative",
+                }}>
+                  {p.badge && (
+                    <span style={{ position: "absolute", top: -10, right: 16, background: "linear-gradient(135deg, #6c71e8, #5b5fd6)", color: "#fff", fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 8 }}>
+                      {p.badge}
+                    </span>
+                  )}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+                    <div>
+                      <p style={{ fontSize: 18, fontWeight: 700, color: "#f0f2f8", margin: "0 0 4px" }}>{p.label}</p>
+                      <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
+                        <span style={{ fontSize: 28, fontWeight: 700, color: "#f0f2f8" }}>
+                          {p.price === 0 ? "¥0" : `¥${monthlyEquiv.toLocaleString()}`}
+                        </span>
+                        {p.price > 0 && <span style={{ fontSize: 13, color: "#6a7080" }}>/月</span>}
+                      </div>
+                      {isYearly && savings > 0 && (
+                        <p style={{ fontSize: 12, color: "#22c55e", fontWeight: 600, margin: "2px 0 0" }}>
+                          年間 ¥{savings.toLocaleString()} お得
+                        </p>
+                      )}
+                    </div>
+                    <div style={{ textAlign: "right", background: "#0e1117", padding: "8px 12px", borderRadius: 10 }}>
+                      <p style={{ fontSize: 22, fontWeight: 700, color: "#6c71e8", margin: 0 }}>{p.runs.toLocaleString()}</p>
+                      <p style={{ fontSize: 10, color: "#6a7080", margin: 0 }}>回/月</p>
                     </div>
                   </div>
-                  <ul style={{ listStyle: "none", padding: 0, margin: "0 0 18px" }}>
+
+                  {/* Cost per run bar */}
+                  {p.price > 0 && (
+                    <div style={{ background: "#0e1117", borderRadius: 8, padding: "8px 12px", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 11, color: "#9096a8", whiteSpace: "nowrap" }}>1回あたり</span>
+                      <div style={{ flex: 1, height: 4, background: "#2e3440", borderRadius: 2 }}>
+                        <div style={{ height: "100%", width: `${Math.max(10, Math.min(100, 100 - costPerRun * 2))}%`, background: "linear-gradient(90deg, #22c55e, #6c71e8)", borderRadius: 2, transition: "width 0.5s ease" }} />
+                      </div>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#22c55e" }}>¥{costPerRun}</span>
+                    </div>
+                  )}
+
+                  {/* Features */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 16 }}>
                     {p.features.map((f, i) => (
-                      <li key={i} style={{ fontSize: 13, color: "#9096a8", padding: "5px 0", display: "flex", alignItems: "center", gap: 8 }}>
-                        <span style={{ color: "#6c71e8", fontSize: 14 }}>+</span> {f}
-                      </li>
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: f.ok ? "#c0c4d0" : "#4a5060" }}>
+                        {f.ok ? (
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="#6c71e8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        ) : (
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 4L10 10M10 4L4 10" stroke="#4a5060" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                        )}
+                        <span style={{ textDecoration: f.ok ? "none" : "line-through", opacity: f.ok ? 1 : 0.5 }}>{f.text}</span>
+                      </div>
                     ))}
-                  </ul>
-                  <button onClick={() => !isCurrent && handlePurchase(p.id)} disabled={isCurrent || purchasing === p.id} style={{ width: "100%", padding: "12px", borderRadius: 10, border: "none", background: isCurrent ? "#242830" : "#6c71e8", color: isCurrent ? "#6a7080" : "#fff", fontSize: 14, fontWeight: 600, cursor: isCurrent ? "default" : "pointer", fontFamily: "inherit", opacity: purchasing === p.id ? 0.5 : 1 }}>
-                    {isCurrent ? "現在のプラン" : purchasing === p.id ? "..." : "アップグレード"}
+                  </div>
+
+                  <button
+                    onClick={() => !isCurrent && handlePurchase(isYearly ? p.id + "_yearly" : p.id)}
+                    disabled={isCurrent || purchasing === p.id}
+                    style={{
+                      width: "100%", padding: "12px", borderRadius: 10, border: "none",
+                      background: isCurrent ? "#242830" : isPro ? "linear-gradient(135deg, #6c71e8, #5b5fd6)" : "#1c2028",
+                      color: isCurrent ? "#6a7080" : "#fff",
+                      fontSize: 14, fontWeight: 600, cursor: isCurrent ? "default" : "pointer",
+                      fontFamily: "inherit", opacity: purchasing === p.id ? 0.5 : 1,
+                      ...((!isCurrent && !isPro) ? { border: "1px solid #2e3440" } : {}),
+                    }}
+                  >
+                    {isCurrent ? "現在のプラン" : purchasing === p.id ? "..." : p.price === 0 ? "現在のプラン" : `${p.label}を始める`}
                   </button>
                 </div>
               );
             })}
+          </div>
+
+          {/* Comparison with other AI services */}
+          <div style={{ marginTop: 20, padding: "16px", background: "#1c2028", borderRadius: 16, border: "1px solid #2e3440", textAlign: "center" }}>
+            <p style={{ fontSize: 13, color: "#9096a8", margin: "0 0 10px" }}>他のAIサービスとの比較</p>
+            <div style={{ display: "flex", justifyContent: "center", gap: 16, fontSize: 12 }}>
+              <div>
+                <p style={{ color: "#6a7080", margin: "0 0 2px" }}>ChatGPT Plus</p>
+                <p style={{ fontWeight: 700, fontSize: 16, color: "#9096a8", margin: 0 }}>¥3,000</p>
+              </div>
+              <div>
+                <p style={{ color: "#6a7080", margin: "0 0 2px" }}>Claude Pro</p>
+                <p style={{ fontWeight: 700, fontSize: 16, color: "#9096a8", margin: 0 }}>¥3,000</p>
+              </div>
+              <div>
+                <p style={{ color: "#6c71e8", margin: "0 0 2px" }}>Lattice Pro</p>
+                <p style={{ fontWeight: 700, fontSize: 16, color: "#6c71e8", margin: 0 }}>¥2,480</p>
+              </div>
+            </div>
+            <p style={{ fontSize: 11, color: "#22c55e", marginTop: 8, fontWeight: 600 }}>しかもLatticeは自動で動き続ける</p>
           </div>
         </div>
       </main>
@@ -234,7 +374,7 @@ const handleLineGenerate = async () => {
             {isPaid && <span style={{ fontSize: 11, color: "#4ade80", background: "#0f2a1a", padding: "3px 10px", borderRadius: 20 }}>有効</span>}
           </div>
           {periodEnd && <p style={{ fontSize: 12, color: "#6a7080", margin: "4px 0 14px" }}>次回請求日: {periodEnd}</p>}
-          {!isPaid && <p style={{ fontSize: 12, color: "#6a7080", margin: "4px 0 14px" }}>月30クレジット・エージェント3体まで</p>}
+          {!isPaid && <p style={{ fontSize: 12, color: "#6a7080", margin: "4px 0 14px" }}>月15回の自動実行・エージェント3体まで</p>}
           <button onClick={() => setShowPlans(true)} style={{ width: "100%", padding: "11px 16px", borderRadius: 8, border: "1px solid #2e3440", background: "transparent", color: "#6c71e8", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span>{isPaid ? "プラン変更" : "アップグレード"}</span>
             <span style={{ fontSize: 16 }}>...</span>
