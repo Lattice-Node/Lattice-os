@@ -31,7 +31,7 @@ const CATEGORY_DESC: Record<string, string> = {
 
 const categories = ["すべて", "リサーチ", "営業", "SNS", "生産性", "通知"];
 
-export default function StoreList({ templates }: { templates: Template[] }) {
+export default function StoreList({ templates, isPaid }: { templates: Template[]; isPaid: boolean }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("すべて");
   const [selected, setSelected] = useState<Template | null>(null);
@@ -128,6 +128,8 @@ export default function StoreList({ templates }: { templates: Template[] }) {
   // Detail + setup view
   if (selected) {
     const vars = getVariables(selected);
+    const isToolUse = (selected.description || "").includes("Tool Use") || (selected.prompt || "").includes("fetch_url") || (selected.prompt || "").includes("send_gmail");
+    const isLocked = isToolUse && !isPaid;
 
     return (
       <div style={{ maxWidth: 420, margin: "0 auto", padding: "0 0 100px" }}>
@@ -138,22 +140,50 @@ export default function StoreList({ templates }: { templates: Template[] }) {
           ← 戻る
         </button>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
-          <div style={{ width: 56, height: 56, borderRadius: 14, background: "rgba(108,113,232,0.12)", border: "1px solid rgba(108,113,232,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg width="24" height="24" viewBox="0 0 18 18" fill="none" stroke="#6c71e8" strokeWidth="1.6">
-              <rect x="2" y="3" width="14" height="12" rx="2" />
-              <path d="M2 7h14M7 7v8" />
-            </svg>
+        <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
+          <div style={{ width: 56, height: 56, borderRadius: 14, background: isToolUse ? "rgba(168,85,247,0.12)" : "rgba(108,113,232,0.12)", border: `1px solid ${isToolUse ? "rgba(168,85,247,0.3)" : "rgba(108,113,232,0.2)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            {isToolUse ? (
+              <svg width="24" height="24" viewBox="0 0 18 18" fill="none" stroke="#a855f7" strokeWidth="1.6">
+                <path d="M9 2v4l2 1" />
+                <circle cx="9" cy="9" r="7" />
+                <path d="M13 13l2 2" />
+              </svg>
+            ) : (
+              <svg width="24" height="24" viewBox="0 0 18 18" fill="none" stroke="#6c71e8" strokeWidth="1.6">
+                <rect x="2" y="3" width="14" height="12" rx="2" />
+                <path d="M2 7h14M7 7v8" />
+              </svg>
+            )}
           </div>
           <div>
-            <h1 style={{ fontSize: 20, fontWeight: 700, color: "#f0f2f8", margin: "0 0 4px", letterSpacing: "-0.02em" }}>
-              {selected.name}
-            </h1>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+              <h1 style={{ fontSize: 20, fontWeight: 700, color: "#f0f2f8", margin: 0, letterSpacing: "-0.02em" }}>
+                {selected.name}
+              </h1>
+              {isToolUse && (
+                <span style={{ fontSize: 10, fontWeight: 700, color: "#a855f7", background: "rgba(168,85,247,0.15)", padding: "2px 7px", borderRadius: 4 }}>
+                  Tool Use
+                </span>
+              )}
+            </div>
             {selected.category && (
               <span style={{ fontSize: 11, color: "#6c71e8", background: "#1e2044", padding: "2px 8px", borderRadius: 4, fontWeight: 500 }}>
                 {selected.category}
               </span>
             )}
+          </div>
+        </div>
+
+        {/* Tool Use / Normal explanation */}
+        <div style={{ background: isToolUse ? "rgba(168,85,247,0.06)" : "#1c2028", border: `1px solid ${isToolUse ? "rgba(168,85,247,0.2)" : "#2e3440"}`, borderRadius: 10, padding: "12px 16px", marginBottom: 12, display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontSize: 18 }}>{isToolUse ? "⚡" : "📄"}</span>
+          <div>
+            <p style={{ fontSize: 13, fontWeight: 600, color: isToolUse ? "#a855f7" : "#9096a8", margin: "0 0 2px" }}>
+              {isToolUse ? "AIが自分で判断して行動する" : "AIが検索して報告する"}
+            </p>
+            <p style={{ fontSize: 11, color: "#6a7080", margin: 0 }}>
+              {isToolUse ? "Webページを読み込み・メール送信など、複数ステップを自律実行" : "Web検索の結果をもとにテキストを生成して報告"}
+            </p>
           </div>
         </div>
 
@@ -230,6 +260,16 @@ export default function StoreList({ templates }: { templates: Template[] }) {
           <div style={{ textAlign: "center", padding: "14px", borderRadius: 10, background: "#0f2a1a", border: "1px solid #1a4a2a" }}>
             <p style={{ fontSize: 15, fontWeight: 600, color: "#4ade80", margin: 0 }}>エージェントを作成しました</p>
           </div>
+        ) : isLocked ? (
+          <div style={{ textAlign: "center" }}>
+            <div style={{ padding: "16px", borderRadius: 10, background: "rgba(168,85,247,0.06)", border: "1px solid rgba(168,85,247,0.2)", marginBottom: 10 }}>
+              <p style={{ fontSize: 14, fontWeight: 600, color: "#a855f7", margin: "0 0 6px" }}>Starter以上のプランで利用できます</p>
+              <p style={{ fontSize: 12, color: "#6a7080", margin: 0 }}>Tool Useエージェントは、AIが自律的にWebを読んだりメールを送る高度な機能です</p>
+            </div>
+            <a href="/settings" style={{ display: "block", padding: "14px", borderRadius: 10, background: "#a855f7", color: "#fff", fontSize: 15, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>
+              プランをアップグレード
+            </a>
+          </div>
         ) : (
           <button
             onClick={handleAdd}
@@ -239,7 +279,7 @@ export default function StoreList({ templates }: { templates: Template[] }) {
               padding: "14px",
               borderRadius: 10,
               border: "none",
-              background: adding ? "#1e2044" : "#6c71e8",
+              background: adding ? "#1e2044" : isToolUse ? "#a855f7" : "#6c71e8",
               color: adding ? "#4a5060" : "#fff",
               fontSize: 15,
               fontWeight: 600,
