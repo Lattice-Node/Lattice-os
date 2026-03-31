@@ -387,15 +387,10 @@ const handleLineGenerate = async () => {
             <p style={{ ...sectionLabel, margin: 0 }}>クレジット</p>
             <span style={{ fontSize: 24, fontWeight: 700, color: "#e8eaf0", letterSpacing: "-0.02em" }}>{credits}</span>
           </div>
-          {isPaid && (
-            <button onClick={() => setShowCredit(true)} style={{ width: "100%", padding: "11px 16px", borderRadius: 8, border: "1px solid #2e3440", background: "transparent", color: "#6c71e8", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span>クレジットを追加</span>
-              <span style={{ fontSize: 16 }}>...</span>
-            </button>
-          )}
-          {!isPaid && (
-            <p style={{ fontSize: 12, color: "#6a7080", margin: 0 }}>有料プランでクレジット追加購入が可能です</p>
-          )}
+          <button onClick={() => setShowCredit(true)} style={{ width: "100%", padding: "11px 16px", borderRadius: 8, border: "1px solid #2e3440", background: "transparent", color: "#6c71e8", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span>クレジットを追加</span>
+            <span style={{ fontSize: 16 }}>...</span>
+          </button>
         </div>
 
         {/* Connections */}
