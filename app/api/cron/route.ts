@@ -135,6 +135,26 @@ export async function GET(req: NextRequest) {
           }
         } catch {}
       }
+      // Agent Memory: Pro/Business/adminのみ直近5件のログをコンテキスト注入
+      let memoryContext = "";
+      const isPaidPlan = user.role === "admin" || user.plan === "pro" || user.plan === "business";
+      if (isPaidPlan) {
+        const recentLogs = await prisma.agentLog.findMany({
+          where: { agentId: agent.id, status: "success" },
+          orderBy: { createdAt: "desc" },
+          take: 5,
+          select: { output: true, createdAt: true },
+        });
+        if (recentLogs.length > 0) {
+          memoryContext = "--- 過去の実行履歴（最新5件）---\n" + recentLogs.map((log: { output: string; createdAt: Date }, i: number) => {
+            const d = new Date(log.createdAt);
+            const dateStr = `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,"0")}`;
+            const snippet = log.output.slice(0, 300);
+            return `[${dateStr}]\n${snippet}`;
+          }).join("\n\n");
+        }
+      }
+
 
       const systemPrompt = isDailyNews ? buildDailyAiNewsSystemPrompt() : buildSystemPrompt();
       const userPrompt = isDailyNews
@@ -143,7 +163,7 @@ export async function GET(req: NextRequest) {
             `エージェント名: ${agent.name}`,
             agent.description ? `説明: ${agent.description}` : "",
             agent.prompt ? `指示: ${agent.prompt}` : "",
-          ].filter(Boolean).join("\n\n") + (extraContext ? "\n\n" + extraContext : "");
+          ].filter(Boolean).join("\n\n") + (extraContext ? "\n\n" + extraContext : "") + (memoryContext ? "\n\n" + memoryContext : "");
 
       // Build tools: web_search (always) + client tools (paid plans only)
       const { getAvailableTools, executeTool } = await import("@/lib/agent-tools");

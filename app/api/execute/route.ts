@@ -284,6 +284,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Agent Memory: Pro/Business/adminのみ直近5件のログをコンテキスト注入
+    let memoryContext = "";
+    const isPaidPlan = user.role === "admin" || user.plan === "pro" || user.plan === "business";
+    if (isPaidPlan) {
+      const recentLogs = await prisma.agentLog.findMany({
+        where: { agentId: agent.id, status: "success" },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        select: { output: true, createdAt: true },
+      });
+      if (recentLogs.length > 0) {
+        memoryContext = "--- 過去の実行履歴（最新5件）---\n" + recentLogs.map((log, i) => {
+          const d = new Date(log.createdAt);
+          const dateStr = `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,"0")}`;
+          const snippet = log.output.slice(0, 300);
+          return `[${dateStr}]\n${snippet}`;
+        }).join("\n\n");
+      }
+    }
+
     const now = new Date();
 
     const log = await prisma.agentLog.create({
@@ -344,7 +364,7 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      finalOutput = await runWithAnthropic(agent, now, isDailyNews, extraContext, {
+      finalOutput = await runWithAnthropic(agent, now, isDailyNews, extraContext + (memoryContext ? "\n\n" + memoryContext : ""), {
         clientTools,
         userId: user.id,
         gmailToken,
