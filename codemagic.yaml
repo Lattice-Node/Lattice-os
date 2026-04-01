@@ -11,7 +11,9 @@ workflows:
         XCODE_SCHEME: "App"
     scripts:
       - name: Install dependencies
-        script: npm install
+        script: |
+          npm install
+          npm install @capacitor/ios @capacitor/cli
       - name: Add iOS platform
         script: |
           npx cap add ios || true
