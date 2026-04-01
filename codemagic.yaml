@@ -16,9 +16,10 @@ workflows:
           npm install @capacitor/ios @capacitor/cli
       - name: Add iOS platform
         script: npx cap add ios || true
-      - name: Install CocoaPods
+      - name: Fix Podfile and install pods
         script: |
           cd ios/App
+          perl -i -pe "s/platform :ios, '[0-9.]+'/platform :ios, '14.0'/" Podfile
           pod install
       - name: Sync Capacitor
         script: npx cap sync ios
