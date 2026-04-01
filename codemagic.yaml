@@ -3,11 +3,15 @@ workflows:
     name: Lattice iOS
     max_build_duration: 60
     environment:
+      groups:
+        - ios
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.lattice.protocol
-      groups:
-        - ios
+        api_key:
+          key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+          issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+          private_key: $APP_STORE_CONNECT_PRIVATE_KEY
       vars:
         BUNDLE_ID: "com.lattice.protocol"
         XCODE_WORKSPACE: "ios/App/App.xcworkspace"
