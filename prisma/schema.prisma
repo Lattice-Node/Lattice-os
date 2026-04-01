@@ -24,6 +24,7 @@ model User {
   UserConnection UserConnection[]
   linkCodes      LinkCode[]
   deviceTokens   DeviceToken[]
+}
 
 model UserAgent {
   id           String     @id @default(cuid())
