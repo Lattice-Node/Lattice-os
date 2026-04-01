@@ -15,13 +15,14 @@ workflows:
           npm install
           npm install @capacitor/ios @capacitor/cli
       - name: Add iOS platform
-        script: |
-          npx cap add ios || true
-          npx cap sync ios
-      - name: Install CocoaPods
+        script: npx cap add ios || true
+      - name: Fix Podfile and install
         script: |
           cd ios/App
+          ruby -i -e "gsub(/platform :ios, .+/, \"platform :ios, \x2714.0\x27\")" Podfile
           pod install
+      - name: Sync Capacitor
+        script: npx cap sync ios
       - name: Set up keychain
         script: keychain initialize
       - name: Fetch signing files
