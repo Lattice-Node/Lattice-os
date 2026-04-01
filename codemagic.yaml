@@ -13,13 +13,12 @@ workflows:
       - name: Install dependencies
         script: |
           npm install
-          npm install @capacitor/ios @capacitor/cli
+          npm install @capacitor/ios@6 @capacitor/cli@6 @capacitor/core@6
       - name: Add iOS platform
         script: npx cap add ios || true
-      - name: Fix Podfile and install pods
+      - name: Install CocoaPods
         script: |
           cd ios/App
-          perl -i -pe "s/platform :ios, '[0-9.]+'/platform :ios, '14.0'/" Podfile
           pod install
       - name: Sync Capacitor
         script: npx cap sync ios
