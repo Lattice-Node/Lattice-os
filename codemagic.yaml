@@ -6,6 +6,8 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.lattice.protocol
+      groups:
+        - ios
       vars:
         BUNDLE_ID: "com.lattice.protocol"
         XCODE_WORKSPACE: "ios/App/App.xcworkspace"
