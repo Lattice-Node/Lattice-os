@@ -24,10 +24,14 @@ workflows:
         script: npx cap sync ios
       - name: Set up keychain
         script: keychain initialize
-      - name: Fetch signing files
+      - name: Decode and fetch signing files
         script: |
+          echo $APP_STORE_CONNECT_PRIVATE_KEY | base64 --decode > /tmp/api_key.p8
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
+            --private-key @file:/tmp/api_key.p8 \
+            --key-id $APP_STORE_CONNECT_KEY_IDENTIFIER \
+            --issuer-id $APP_STORE_CONNECT_ISSUER_ID \
             --create
       - name: Add certificates to keychain
         script: keychain add-certificates
