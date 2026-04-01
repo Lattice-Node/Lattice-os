@@ -481,6 +481,23 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // プッシュ通知
+    try {
+      const deviceTokens = await prisma.deviceToken.findMany({
+        where: { userId: user.id },
+        select: { token: true },
+      });
+      if (deviceTokens.length > 0) {
+        const { sendPushNotification } = await import("@/lib/fcm");
+        const tokens = deviceTokens.map(d => d.token);
+        const title = finalError ? agent.name + " \u5b9f\u884c\u30a8\u30e9\u30fc" : agent.name + " \u5b9f\u884c\u5b8c\u4e86";
+        const body = finalError ? "\u30a8\u30e9\u30fc\u304c\u767a\u751f\u3057\u307e\u3057\u305f" : (finalOutput.slice(0, 80) + (finalOutput.length > 80 ? "..." : ""));
+        await sendPushNotification(tokens, title, body);
+      }
+    } catch (pushError) {
+      console.error("Push notification failed:", pushError);
+    }
+
     return NextResponse.json({
       ok: !finalError,
       status: finalStatus,

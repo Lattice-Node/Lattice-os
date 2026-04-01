@@ -1,7 +1,8 @@
-﻿import "./globals.css";
+import "./globals.css";
 import type { Metadata, Viewport } from "next";
 import { DM_Sans } from "next/font/google";
 import { Providers } from "./providers";
+import PushNotificationSetup from "@/components/PushNotificationSetup";
 import BottomNav from "@/components/BottomNav";
 
 const dmSans = DM_Sans({ subsets: ["latin"] });
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <div className="app-shell">{children}</div>
           <BottomNav />
+          <PushNotificationSetup />
         </Providers>
       </body>
     </html>

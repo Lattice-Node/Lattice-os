@@ -23,7 +23,7 @@ model User {
   logs           AgentLog[]
   UserConnection UserConnection[]
   linkCodes      LinkCode[]
-}
+  deviceTokens   DeviceToken[]
 
 model UserAgent {
   id           String     @id @default(cuid())
@@ -91,6 +91,15 @@ model LinkCode {
   userId    String
   code      String   @unique
   expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model DeviceToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  platform  String   @default("web")
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
 }
