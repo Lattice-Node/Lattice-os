@@ -22,6 +22,26 @@ workflows:
           pod install
       - name: Sync Capacitor
         script: npx cap sync ios
+      - name: Set app icon
+        script: |
+          ICON_SET="ios/App/App/Assets.xcassets/AppIcon.appiconset"
+          cp public/app-icon-1024.png "$ICON_SET/AppIcon-512@2x.png"
+          cat > "$ICON_SET/Contents.json" << 'ICONEOF'
+          {
+            "images" : [
+              {
+                "filename" : "AppIcon-512@2x.png",
+                "idiom" : "universal",
+                "platform" : "ios",
+                "size" : "1024x1024"
+              }
+            ],
+            "info" : {
+              "author" : "xcode",
+              "version" : 1
+            }
+          }
+          ICONEOF
       - name: Set up keychain
         script: keychain initialize
       - name: Fetch signing files
