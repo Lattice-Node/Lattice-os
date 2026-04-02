@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import Anthropic from "@anthropic-ai/sdk";
 import { extractTextFromClaudeResponse, isDailyAiNewsAgent, normalizeDailyAiNewsOutput, buildDailyAiNewsSystemPrompt, buildDailyAiNewsUserPrompt } from "@/lib/agents/daily-ai-news";
 import { getGmailToken, sendGmailMessage, readGmailMessages } from "@/lib/gmail";
+import { notifyCronComplete } from "@/lib/push-notify-user";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -297,6 +298,8 @@ export async function GET(req: NextRequest) {
         }
       }
 
+await notifyCronComplete({ userId: user.id, agentName: agent.name, agentId: agent.id, success: true });
+
       results.push({ id: agent.id, name: agent.name, status: "success" });
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : String(err);
@@ -309,7 +312,7 @@ export async function GET(req: NextRequest) {
       if (nextRun) {
         await prisma.userAgent.update({ where: { id: agent.id }, data: { nextRunAt: nextRun } });
       }
-
+await notifyCronComplete({ userId: user.id, agentName: agent.name, agentId: agent.id, success: false });
       results.push({ id: agent.id, name: agent.name, status: "error", error: errMsg });
     }
   }
