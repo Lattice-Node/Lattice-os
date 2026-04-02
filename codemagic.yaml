@@ -13,8 +13,8 @@ workflows:
       - name: Install dependencies
         script: |
           npm install
-          npm install @capacitor/ios@6 @capacitor/cli@6 @capacitor/core@6
-          npm install @capacitor/push-notifications@8
+          npm install @capacitor/ios @capacitor/cli @capacitor/core
+          npm install @capacitor/push-notifications
       - name: Add iOS platform
         script: npx cap add ios || true
       - name: Install CocoaPods
