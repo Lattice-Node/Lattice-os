@@ -10,14 +10,14 @@ workflows:
         XCODE_WORKSPACE: "ios/App/App.xcworkspace"
         XCODE_SCHEME: "App"
     scripts:
-      - - name: Install dependencies
+      - name: Install dependencies
         script: |
           npm install
           npm install @capacitor/ios@6 @capacitor/cli@6 @capacitor/core@6
           npm install @capacitor/push-notifications@6
       - name: Add iOS platform
         script: npx cap add ios || true
-      - - - name: Install CocoaPods
+      - name: Install CocoaPods
         script: |
           cd ios/App
           pod install
@@ -43,7 +43,7 @@ workflows:
             }
           }
           ICONEOF
-          - name: Add Push Notification entitlement
+      - name: Add Push Notification entitlement
         script: |
           ENTITLEMENTS="ios/App/App/App.entitlements"
           cat > "$ENTITLEMENTS" << 'ENTEOF'
@@ -80,17 +80,8 @@ workflows:
       - name: Increment build number
         script: |
           PLIST="ios/App/App/Info.plist"
-          echo "Current Info.plist contents:"
-          cat "$PLIST"
-          echo ""
-          echo "Setting build number via plutil..."
           BUILD_NUM=$BUILD_NUMBER
-          echo "Using Codemagic BUILD_NUMBER: $BUILD_NUM"
           plutil -replace CFBundleVersion -string "$BUILD_NUM" "$PLIST"
-          echo "Updated CFBundleVersion to: $BUILD_NUM"
-          echo ""
-          echo "Verify:"
-          plutil -extract CFBundleVersion raw "$PLIST"
       - name: Build iOS
         script: |
           xcode-project build-ipa \
