@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 const tabs = [
   { href: "/home", label: "ホーム", icon: (a: boolean) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={a ? "#6c71e8" : "#4a5060"} strokeWidth="1.6"><path d="M3 10l8-7 8 7"/><path d="M5 9v9a1 1 0 001 1h10a1 1 0 001-1V9"/></svg> },
   { href: "/store", label: "ストア", icon: (a: boolean) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={a ? "#6c71e8" : "#4a5060"} strokeWidth="1.6"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="12" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="12" width="7" height="7" rx="1.5"/><rect x="12" y="12" width="7" height="7" rx="1.5"/></svg> },
-  { href: "/agents/new", label: "作成", isCenter: true, icon: () => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#fff" strokeWidth="2"><path d="M11 4v14M4 11h14"/></svg> },
+  { href: "/agents/new", label: "作成", isCenter: true, icon: (_a: boolean) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#fff" strokeWidth="2"><path d="M11 4v14M4 11h14"/></svg> },
   { href: "/inbox", label: "受信箱", icon: (a: boolean) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={a ? "#6c71e8" : "#4a5060"} strokeWidth="1.6"><path d="M4 6h14M4 11h14M4 16h10"/></svg> },
   { href: "/settings", label: "設定", icon: (a: boolean) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={a ? "#6c71e8" : "#4a5060"} strokeWidth="1.6"><circle cx="11" cy="8" r="4"/><path d="M4 19c0-3.3 3.1-6 7-6s7 2.7 7 6"/></svg> },
 ];
