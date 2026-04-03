@@ -27,6 +27,7 @@ export default async function StorePage() {
   });
 
   const isPaid = user?.role === "admin" || ["starter", "personal", "pro", "business"].includes(user?.plan || "");
+  const userPlan = user?.role === "admin" ? "business" : (user?.plan || "free");
 
   const userConnections = user?.id
     ? await prisma.userConnection.findMany({
@@ -43,11 +44,13 @@ export default async function StorePage() {
       id: true,
       name: true,
       description: true,
+      prompt: true,
       trigger: true,
       triggerCron: true,
       publicUseCount: true,
       runCount: true,
       user: { select: { name: true } },
+    
     },
     take: 50,
   });
@@ -59,6 +62,7 @@ export default async function StorePage() {
       <StoreList
         templates={JSON.parse(JSON.stringify(templates))}
         isPaid={isPaid}
+        userPlan={userPlan}
         connectedProviders={connectedProviders}
         communityAgents={JSON.parse(JSON.stringify(communityAgents))}
       />
