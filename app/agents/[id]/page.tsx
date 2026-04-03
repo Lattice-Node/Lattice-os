@@ -76,7 +76,7 @@ export default function AgentDetailPage() {
     if (!agent) return;
     const res = await fetch("/api/agents/" + id, {
       method: "PATCH",
-      headers: { Content-Type: pplication/json },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ isPublic: !agent.isPublic }),
     });
     const data = await res.json();
