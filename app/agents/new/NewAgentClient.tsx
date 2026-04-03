@@ -41,11 +41,12 @@ const TOOLUSE_EXAMPLES = [
 function detectRequiredFeatures(text: string) {
   const lower = text.toLowerCase();
   return {
+    needsToolUse: lower.includes("fetch_url") || lower.includes("send_gmail") || lower.includes("fetch url") || lower.includes("tool use"),
     needsGmail: lower.includes("gmail") || lower.includes("未読メール") || lower.includes("メール要約") || lower.includes("メール取得") || lower.includes("メールを取得"),
   };
 }
 
-export default function NewAgentClient() {
+export default function NewAgentClient({ isPaid = false, connectedProviders = [] }: { isPaid?: boolean; connectedProviders?: string[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [input, setInput] = useState("");
@@ -93,7 +94,12 @@ export default function NewAgentClient() {
     // Check required features before saving
     const agentText = [parsed.name, parsed.description, parsed.prompt].join(" ");
     const features = detectRequiredFeatures(agentText);
-    const hasGmail = userConnections.some(c => c.provider === "gmail");
+    const hasGmail = connectedProviders.includes("gmail");
+
+    if (features.needsToolUse && !isPaid) {
+      setError("Tool Use機能はStarter以上のプランで利用できます。設定画面からプランをアップグレードしてください。");
+      return;
+    }
 
     if (features.needsGmail && !hasGmail) {
       setError("このエージェントにはGmail連携が必要です。設定画面からGmailを連携してください。");
