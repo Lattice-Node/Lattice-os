@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 const tabs = [
   {
     href: "/store",
-    label: "\u30B9\u30C8\u30A2",
+    label: "ストア",
     icon: (active: boolean) => (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={active ? "#6c71e8" : "#4a5060"} strokeWidth="1.6">
         <rect x="3" y="3" width="7" height="7" rx="1.5" />
@@ -20,7 +20,7 @@ const tabs = [
   },
   {
     href: "/agents",
-    label: "\u30DE\u30A4Agent",
+    label: "マイAgent",
     icon: (active: boolean) => (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={active ? "#6c71e8" : "#4a5060"} strokeWidth="1.6">
         <circle cx="11" cy="11" r="8" />
@@ -30,7 +30,7 @@ const tabs = [
   },
   {
     href: "/agents/new",
-    label: "\u4F5C\u6210",
+    label: "作成",
     isCenter: true,
     icon: (_active: boolean) => (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#fff" strokeWidth="2">
@@ -40,7 +40,7 @@ const tabs = [
   },
   {
     href: "/inbox",
-    label: "\u53D7\u4FE1\u7BB1",
+    label: "受信箱",
     icon: (active: boolean) => (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={active ? "#6c71e8" : "#4a5060"} strokeWidth="1.6">
         <path d="M4 6h14M4 11h14M4 16h10" />
@@ -49,7 +49,7 @@ const tabs = [
   },
   {
     href: "/settings",
-    label: "\u8A2D\u5B9A",
+    label: "設定",
     icon: (active: boolean) => (
       <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={active ? "#6c71e8" : "#4a5060"} strokeWidth="1.6">
         <circle cx="11" cy="8" r="4" />
@@ -68,7 +68,7 @@ export default function BottomNav() {
     setLoading(false);
   }, [pathname]);
 
-  const publicPaths = ["/", "/login", "/privacy", "/terms"];
+  const publicPaths = ["/", "/login", "/privacy", "/terms", "/pricing"];
   if (publicPaths.includes(pathname) || status !== "authenticated") return null;
 
   const handleClick = (href: string) => {
