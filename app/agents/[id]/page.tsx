@@ -74,8 +74,8 @@ export default function AgentDetailPage() {
 
   async function handleTogglePublic() {
     if (!agent) return;
-    const res = await fetch(/api/agents/+id, {
-      method: PATCH,
+    const res = await fetch("/api/agents/" + id, {
+      method: "PATCH",
       headers: { Content-Type: pplication/json },
       body: JSON.stringify({ isPublic: !agent.isPublic }),
     });
