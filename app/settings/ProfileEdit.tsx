@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 interface ProfileEditProps {
   oauthName: string;
@@ -25,7 +25,32 @@ const PRESET_AVATARS = [
   { id: "avatar:globe", emoji: "🌏", bg: "#1a2a2a" },
 ];
 
+function resizeImage(file: File, maxSize: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = maxSize;
+        canvas.height = maxSize;
+        const ctx = canvas.getContext("2d")!;
+        const size = Math.min(img.width, img.height);
+        const x = (img.width - size) / 2;
+        const y = (img.height - size) / 2;
+        ctx.drawImage(img, x, y, size, size, 0, 0, maxSize, maxSize);
+        resolve(canvas.toDataURL("image/jpeg", 0.8));
+      };
+      img.onerror = reject;
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 function getAvatarDisplay(avatarUrl: string | null, oauthImage: string, name: string): { type: "image" | "emoji" | "initial"; src?: string; emoji?: string; bg?: string; initial?: string } {
+  if (avatarUrl && avatarUrl.startsWith("data:image")) return { type: "image", src: avatarUrl };
   if (avatarUrl && avatarUrl.startsWith("avatar:")) {
     const preset = PRESET_AVATARS.find(a => a.id === avatarUrl);
     if (preset) return { type: "emoji", emoji: preset.emoji, bg: preset.bg };
@@ -43,41 +68,39 @@ export default function ProfileEdit({ oauthName, oauthImage, initialHandle, init
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const currentAvatar = getAvatarDisplay(avatarUrl, oauthImage, displayName || oauthName);
   const shownName = displayName || oauthName || "ユーザー";
 
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { setError("画像ファイルを選択してください"); return; }
+    if (file.size > 5 * 1024 * 1024) { setError("5MB以下の画像を選択してください"); return; }
+    try {
+      const base64 = await resizeImage(file, 128);
+      setAvatarUrl(base64);
+      setError("");
+    } catch { setError("画像の読み込みに失敗しました"); }
+  };
+
   const handleSave = async () => {
-    setSaving(true);
-    setError("");
-    setSuccess(false);
+    setSaving(true); setError(""); setSuccess(false);
     try {
       const res = await fetch("/api/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          handle: handle.trim() || null,
-          displayName: displayName.trim(),
-          avatarUrl,
-        }),
+        body: JSON.stringify({ handle: handle.trim() || null, displayName: displayName.trim(), avatarUrl }),
       });
       const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "保存に失敗しました");
-        setSaving(false);
-        return;
-      }
+      if (!res.ok) { setError(data.error || "保存に失敗しました"); setSaving(false); return; }
       if (data.profile.publicId) setPublicId(data.profile.publicId);
       setSuccess(true);
       setTimeout(() => { setSuccess(false); setEditing(false); }, 1200);
-    } catch {
-      setError("保存に失敗しました");
-    } finally {
-      setSaving(false);
-    }
+    } catch { setError("保存に失敗しました"); } finally { setSaving(false); }
   };
 
-  // Edit view
   if (editing) {
     return (
       <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, padding: 20, marginBottom: 12 }}>
@@ -86,100 +109,70 @@ export default function ProfileEdit({ oauthName, oauthImage, initialHandle, init
           <button onClick={() => { setEditing(false); setError(""); }} style={{ background: "none", border: "none", color: "#4a5060", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>キャンセル</button>
         </div>
 
-        {/* Avatar picker */}
-        <p style={{ fontSize: 12, color: "#6a7080", marginBottom: 8 }}>アイコン</p>
+        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 16 }}>
+          {currentAvatar.type === "image" ? (
+            <img src={currentAvatar.src} alt="" width={56} height={56} style={{ borderRadius: "50%", border: "2px solid #6c71e8", objectFit: "cover" }} />
+          ) : currentAvatar.type === "emoji" ? (
+            <div style={{ width: 56, height: 56, borderRadius: "50%", background: currentAvatar.bg, border: "2px solid #6c71e8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>{currentAvatar.emoji}</div>
+          ) : (
+            <div style={{ width: 56, height: 56, borderRadius: "50%", background: currentAvatar.bg, border: "2px solid #6c71e8", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 22, fontWeight: 700 }}>{currentAvatar.initial}</div>
+          )}
+          <div>
+            <p style={{ fontSize: 13, color: "#9096a8", margin: "0 0 6px" }}>アイコンを変更</p>
+            <button onClick={() => fileInputRef.current?.click()} style={{ padding: "6px 14px", borderRadius: 6, border: "1px solid #6c71e8", background: "transparent", color: "#6c71e8", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+              写真をアップロード
+            </button>
+            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileSelect} style={{ display: "none" }} />
+          </div>
+        </div>
+
+        <p style={{ fontSize: 12, color: "#4a5060", marginBottom: 8 }}>またはプリセットから選択</p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
-          {/* OAuth image option */}
           {oauthImage && (
-            <button
-              onClick={() => setAvatarUrl(null)}
-              style={{
-                width: 44, height: 44, borderRadius: "50%", border: !avatarUrl ? "2px solid #6c71e8" : "2px solid transparent",
-                padding: 0, cursor: "pointer", overflow: "hidden", background: "none",
-              }}
-            >
-              <img src={oauthImage} alt="" width={40} height={40} style={{ borderRadius: "50%" }} />
+            <button onClick={() => setAvatarUrl(null)} style={{ width: 40, height: 40, borderRadius: "50%", border: !avatarUrl ? "2px solid #6c71e8" : "2px solid transparent", padding: 0, cursor: "pointer", overflow: "hidden", background: "none" }}>
+              <img src={oauthImage} alt="" width={36} height={36} style={{ borderRadius: "50%" }} />
             </button>
           )}
-          {/* Preset avatars */}
           {PRESET_AVATARS.map(a => (
-            <button
-              key={a.id}
-              onClick={() => setAvatarUrl(a.id)}
-              style={{
-                width: 44, height: 44, borderRadius: "50%",
-                border: avatarUrl === a.id ? "2px solid #6c71e8" : "2px solid transparent",
-                background: a.bg, display: "flex", alignItems: "center", justifyContent: "center",
-                cursor: "pointer", fontSize: 20, padding: 0,
-              }}
-            >
+            <button key={a.id} onClick={() => setAvatarUrl(a.id)} style={{ width: 40, height: 40, borderRadius: "50%", border: avatarUrl === a.id ? "2px solid #6c71e8" : "2px solid transparent", background: a.bg, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", fontSize: 18, padding: 0 }}>
               {a.emoji}
             </button>
           ))}
         </div>
 
-        {/* Display name */}
         <label style={{ fontSize: 12, color: "#6a7080", display: "block", marginBottom: 6 }}>表示名</label>
-        <input
-          value={displayName}
-          onChange={e => setDisplayName(e.target.value)}
-          placeholder={oauthName || "表示名を入力"}
-          maxLength={30}
-          style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #2e3440", background: "#0e1117", color: "#e8eaf0", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box", marginBottom: 14 }}
-        />
+        <input value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder={oauthName || "表示名を入力"} maxLength={30} style={{ width: "100%", padding: "10px 12px", borderRadius: 8, border: "1px solid #2e3440", background: "#0e1117", color: "#e8eaf0", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box", marginBottom: 14 }} />
 
-        {/* Handle */}
         <label style={{ fontSize: 12, color: "#6a7080", display: "block", marginBottom: 6 }}>ハンドル名</label>
         <div style={{ position: "relative", marginBottom: 14 }}>
           <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#4a5060", fontSize: 14 }}>@</span>
-          <input
-            value={handle}
-            onChange={e => setHandle(e.target.value.replace(/[^a-zA-Z0-9_]/g, ""))}
-            placeholder="username"
-            maxLength={20}
-            style={{ width: "100%", padding: "10px 12px 10px 28px", borderRadius: 8, border: "1px solid #2e3440", background: "#0e1117", color: "#e8eaf0", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }}
-          />
+          <input value={handle} onChange={e => setHandle(e.target.value.replace(/[^a-zA-Z0-9_]/g, ""))} placeholder="username" maxLength={20} style={{ width: "100%", padding: "10px 12px 10px 28px", borderRadius: 8, border: "1px solid #2e3440", background: "#0e1117", color: "#e8eaf0", fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box" }} />
         </div>
         <p style={{ fontSize: 11, color: "#4a5060", margin: "-8px 0 14px", lineHeight: 1.4 }}>英数字とアンダースコア、3〜20文字</p>
 
         {error && <p style={{ fontSize: 12, color: "#f87171", margin: "0 0 10px" }}>{error}</p>}
         {success && <p style={{ fontSize: 12, color: "#4ade80", margin: "0 0 10px" }}>保存しました</p>}
 
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          style={{
-            width: "100%", padding: "12px", borderRadius: 8, border: "none",
-            background: saving ? "#1e2044" : "#6c71e8", color: saving ? "#4a5060" : "#fff",
-            fontSize: 14, fontWeight: 600, cursor: saving ? "default" : "pointer", fontFamily: "inherit",
-          }}
-        >
+        <button onClick={handleSave} disabled={saving} style={{ width: "100%", padding: "12px", borderRadius: 8, border: "none", background: saving ? "#1e2044" : "#6c71e8", color: saving ? "#4a5060" : "#fff", fontSize: 14, fontWeight: 600, cursor: saving ? "default" : "pointer", fontFamily: "inherit" }}>
           {saving ? "保存中..." : "保存する"}
         </button>
       </div>
     );
   }
 
-  // Display view
   return (
     <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, padding: 20, marginBottom: 12 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
         <p style={{ fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase", margin: 0 }}>プロフィール</p>
         <button onClick={() => setEditing(true)} style={{ background: "none", border: "none", color: "#6c71e8", fontSize: 12, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>編集</button>
       </div>
-
       <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
-        {/* Avatar */}
         {currentAvatar.type === "image" ? (
-          <img src={currentAvatar.src} alt="" width={52} height={52} style={{ borderRadius: "50%", border: "1px solid #2e3440" }} />
+          <img src={currentAvatar.src} alt="" width={52} height={52} style={{ borderRadius: "50%", border: "1px solid #2e3440", objectFit: "cover" }} />
         ) : currentAvatar.type === "emoji" ? (
-          <div style={{ width: 52, height: 52, borderRadius: "50%", background: currentAvatar.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26 }}>
-            {currentAvatar.emoji}
-          </div>
+          <div style={{ width: 52, height: 52, borderRadius: "50%", background: currentAvatar.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26 }}>{currentAvatar.emoji}</div>
         ) : (
-          <div style={{ width: 52, height: 52, borderRadius: "50%", background: currentAvatar.bg, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 20, fontWeight: 700 }}>
-            {currentAvatar.initial}
-          </div>
+          <div style={{ width: 52, height: 52, borderRadius: "50%", background: currentAvatar.bg, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 20, fontWeight: 700 }}>{currentAvatar.initial}</div>
         )}
         <div>
           <p style={{ fontSize: 16, fontWeight: 700, color: "#e8eaf0", margin: "0 0 2px" }}>{shownName}</p>
@@ -190,8 +183,6 @@ export default function ProfileEdit({ oauthName, oauthImage, initialHandle, init
           )}
         </div>
       </div>
-
-      {/* Public ID */}
       {publicId && (
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", borderRadius: 8, background: "#0e1117" }}>
           <span style={{ fontSize: 12, color: "#4a5060" }}>ID</span>

@@ -42,7 +42,6 @@ export async function PATCH(req: Request) {
       if (!/^[a-zA-Z0-9_]+$/.test(cleaned)) {
         return NextResponse.json({ error: "ハンドルは英数字とアンダースコアのみ使用できます" }, { status: 400 });
       }
-      // Check uniqueness
       const existing = await prisma.user.findFirst({
         where: { handle: cleaned, NOT: { id: user.id } },
       });
@@ -60,9 +59,19 @@ export async function PATCH(req: Request) {
     }
   }
 
-  // Avatar URL (preset identifier or empty)
+  // Avatar URL - accept preset IDs, base64 data URLs, or null
   if (avatarUrl !== undefined) {
-    updateData.avatarUrl = avatarUrl || null;
+    if (avatarUrl === null || avatarUrl === "") {
+      updateData.avatarUrl = null;
+    } else if (avatarUrl.startsWith("avatar:")) {
+      updateData.avatarUrl = avatarUrl;
+    } else if (avatarUrl.startsWith("data:image")) {
+      // Base64 image - validate size (max ~50KB base64 ≈ ~37KB image)
+      if (avatarUrl.length > 70000) {
+        return NextResponse.json({ error: "画像サイズが大きすぎます" }, { status: 400 });
+      }
+      updateData.avatarUrl = avatarUrl;
+    }
   }
 
   // Generate publicId if missing
