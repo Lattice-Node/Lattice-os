@@ -6,14 +6,14 @@ interface Task { id: string; label: string; credits: number; type: string; categ
 interface Props { name: string; avatarUrl: string | null; credits: number; plan: string; agentCount: number; }
 
 const MENU = [
-  { href: "/agents", label: "マイAgent", color: "#6c71e8", bg: "rgba(108,113,232,0.12)", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.6"><circle cx="11" cy="11" r="8"/><path d="M11 7v4l3 2"/></svg> },
-  { href: "/inbox", label: "受信箱", color: "#4ade80", bg: "rgba(74,222,128,0.10)", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.6"><path d="M4 6h14M4 11h14M4 16h10"/></svg> },
-  { href: "#tasks", label: "タスク", color: "#f59e0b", bg: "rgba(245,158,11,0.10)", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.6"><path d="M5 11l4 4 8-8"/><rect x="3" y="3" width="16" height="16" rx="3"/></svg> },
-  { href: "/store", label: "ストア", color: "#a855f7", bg: "rgba(168,85,247,0.10)", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.6"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="12" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="12" width="7" height="7" rx="1.5"/><rect x="12" y="12" width="7" height="7" rx="1.5"/></svg> },
-  { href: "/agents/new", label: "新規作成", color: "#6c71e8", bg: "rgba(108,113,232,0.08)", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.8"><path d="M11 4v14M4 11h14"/></svg> },
-  { href: "#invite", label: "招待", color: "#f87171", bg: "rgba(239,68,68,0.10)", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.6"><circle cx="9" cy="8" r="4"/><path d="M2 19c0-3.3 3.1-6 7-6s7 2.7 7 6"/><path d="M16 7v6M13 10h6"/></svg> },
-  { href: "/pricing", label: "プラン", color: "#4ade80", bg: "rgba(74,222,128,0.08)", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.6"><rect x="3" y="5" width="16" height="12" rx="2"/><path d="M3 9h16"/></svg> },
-  { href: "/settings", label: "設定", color: "#6a7080", bg: "rgba(74,80,96,0.15)", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.6"><circle cx="11" cy="11" r="3"/><path d="M11 3v2M11 17v2M3 11h2M17 11h2M5.6 5.6l1.4 1.4M15 15l1.4 1.4M5.6 16.4l1.4-1.4M15 7l1.4-1.4"/></svg> },
+  { href: "/agents", label: "マイAgent", color: "#818cf8", bg: "#1e2252", border: "#3b3fa0", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.8"><circle cx="11" cy="11" r="8"/><path d="M11 7v4l3 2"/></svg> },
+  { href: "/inbox", label: "受信箱", color: "#6ee7b7", bg: "#0f2a1e", border: "#1a5c3a", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.8"><path d="M4 6h14M4 11h14M4 16h10"/></svg> },
+  { href: "#tasks", label: "タスク", color: "#fbbf24", bg: "#2a2008", border: "#5c4a10", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.8"><path d="M5 11l4 4 8-8"/><rect x="3" y="3" width="16" height="16" rx="3"/></svg> },
+  { href: "/store", label: "ストア", color: "#c084fc", bg: "#261540", border: "#5a2d8c", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="12" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="12" width="7" height="7" rx="1.5"/><rect x="12" y="12" width="7" height="7" rx="1.5"/></svg> },
+  { href: "/agents/new", label: "新規作成", color: "#818cf8", bg: "#1a1d40", border: "#3b3fa0", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="2"><path d="M11 4v14M4 11h14"/></svg> },
+  { href: "#invite", label: "招待", color: "#fca5a5", bg: "#2a0f0f", border: "#7c2d2d", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.8"><circle cx="9" cy="8" r="4"/><path d="M2 19c0-3.3 3.1-6 7-6s7 2.7 7 6"/><path d="M16 7v6M13 10h6"/></svg> },
+  { href: "/pricing", label: "プラン", color: "#6ee7b7", bg: "#0a2018", border: "#1a5c3a", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.8"><rect x="3" y="5" width="16" height="12" rx="2"/><path d="M3 9h16"/></svg> },
+  { href: "/settings", label: "設定", color: "#a1a5b0", bg: "#1a1c22", border: "#3a3d48", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.8"><circle cx="11" cy="11" r="3"/><path d="M11 3v2M11 17v2M3 11h2M17 11h2M5.6 5.6l1.4 1.4M15 15l1.4 1.4M5.6 16.4l1.4-1.4M15 7l1.4-1.4"/></svg> },
 ];
 
 const AVATARS: Record<string, { emoji: string; bg: string }> = {
@@ -103,59 +103,59 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
               <p style={{ fontSize: 17, fontWeight: 700, color: "#e8eaf0", margin: 0 }}>{name || "ユーザー"}</p>
             </div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(74,222,128,0.10)", padding: "6px 14px", borderRadius: 20 }}>
-            <span style={{ fontSize: 13, color: "#4ade80", fontWeight: 700 }}>{credits} cr</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0f2a1e", border: "1px solid #1a5c3a", padding: "6px 14px", borderRadius: 20 }}>
+            <span style={{ fontSize: 13, color: "#6ee7b7", fontWeight: 700 }}>{credits} cr</span>
           </div>
         </div>
 
         {/* Daily progress */}
-        <div style={{ background: "rgba(108,113,232,0.08)", border: "1px solid rgba(108,113,232,0.2)", borderRadius: 12, padding: "14px 16px", marginBottom: 24 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+        <div style={{ background: "#1a1f52", border: "1px solid #3b40a0", borderRadius: 14, padding: "16px 18px", marginBottom: 24 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
             <div>
-              <p style={{ fontSize: 13, color: "#6c71e8", fontWeight: 600, margin: "0 0 2px" }}>今日のデイリー</p>
-              <p style={{ fontSize: 11, color: "#6a7080", margin: 0 }}>{dailyDone}/{dailyTotal} 完了</p>
+              <p style={{ fontSize: 14, color: "#a5b4fc", fontWeight: 700, margin: "0 0 3px" }}>今日のデイリー</p>
+              <p style={{ fontSize: 12, color: "#9096a8", margin: 0 }}>{dailyDone}/{dailyTotal} 完了</p>
             </div>
-            <div style={{ width: 40, height: 40, borderRadius: "50%", background: `conic-gradient(#6c71e8 ${pct * 3.6}deg, rgba(108,113,232,0.15) 0deg)`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <div style={{ width: 30, height: 30, borderRadius: "50%", background: "#12141c", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontSize: 10, color: "#6c71e8", fontWeight: 700 }}>{pct}%</span>
+            <div style={{ width: 44, height: 44, borderRadius: "50%", background: `conic-gradient(#818cf8 ${pct * 3.6}deg, #2a2f5c 0deg)`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#141838", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ fontSize: 11, color: "#a5b4fc", fontWeight: 700 }}>{pct}%</span>
               </div>
             </div>
           </div>
-          <div style={{ height: 4, borderRadius: 2, background: "rgba(108,113,232,0.15)" }}>
-            <div style={{ height: "100%", borderRadius: 2, background: "#6c71e8", width: `${pct}%`, transition: "width 0.5s" }} />
+          <div style={{ height: 5, borderRadius: 3, background: "#2a2f5c" }}>
+            <div style={{ height: "100%", borderRadius: 3, background: "linear-gradient(90deg, #818cf8, #a5b4fc)", width: `${pct}%`, transition: "width 0.5s" }} />
           </div>
         </div>
 
         {/* Menu grid */}
-        <p style={{ fontSize: 11, color: "#4a5060", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 12px" }}>メニュー</p>
+        <p style={{ fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 12px" }}>メニュー</p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 28 }}>
           {MENU.map(m => (
             <div key={m.href} onClick={() => nav(m.href)} style={{ textAlign: "center", cursor: "pointer" }}>
-              <div style={{ width: 48, height: 48, borderRadius: 14, background: m.bg, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 6px" }}>{m.icon(m.color)}</div>
-              <span style={{ fontSize: 10, color: "#9096a8" }}>{m.label}</span>
+              <div style={{ width: 48, height: 48, borderRadius: 14, background: m.bg, border: `1px solid ${m.border}`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 6px" }}>{m.icon(m.color)}</div>
+              <span style={{ fontSize: 10, color: "#c0c4d0", fontWeight: 500 }}>{m.label}</span>
             </div>
           ))}
         </div>
 
         {/* Stats */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 28 }}>
-          <div style={{ background: "#1c2028", borderRadius: 10, padding: "12px 14px", textAlign: "center" }}>
-            <p style={{ fontSize: 20, fontWeight: 700, color: "#e8eaf0", margin: "0 0 2px" }}>{agentCount}</p>
-            <p style={{ fontSize: 10, color: "#6a7080", margin: 0 }}>エージェント</p>
+          <div style={{ background: "#1e2252", border: "1px solid #3b3fa0", borderRadius: 12, padding: "14px 14px", textAlign: "center" }}>
+            <p style={{ fontSize: 22, fontWeight: 800, color: "#818cf8", margin: "0 0 2px" }}>{agentCount}</p>
+            <p style={{ fontSize: 10, color: "#c0c4d0", fontWeight: 500, margin: 0 }}>エージェント</p>
           </div>
-          <div style={{ background: "#1c2028", borderRadius: 10, padding: "12px 14px", textAlign: "center" }}>
-            <p style={{ fontSize: 20, fontWeight: 700, color: "#4ade80", margin: "0 0 2px" }}>{credits}</p>
-            <p style={{ fontSize: 10, color: "#6a7080", margin: 0 }}>クレジット</p>
+          <div style={{ background: "#0f2a1e", border: "1px solid #1a5c3a", borderRadius: 12, padding: "14px 14px", textAlign: "center" }}>
+            <p style={{ fontSize: 22, fontWeight: 800, color: "#6ee7b7", margin: "0 0 2px" }}>{credits}</p>
+            <p style={{ fontSize: 10, color: "#c0c4d0", fontWeight: 500, margin: 0 }}>クレジット</p>
           </div>
-          <div style={{ background: "#1c2028", borderRadius: 10, padding: "12px 14px", textAlign: "center" }}>
-            <p style={{ fontSize: 20, fontWeight: 700, color: "#f87171", margin: "0 0 2px" }}>{referralCount}</p>
-            <p style={{ fontSize: 10, color: "#6a7080", margin: 0 }}>招待</p>
+          <div style={{ background: "#2a0f0f", border: "1px solid #7c2d2d", borderRadius: 12, padding: "14px 14px", textAlign: "center" }}>
+            <p style={{ fontSize: 22, fontWeight: 800, color: "#fca5a5", margin: "0 0 2px" }}>{referralCount}</p>
+            <p style={{ fontSize: 10, color: "#c0c4d0", fontWeight: 500, margin: 0 }}>招待</p>
           </div>
         </div>
 
         {/* Tasks */}
         <div id="tasks-section">
-          <p style={{ fontSize: 11, color: "#4a5060", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 10px" }}>タスク</p>
+          <p style={{ fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 10px" }}>タスク</p>
 
           {/* Tabs */}
           <div style={{ display: "flex", gap: 0, marginBottom: 12, borderBottom: "1px solid #2e3440" }}>
@@ -174,8 +174,8 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
               <div key={t.id} style={{
                 display: "flex", alignItems: "center", justifyContent: "space-between",
                 padding: "12px 14px", borderRadius: 10,
-                background: t.completed ? "rgba(74,222,128,0.06)" : "#1c2028",
-                border: `1px solid ${t.completed ? "rgba(74,222,128,0.15)" : "#2e3440"}`,
+                background: t.completed ? "#0f2a1a" : "#161a24",
+                border: `1px solid ${t.completed ? "#1a5c3a" : "#2a2f3c"}`,
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1 }}>
                   {t.completed ? (
@@ -198,7 +198,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
                     opacity: claiming === t.id ? 0.5 : 1,
                   }}>{claiming === t.id ? "..." : `+${t.credits}cr`}</button>
                 ) : (
-                  <span style={{ fontSize: 11, color: "#4a5060" }}>+{t.credits}cr</span>
+                  <span style={{ fontSize: 11, color: "#6a7080" }}>+{t.credits}cr</span>
                 )}
               </div>
             ))}
@@ -207,7 +207,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
 
         {/* Invite */}
         <div id="invite-section">
-          <p style={{ fontSize: 11, color: "#4a5060", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 10px" }}>友達を招待</p>
+          <p style={{ fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 10px" }}>友達を招待</p>
           <div style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.15)", borderRadius: 12, padding: "18px 16px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
               <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(239,68,68,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -223,7 +223,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
               <>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                   <div style={{ flex: 1, padding: "10px 14px", borderRadius: 8, background: "#0e1117", border: "1px solid #2e3440" }}>
-                    <p style={{ fontSize: 11, color: "#4a5060", margin: "0 0 2px" }}>招待コード</p>
+                    <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 2px" }}>招待コード</p>
                     <p style={{ fontSize: 18, fontWeight: 700, color: "#e8eaf0", margin: 0, letterSpacing: "0.1em", fontFamily: "monospace" }}>{referralCode}</p>
                   </div>
                   <button onClick={copyLink} style={{
