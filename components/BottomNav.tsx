@@ -7,6 +7,16 @@ import { useState, useEffect } from "react";
 
 const tabs = [
   {
+    href: "/home",
+    label: "ホーム",
+    icon: (active: boolean) => (
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={active ? "#6c71e8" : "#4a5060"} strokeWidth="1.6">
+        <path d="M3 10l8-7 8 7" />
+        <path d="M5 9v9a1 1 0 001 1h10a1 1 0 001-1V9" />
+      </svg>
+    ),
+  },
+  {
     href: "/store",
     label: "ストア",
     icon: (active: boolean) => (
@@ -15,16 +25,6 @@ const tabs = [
         <rect x="12" y="3" width="7" height="7" rx="1.5" />
         <rect x="3" y="12" width="7" height="7" rx="1.5" />
         <rect x="12" y="12" width="7" height="7" rx="1.5" />
-      </svg>
-    ),
-  },
-  {
-    href: "/agents",
-    label: "マイAgent",
-    icon: (active: boolean) => (
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={active ? "#6c71e8" : "#4a5060"} strokeWidth="1.6">
-        <circle cx="11" cy="11" r="8" />
-        <path d="M11 7v4l3 2" />
       </svg>
     ),
   },
@@ -73,8 +73,8 @@ export default function BottomNav() {
 
   const handleClick = (href: string) => {
     const isCurrent =
-      href === "/agents"
-        ? pathname === "/agents"
+      href === "/home"
+        ? pathname === "/home"
         : href === "/agents/new"
         ? pathname === "/agents/new"
         : pathname.startsWith(href);
@@ -107,8 +107,8 @@ export default function BottomNav() {
       <nav className="btm-nav">
         {tabs.map((tab) => {
           const isActive =
-            tab.href === "/agents"
-              ? pathname === "/agents"
+            tab.href === "/home"
+              ? pathname === "/home"
               : tab.href === "/agents/new"
               ? pathname === "/agents/new"
               : pathname.startsWith(tab.href);

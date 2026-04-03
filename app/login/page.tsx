@@ -59,7 +59,7 @@ export default function LoginPage() {
 
       <div style={{ width: "100%", maxWidth: 340, display: "flex", flexDirection: "column", gap: 12 }}>
         <button
-          onClick={() => signIn("google", { callbackUrl: "/agents" })}
+          onClick={() => signIn("google", { callbackUrl: "/home" })}
           style={{
             width: "100%",
             padding: "14px 20px",
@@ -87,7 +87,7 @@ export default function LoginPage() {
         </button>
 
 <button
-          onClick={() => signIn("github", { callbackUrl: "/agents" })}
+          onClick={() => signIn("github", { callbackUrl: "/home" })}
           style={{
             width: "100%",
             padding: "14px 20px",

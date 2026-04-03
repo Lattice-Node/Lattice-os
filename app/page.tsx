@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+﻿import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
@@ -6,7 +6,7 @@ import Link from "next/link";
 export default async function HomePage() {
   const session = await auth();
   if (session?.user?.email) {
-    redirect("/agents");
+    redirect("/home");
   }
 
   // Fetch counts for social proof

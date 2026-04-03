@@ -28,7 +28,20 @@ model User {
   UserConnection UserConnection[]
   linkCodes      LinkCode[]
   deviceTokens   DeviceToken[]
+  taskCompletions TaskCompletion[]
 }
+
+model TaskCompletion {
+  id        String   @id @default(cuid())
+  userId    String
+  taskId    String
+  credits   Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+ 
+  @@index([userId, taskId, createdAt])
+}
+
 
 model UserAgent {
   id           String     @id @default(cuid())
