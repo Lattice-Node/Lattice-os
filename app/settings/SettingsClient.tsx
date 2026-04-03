@@ -97,6 +97,7 @@ export default function SettingsClient({ name, email, image, credits, plan, curr
   const [lineSuccess, setLineSuccess] = useState(false);
   const [canceling, setCanceling] = useState(false);
   const [cancelConfirm, setCancelConfirm] = useState(false);
+  const [isYearly, setIsYearly] = useState(false);
 
   useEffect(() => {
     fetch("/api/connections").then(r => r.json()).then(d => setConnections(d.connections || [])).catch(() => {});
@@ -193,8 +194,6 @@ const handleLineGenerate = async () => {
     );
   }
 
-  // Plan selection view
-  const [isYearly, setIsYearly] = useState(false);
 
   if (showPlans) {
     return (
