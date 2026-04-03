@@ -31,7 +31,16 @@ const CATEGORY_DESC: Record<string, string> = {
 
 const categories = ["すべて", "リサーチ", "営業", "SNS", "生産性", "通知"];
 
-export default function StoreList({ templates, isPaid }: { templates: Template[]; isPaid: boolean }) {
+// Detect what features/connections a template requires
+function detectRequiredFeatures(template: Template) {
+  const text = [template.name, template.description, template.prompt].filter(Boolean).join(" ").toLowerCase();
+  return {
+    needsToolUse: text.includes("fetch_url") || text.includes("send_gmail"),
+    needsGmail: text.includes("gmail") || text.includes("未読メール") || text.includes("メール要約") || text.includes("メール取得") || text.includes("メールを取得"),
+  };
+}
+
+export default function StoreList({ templates, isPaid, connectedProviders = [] }: { templates: Template[]; isPaid: boolean; connectedProviders?: string[] }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("すべて");
   const [selected, setSelected] = useState<Template | null>(null);
@@ -128,8 +137,10 @@ export default function StoreList({ templates, isPaid }: { templates: Template[]
   // Detail + setup view
   if (selected) {
     const vars = getVariables(selected);
-    const isToolUse = (selected.description || "").includes("Tool Use") || (selected.prompt || "").includes("fetch_url") || (selected.prompt || "").includes("send_gmail");
+    const features = detectRequiredFeatures(selected);
+    const isToolUse = features.needsToolUse || (selected.description || "").includes("Tool Use") || (selected.prompt || "").includes("fetch_url") || (selected.prompt || "").includes("send_gmail");
     const isLocked = isToolUse && !isPaid;
+    const needsGmailConnection = features.needsGmail && !connectedProviders.includes("gmail");
 
     return (
       <div style={{ maxWidth: 420, margin: "0 auto", padding: "0 0 100px" }}>
@@ -270,6 +281,16 @@ export default function StoreList({ templates, isPaid }: { templates: Template[]
               プランをアップグレード
             </a>
           </div>
+        ) : needsGmailConnection ? (
+          <div style={{ textAlign: "center" }}>
+            <div style={{ padding: "16px", borderRadius: 10, background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)", marginBottom: 10 }}>
+              <p style={{ fontSize: 14, fontWeight: 600, color: "#f87171", margin: "0 0 6px" }}>Gmail連携が必要です</p>
+              <p style={{ fontSize: 12, color: "#6a7080", margin: 0 }}>このエージェントはGmailからメールを取得します。設定画面からGmailを連携してください。</p>
+            </div>
+            <a href="/settings" style={{ display: "block", padding: "14px", borderRadius: 10, background: "#f87171", color: "#fff", fontSize: 15, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>
+              Gmailを連携する
+            </a>
+          </div>
         ) : (
           <button
             onClick={handleAdd}
@@ -327,7 +348,9 @@ export default function StoreList({ templates, isPaid }: { templates: Template[]
         </div>
       ) : (
         filtered.map((t, i) => {
-          const isToolUse = (t.description || "").includes("Tool Use") || (t.prompt || "").includes("fetch_url") || (t.prompt || "").includes("send_gmail");
+          const tFeatures = detectRequiredFeatures(t);
+          const isToolUse = tFeatures.needsToolUse || (t.description || "").includes("Tool Use") || (t.prompt || "").includes("fetch_url") || (t.prompt || "").includes("send_gmail");
+          const needsGmail = tFeatures.needsGmail && !connectedProviders.includes("gmail");
           return (
           <div
             key={t.id}
@@ -341,11 +364,16 @@ export default function StoreList({ templates, isPaid }: { templates: Template[]
           >
             <div className="store-card-top">
               <div style={{ flex: 1, minWidth: 0, marginRight: 12 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2, flexWrap: "wrap" }}>
                   <p className="store-card-title" style={{ margin: 0 }}>{t.name}</p>
                   {isToolUse && (
                     <span style={{ fontSize: 10, fontWeight: 700, color: "#a855f7", background: "rgba(168,85,247,0.15)", padding: "2px 7px", borderRadius: 4, whiteSpace: "nowrap", letterSpacing: "0.02em" }}>
                       Tool Use
+                    </span>
+                  )}
+                  {needsGmail && (
+                    <span style={{ fontSize: 10, fontWeight: 700, color: "#f87171", background: "rgba(239,68,68,0.12)", padding: "2px 7px", borderRadius: 4, whiteSpace: "nowrap", letterSpacing: "0.02em" }}>
+                      Gmail必須
                     </span>
                   )}
                 </div>

@@ -37,6 +37,14 @@ const TOOLUSE_EXAMPLES = [
   "指定URLの記事を読んで、Gmailで自動配信する",
 ];
 
+// Detect required features from agent text
+function detectRequiredFeatures(text: string) {
+  const lower = text.toLowerCase();
+  return {
+    needsGmail: lower.includes("gmail") || lower.includes("未読メール") || lower.includes("メール要約") || lower.includes("メール取得") || lower.includes("メールを取得"),
+  };
+}
+
 export default function NewAgentClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -81,6 +89,17 @@ export default function NewAgentClient() {
 
   async function handleSave() {
     if (!parsed || saving) return;
+
+    // Check required features before saving
+    const agentText = [parsed.name, parsed.description, parsed.prompt].join(" ");
+    const features = detectRequiredFeatures(agentText);
+    const hasGmail = userConnections.some(c => c.provider === "gmail");
+
+    if (features.needsGmail && !hasGmail) {
+      setError("このエージェントにはGmail連携が必要です。設定画面からGmailを連携してください。");
+      return;
+    }
+
     setSaving(true);
     setError("");
     try {
