@@ -41,6 +41,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
   const [claiming, setClaiming] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ id: string; cr: number } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [refApplied, setRefApplied] = useState(false);
   const [tab, setTab] = useState<"daily" | "start" | "feature">("daily");
   const router = useRouter();
 
@@ -51,13 +52,23 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
       setDaily(d.daily || []); setStart(d.start || []); setFeature(d.feature || []); setSocial(d.social || []);
       setDailyDone(d.dailyCompleted || 0); setDailyTotal(d.dailyTotal || 0);
       setCredits(d.userCredits); setReferralCode(d.referralCode); setReferralCount(d.referralCount || 0);
-      // Auto-claim login
       const login = (d.daily || []).find((t: Task) => t.id === "daily_login" && !t.completed && t.claimable);
       if (login) claim("daily_login");
     } catch {}
   }, []);
 
   useEffect(() => { fetchTasks(); }, [fetchTasks]);
+
+  // Apply referral code from login page ?ref= param
+  useEffect(() => {
+    const ref = sessionStorage.getItem("lattice_ref");
+    if (!ref) return;
+    sessionStorage.removeItem("lattice_ref");
+    fetch("/api/referral", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: ref }) })
+      .then(r => r.json()).then(d => {
+        if (d.success) { setRefApplied(true); setCredits(c => c + 10); setTimeout(() => setRefApplied(false), 5000); }
+      }).catch(() => {});
+  }, []);
 
   const claim = async (taskId: string) => {
     if (claiming) return;
@@ -107,6 +118,13 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
             <span style={{ fontSize: 13, color: "#6ee7b7", fontWeight: 700 }}>{credits} cr</span>
           </div>
         </div>
+
+        {refApplied && (
+          <div style={{ background: "#0f2a1e", border: "1px solid #1a5c3a", borderRadius: 10, padding: "12px 16px", marginBottom: 12, textAlign: "center" }}>
+            <p style={{ fontSize: 14, color: "#6ee7b7", fontWeight: 700, margin: "0 0 2px" }}>+10cr ボーナス獲得!</p>
+            <p style={{ fontSize: 11, color: "#4a7a5a", margin: 0 }}>招待コードが適用されました</p>
+          </div>
+        )}
 
         {/* Daily progress */}
         <div style={{ background: "#1a1f52", border: "1px solid #3b40a0", borderRadius: 14, padding: "16px 18px", marginBottom: 24 }}>
@@ -215,7 +233,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
               </div>
               <div>
                 <p style={{ fontSize: 14, fontWeight: 700, color: "#e8eaf0", margin: "0 0 2px" }}>1人招待で +10cr</p>
-                <p style={{ fontSize: 11, color: "#6a7080", margin: 0 }}>招待された友達にも30crプレゼント</p>
+                <p style={{ fontSize: 11, color: "#6a7080", margin: 0 }}>招待された友達にも+10crプレゼント</p>
               </div>
             </div>
 
@@ -251,6 +269,32 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
                 cursor: "pointer", fontFamily: "inherit",
               }}>招待コードを発行する</button>
             )}
+          </div>
+        </div>
+
+        {/* Roadmap */}
+        <div style={{ marginTop: 28 }}>
+          <p style={{ fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 10px" }}>今後の予定</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {[
+              { label: "フィードバック機能", desc: "要望・バグ報告をアプリ内から送信", status: "soon", color: "#818cf8" },
+              { label: "日本特化テンプレート追加", desc: "天気・電車遅延・花粉・ニュースなど15種+", status: "soon", color: "#818cf8" },
+              { label: "SNS機能", desc: "ユーザー同士の交流・エージェント共有", status: "planned", color: "#6a7080" },
+              { label: "クレジット売買", desc: "クレジットの購入・ポイント交換", status: "planned", color: "#6a7080" },
+              { label: "Lattice Protocol v0", desc: "AIエージェント間通信の公開API", status: "planned", color: "#6a7080" },
+              { label: "Lattice Token (LTC)", desc: "プラットフォーム内通貨のトークン化", status: "future", color: "#4a5060" },
+            ].map(item => (
+              <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 10, background: "#161a24", border: "1px solid #2a2f3c" }}>
+                <div style={{ width: 8, height: 8, borderRadius: "50%", background: item.color, flexShrink: 0 }} />
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: "#e8eaf0", margin: "0 0 1px" }}>{item.label}</p>
+                  <p style={{ fontSize: 11, color: "#6a7080", margin: 0 }}>{item.desc}</p>
+                </div>
+                <span style={{ fontSize: 9, fontWeight: 700, color: item.status === "soon" ? "#818cf8" : item.status === "planned" ? "#6a7080" : "#4a5060", background: item.status === "soon" ? "#1e2252" : "#1a1c22", padding: "2px 8px", borderRadius: 4, whiteSpace: "nowrap", textTransform: "uppercase" }}>
+                  {item.status === "soon" ? "まもなく" : item.status === "planned" ? "開発中" : "将来"}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 

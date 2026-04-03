@@ -15,23 +15,19 @@ export async function POST(req: Request) {
   });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-  // Already referred
   if (user.referredBy) return NextResponse.json({ error: "既に招待コードが適用されています" }, { status: 409 });
 
-  // Only allow within 24h of account creation
   const hoursSinceCreation = (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60);
   if (hoursSinceCreation > 24) return NextResponse.json({ error: "招待コードは登録後24時間以内に適用できます" }, { status: 400 });
 
-  // Find inviter
   const inviter = await prisma.user.findFirst({ where: { referralCode: code.toUpperCase() } });
   if (!inviter) return NextResponse.json({ error: "無効な招待コードです" }, { status: 404 });
   if (inviter.id === user.id) return NextResponse.json({ error: "自分の招待コードは使用できません" }, { status: 400 });
 
-  // Apply referral
   await prisma.$transaction([
-    prisma.user.update({ where: { id: user.id }, data: { referredBy: inviter.id } }),
+    prisma.user.update({ where: { id: user.id }, data: { referredBy: inviter.id, credits: { increment: 10 } } }),
     prisma.user.update({ where: { id: inviter.id }, data: { referralCount: { increment: 1 } } }),
   ]);
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, bonus: 10 });
 }
