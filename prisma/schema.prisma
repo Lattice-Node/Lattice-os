@@ -18,6 +18,9 @@ model User {
   displayName    String           @default("")
   avatarUrl      String?
   publicId       String?          @unique
+  referralCode   String?  @unique
+  referredBy     String?
+  referralCount  Int      @default(0)
   stripeCustomerId    String?
   stripeSubscriptionId String?
   currentPeriodEnd    DateTime?

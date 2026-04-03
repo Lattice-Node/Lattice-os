@@ -10,17 +10,10 @@ export default async function HomePage() {
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
     select: {
-      id: true,
-      name: true,
-      displayName: true,
-      handle: true,
-      avatarUrl: true,
-      credits: true,
-      plan: true,
-      role: true,
+      id: true, name: true, displayName: true, handle: true,
+      avatarUrl: true, credits: true, plan: true, role: true,
     },
   });
-
   if (!user) redirect("/login");
 
   const agentCount = await prisma.userAgent.count({ where: { userId: user.id } });
