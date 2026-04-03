@@ -56,7 +56,7 @@ export default async function StorePage() {
       triggerCron: true,
       publicUseCount: true,
       runCount: true,
-      user: { select: { name: true } },
+      user: { select: { name: true, displayName: true, handle: true, avatarUrl: true } },
     },
     take: 50,
   });

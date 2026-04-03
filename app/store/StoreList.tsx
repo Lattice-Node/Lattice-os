@@ -29,7 +29,32 @@ interface CommunityAgent {
   triggerCron: string;
   publicUseCount: number;
   runCount: number;
-  user: { name: string };
+  user: { name: string; displayName: string; handle: string | null; avatarUrl: string | null };
+}
+
+const PRESET_AVATARS_MAP: Record<string, { emoji: string; bg: string }> = {
+  "avatar:wolf": { emoji: "🐺", bg: "#1e2044" }, "avatar:cat": { emoji: "🐱", bg: "#2a1e3a" },
+  "avatar:dog": { emoji: "🐶", bg: "#1e2a1a" }, "avatar:fox": { emoji: "🦊", bg: "#2a2010" },
+  "avatar:robot": { emoji: "🤖", bg: "#1a2a2a" }, "avatar:alien": { emoji: "👾", bg: "#2a1a2a" },
+  "avatar:rocket": { emoji: "🚀", bg: "#1e2044" }, "avatar:star": { emoji: "⭐", bg: "#2a2a10" },
+  "avatar:fire": { emoji: "🔥", bg: "#2a1a10" }, "avatar:bolt": { emoji: "⚡", bg: "#2a2a10" },
+  "avatar:gem": { emoji: "💎", bg: "#1a1a2a" }, "avatar:globe": { emoji: "🌏", bg: "#1a2a2a" },
+};
+
+function AuthorAvatar({ user, size = 20 }: { user: { name: string; displayName: string; handle: string | null; avatarUrl: string | null }; size?: number }) {
+  const av = user.avatarUrl;
+  if (av && av.startsWith("data:image")) return <img src={av} alt="" width={size} height={size} style={{ borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />;
+  if (av && PRESET_AVATARS_MAP[av]) {
+    const p = PRESET_AVATARS_MAP[av];
+    return <div style={{ width: size, height: size, borderRadius: "50%", background: p.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: size * 0.55, flexShrink: 0 }}>{p.emoji}</div>;
+  }
+  const initial = (user.displayName || user.name || "U")[0].toUpperCase();
+  return <div style={{ width: size, height: size, borderRadius: "50%", background: "#6c71e8", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: size * 0.45, fontWeight: 700, flexShrink: 0 }}>{initial}</div>;
+}
+
+function authorLabel(user: { name: string; displayName: string; handle: string | null }) {
+  if (user.handle) return "@" + user.handle;
+  return user.displayName || user.name || "匿名";
 }
 
 const CATEGORY_DESC: Record<string, string> = {
@@ -204,7 +229,10 @@ export default function StoreList({ templates, isPaid, userPlan = "free", connec
         <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid #242830" }}>
             <span style={{ fontSize: 13, color: "#6a7080" }}>{"作者"}</span>
-            <span style={{ fontSize: 13, color: "#9096a8" }}>{selectedCommunity.user?.name || "匿名"}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <AuthorAvatar user={selectedCommunity.user} size={22} />
+              <span style={{ fontSize: 13, color: "#9096a8" }}>{authorLabel(selectedCommunity.user)}</span>
+            </div>
           </div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid #242830" }}>
             <span style={{ fontSize: 13, color: "#6a7080" }}>{"利用者数"}</span>
@@ -474,7 +502,7 @@ export default function StoreList({ templates, isPaid, userPlan = "free", connec
                 <div className="store-card-bottom">
                   <div className="store-card-stats">
                     <span className="store-card-stat" style={{ color: "#4ade80" }}>{a.publicUseCount}{"人が利用"}</span>
-                    <span className="store-card-stat" style={{ color: "var(--muted)" }}>{"by " + (a.user?.name || "匿名")}</span>
+                    <span className="store-card-stat" style={{ color: "var(--muted)", display: "flex", alignItems: "center", gap: 4 }}><AuthorAvatar user={a.user} size={14} />{authorLabel(a.user)}</span>
                   </div>
                   <span style={{ fontSize: 12, color: aBadge?.color || "#4ade80" }}>{"詳細 ›"}</span>
                 </div>
