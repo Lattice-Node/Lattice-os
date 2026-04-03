@@ -7,11 +7,6 @@ export default async function StorePage() {
   const session = await auth();
   if (!session?.user?.email) redirect("/login");
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    select: { id: true, plan: true, role: true },
-  });
-
   const templates = await prisma.agentTemplate.findMany({
     orderBy: { useCount: "desc" },
     select: {
@@ -26,21 +21,11 @@ export default async function StorePage() {
     },
   });
 
-  const isPaid = user?.role === "admin" || ["starter", "personal", "pro", "business"].includes(user?.plan || "");
-
-  const userConnections = user?.id
-    ? await prisma.userConnection.findMany({
-        where: { userId: user.id },
-        select: { provider: true },
-      })
-    : [];
-  const connectedProviders = userConnections.map((c) => c.provider);
-
   return (
     <div className="page">
       <p className="page-label">エージェントストア</p>
       <h1 className="page-title">エージェントを探す</h1>
-      <StoreList templates={JSON.parse(JSON.stringify(templates))} isPaid={isPaid} connectedProviders={connectedProviders} />
+      <StoreList templates={JSON.parse(JSON.stringify(templates))} />
     </div>
   );
 }

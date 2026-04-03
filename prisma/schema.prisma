@@ -39,6 +39,9 @@ model UserAgent {
   outputType   String     @default("app")
   outputConfig String     @default("{}")
   runCount     Int        @default(0)
+  isPublic        Boolean    @default(false)
+  publicUseCount  Int        @default(0)
+  originalAuthorId String?
   lastRunAt    DateTime?
   nextRunAt    DateTime?
   createdAt    DateTime   @default(now())

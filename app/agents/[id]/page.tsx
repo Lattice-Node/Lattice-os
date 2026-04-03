@@ -72,6 +72,17 @@ export default function AgentDetailPage() {
     setAgent(data.agent);
   }
 
+  async function handleTogglePublic() {
+    if (!agent) return;
+    const res = await fetch(/api/agents/+id, {
+      method: PATCH,
+      headers: { Content-Type: pplication/json },
+      body: JSON.stringify({ isPublic: !agent.isPublic }),
+    });
+    const data = await res.json();
+    setAgent(data.agent);
+  }
+
   async function handleRun() {
     setRunning(true);
     setOutput("");
@@ -214,6 +225,35 @@ export default function AgentDetailPage() {
           {agent.description}
         </p>
       )}
+
+      {/* Publish toggle */}
+      <div style={{
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+        padding: "12px 16px",
+        background: agent.isPublic ? "rgba(108,113,232,0.08)" : "#1c2028",
+        border: agent.isPublic ? "1px solid rgba(108,113,232,0.3)" : "1px solid #2e3440",
+        borderRadius: 10, marginBottom: 16, transition: "all 0.2s",
+      }}>
+        <div>
+          <p style={{ fontSize: 13, fontWeight: 600, color: agent.isPublic ? "#6c71e8" : "#9096a8", margin: "0 0 2px" }}>
+            {agent.isPublic ? "\u516C\u958B\u4E2D" : "\u975E\u516C\u958B"}
+          </p>
+          <p style={{ fontSize: 11, color: "#6a7080", margin: 0 }}>
+            {agent.isPublic
+              ? "\u307F\u3093\u306A\u306E\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u306B\u8868\u793A\u4E2D \u00B7 " + (agent.publicUseCount || 0) + "\u4EBA\u304C\u5229\u7528"
+              : "\u30B9\u30C8\u30A2\u306B\u516C\u958B\u3057\u3066\u4ED6\u306E\u30E6\u30FC\u30B6\u30FC\u304C\u4F7F\u3048\u308B\u3088\u3046\u306B\u3059\u308B"}
+          </p>
+        </div>
+        <button onClick={handleTogglePublic} style={{
+          padding: "6px 14px", borderRadius: 8,
+          border: agent.isPublic ? "1px solid rgba(108,113,232,0.3)" : "1px solid #2e3440",
+          background: agent.isPublic ? "transparent" : "#6c71e8",
+          color: agent.isPublic ? "#6c71e8" : "#fff",
+          fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", flexShrink: 0, marginLeft: 12,
+        }}>
+          {agent.isPublic ? "\u975E\u516C\u958B\u306B\u3059\u308B" : "\u516C\u958B\u3059\u308B"}
+        </button>
+      </div>
 
       <div className="stat-row" style={{ marginBottom: 16 }}>
         <div className="stat-box">
