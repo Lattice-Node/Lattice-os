@@ -12,6 +12,8 @@ type Agent = {
   trigger: string;
   triggerCron: string;
   active: boolean;
+  isPublic: boolean;
+  publicUseCount: number;
   runCount: number;
   lastRunAt: string | null;
   nextRunAt: string | null;
