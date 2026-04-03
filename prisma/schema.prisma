@@ -14,6 +14,10 @@ model User {
   plan           String           @default("free")
   credits        Int              @default(30)
   role           String           @default("user")
+  handle         String?          @unique
+  displayName    String           @default("")
+  avatarUrl      String?
+  publicId       String?          @unique
   stripeCustomerId    String?
   stripeSubscriptionId String?
   currentPeriodEnd    DateTime?

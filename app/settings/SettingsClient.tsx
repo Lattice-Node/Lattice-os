@@ -11,6 +11,7 @@ interface Props {
   plan: string;
   currentPeriodEnd: string | null;
   role: string;
+  profileSection?: React.ReactNode;
 }
 
 const CREDIT_PLANS = [
@@ -81,7 +82,7 @@ const SUB_PLANS = [
 const cardStyle = { background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, padding: "20px", marginBottom: 12 };
 const sectionLabel = { fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase" as const, margin: "0 0 14px" };
 
-export default function SettingsClient({ name, email, image, credits, plan, currentPeriodEnd, role }: Props) {
+export default function SettingsClient({ name, email, image, credits, plan, currentPeriodEnd, role, profileSection }: Props) {
   const [deleting, setDeleting] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [subView, setSubView] = useState<string | null>(null);
@@ -369,6 +370,7 @@ const handleLineGenerate = async () => {
             </div>
           </div>
         </div>
+        {profileSection}
 
         {/* Plan */}
         <div style={cardStyle}>

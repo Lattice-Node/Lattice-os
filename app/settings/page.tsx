@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import SettingsClient from "./SettingsClient";
+import ProfileEdit from "./ProfileEdit";
 import { Suspense } from "react";
 
 export default async function SettingsPage() {
@@ -10,7 +11,16 @@ export default async function SettingsPage() {
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
-    select: { credits: true, plan: true, currentPeriodEnd: true, role: true },
+    select: {
+      credits: true,
+      plan: true,
+      currentPeriodEnd: true,
+      role: true,
+      handle: true,
+      displayName: true,
+      avatarUrl: true,
+      publicId: true,
+    },
   });
 
   return (
@@ -23,6 +33,16 @@ export default async function SettingsPage() {
         plan={user?.plan ?? "free"}
         currentPeriodEnd={user?.currentPeriodEnd?.toISOString() ?? null}
         role={user?.role ?? "user"}
+        profileSection={
+          <ProfileEdit
+            oauthName={session.user.name ?? ""}
+            oauthImage={session.user.image ?? ""}
+            initialHandle={user?.handle ?? null}
+            initialDisplayName={user?.displayName ?? ""}
+            initialAvatarUrl={user?.avatarUrl ?? null}
+            initialPublicId={user?.publicId ?? null}
+          />
+        }
       />
     </Suspense>
   );
