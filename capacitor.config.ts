@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Lattice',
   webDir: 'out',
   server: {
-    url: 'https://www.lattice-protocol.com',
+    url: 'https://www.lattice-protocol.com/home',
     cleartext: false,
   },
   plugins: {
