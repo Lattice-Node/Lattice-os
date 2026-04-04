@@ -1,182 +1,200 @@
-import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
-export const dynamic = "force-dynamic";
-
-const TEMPLATES = [
+const NEW_TEMPLATES = [
   {
-    name: "毎朝AIニュース要約",
-    description: "生成AI・LLM関連の最新ニュースを毎朝収集し、重要なものを厳選して要約します",
-    prompt: "今日の生成AI・LLM・AIエージェント関連の最新ニュースを検索し、最も重要な{{件数}}つを選んで、それぞれ3行で要約してください。日本語で出力してください。",
+    name: "電車遅延・運行情報チェック",
+    description: "通勤路線の遅延・運休情報を毎朝チェックして通知します",
+    prompt: "{{路線名}}の今日の運行状況・遅延情報を検索してください。遅延があれば原因と復旧見込みを、正常なら「通常運行」と報告してください。振替輸送の情報があればそれも含めてください。日本語で簡潔に出力してください。",
     trigger: "schedule",
-    triggerCron: "0 8 * * *",
-    category: "リサーチ",
+    triggerCron: "0 7 * * 1-5",
+    category: "生活",
     variables: JSON.stringify([
-      { key: "件数", label: "ニュースの件数", placeholder: "5", type: "text" },
+      { key: "路線名", label: "チェックしたい路線", placeholder: "JR山手線、東京メトロ丸ノ内線", type: "text" },
     ]),
   },
   {
-    name: "競合サイト更新チェック",
-    description: "指定したWebサイトの最新情報を定期的にチェックして変更点をお届けします",
-    prompt: "以下のWebサイトの最新の更新内容を検索し、新しい記事・製品・お知らせなどの変更点を日本語で3つ以内にまとめてください。\n\n対象サイト:\n{{対象サイトURL}}",
-    trigger: "schedule",
-    triggerCron: "0 8 * * *",
-    category: "営業",
-    variables: JSON.stringify([
-      { key: "対象サイトURL", label: "チェックしたいサイトURL（改行で複数可）", placeholder: "https://example.com", type: "textarea" },
-    ]),
-  },
-  {
-    name: "毎週AIツール新着まとめ",
-    description: "今週リリースされた新しいAIツール・サービスをまとめて週1回お届けします",
-    prompt: "今週新しくリリースまたは大幅アップデートされたAIツール・サービスを調査し、最大{{件数}}個をリストアップしてください。各ツールについて、名前・概要・何ができるかを2行で説明してください。日本語で出力してください。",
-    trigger: "schedule",
-    triggerCron: "0 9 * * 1",
-    category: "リサーチ",
-    variables: JSON.stringify([
-      { key: "件数", label: "ツールの件数", placeholder: "10", type: "text" },
-    ]),
-  },
-  {
-    name: "毎日の天気予報",
-    description: "指定した地域の天気予報を毎朝わかりやすくお届けします",
-    prompt: "{{地域}}の今日の天気予報を検索し、天気・最高気温・最低気温・降水確率・傘が必要かどうかを簡潔にまとめてください。日本語でフレンドリーなトーンで出力してください。",
+    name: "花粉・PM2.5情報",
+    description: "花粉飛散量とPM2.5濃度を毎朝お届けします（春シーズン必須）",
+    prompt: "{{地域}}の今日の花粉飛散量（スギ・ヒノキ）とPM2.5濃度を検索し、外出時の注意点をまとめてください。「非常に多い」「多い」「少ない」などのレベルと、マスクの必要性、洗濯物を外に干せるかも教えてください。日本語で出力してください。",
     trigger: "schedule",
     triggerCron: "0 7 * * *",
-    category: "生産性",
+    category: "生活",
     variables: JSON.stringify([
-      { key: "地域", label: "天気を知りたい地域", placeholder: "東京", type: "text" },
+      { key: "地域", label: "地域", placeholder: "東京", type: "text" },
     ]),
   },
   {
-    name: "業界ニュースまとめ",
-    description: "指定した業界の最新ニュースを毎日収集して要約します",
-    prompt: "{{業界}}業界の今日の最新ニュースを検索し、ビジネスに影響がありそうな重要なニュースを{{件数}}つ選んで、それぞれ2行で要約してください。日本語で出力してください。",
+    name: "為替レート通知（USD/JPY）",
+    description: "ドル円の最新レートと前日比を毎朝通知します",
+    prompt: "現在の米ドル/円（USD/JPY）の為替レートを検索してください。現在のレート、前日比（円高/円安どちらか）、今週の最高値と最安値、簡単な市場コメントを日本語でまとめてください。{{追加通貨}}のレートも含めてください。",
+    trigger: "schedule",
+    triggerCron: "0 8 * * 1-5",
+    category: "ビジネス",
+    variables: JSON.stringify([
+      { key: "追加通貨", label: "追加で知りたい通貨（任意）", placeholder: "EUR/JPY、GBP/JPY", type: "text" },
+    ]),
+  },
+  {
+    name: "日経平均・株式市場レポート",
+    description: "日経平均株価と主要指標を毎日レポートします",
+    prompt: "本日の日経平均株価、TOPIX、マザーズ指数の最新値と前日比を検索してください。市場全体の動向（上昇・下落の要因）と、注目された銘柄やセクターがあれば簡潔にまとめてください。{{注目銘柄}}の株価も確認してください。日本語で出力してください。",
+    trigger: "schedule",
+    triggerCron: "30 15 * * 1-5",
+    category: "ビジネス",
+    variables: JSON.stringify([
+      { key: "注目銘柄", label: "注目したい銘柄（任意）", placeholder: "トヨタ、ソニー、任天堂", type: "text" },
+    ]),
+  },
+  {
+    name: "Xトレンドまとめ（日本）",
+    description: "日本のXトレンドを毎朝まとめて話題のキャッチアップに",
+    prompt: "日本のX（旧Twitter）で今トレンドになっている話題を検索し、上位{{件数}}個をまとめてください。各トピックについて、なぜ話題になっているかを1〜2行で説明してください。エンタメ、政治、テクノロジーなどジャンルも付けてください。日本語で出力してください。",
     trigger: "schedule",
     triggerCron: "0 8 * * *",
-    category: "リサーチ",
-    variables: JSON.stringify([
-      { key: "業界", label: "対象の業界", placeholder: "IT・テクノロジー", type: "text" },
-      { key: "件数", label: "ニュースの件数", placeholder: "5", type: "text" },
-    ]),
-  },
-  {
-    name: "SNSトレンド収集",
-    description: "指定したジャンルのSNSトレンドを毎朝まとめて、投稿ネタとして整理します",
-    prompt: "{{ジャンル}}に関するX（Twitter）やSNSでのトレンド・話題を検索し、今注目されているトピックを{{件数}}つ選んで、それぞれ投稿ネタとして使えるように簡潔にまとめてください。日本語で出力してください。",
-    trigger: "schedule",
-    triggerCron: "0 7 * * *",
     category: "SNS",
     variables: JSON.stringify([
-      { key: "ジャンル", label: "対象のジャンル", placeholder: "AI・テクノロジー", type: "text" },
-      { key: "件数", label: "トピックの件数", placeholder: "5", type: "text" },
+      { key: "件数", label: "トレンド件数", placeholder: "10", type: "text" },
     ]),
   },
   {
-    name: "価格変動アラート",
-    description: "指定した商品の価格を監視して、変動があれば通知します",
-    prompt: "以下の商品の現在の価格を検索してください。前回と比較して変動があれば報告してください。\n\n商品: {{商品名}}\n目標価格: {{目標価格}}円以下\n\n現在の価格、目標との差額、購入すべきかの判断を日本語で簡潔に出力してください。",
+    name: "テックブログ巡回（Zenn/Qiita）",
+    description: "Zenn・Qiitaのトレンド記事を毎日チェックしてまとめます",
+    prompt: "ZennとQiitaで今日トレンドになっている技術記事を検索し、{{分野}}に関連するものを{{件数}}つピックアップしてください。各記事のタイトル、要点、なぜ読むべきかを2行で説明してください。日本語で出力してください。",
     trigger: "schedule",
     triggerCron: "0 12 * * *",
-    category: "通知",
+    category: "リサーチ",
     variables: JSON.stringify([
-      { key: "商品名", label: "監視したい商品名", placeholder: "iPhone 16 Pro 256GB", type: "text" },
-      { key: "目標価格", label: "目標価格（円）", placeholder: "150000", type: "text" },
+      { key: "分野", label: "興味のある分野", placeholder: "フロントエンド、AI、インフラ", type: "text" },
+      { key: "件数", label: "記事の件数", placeholder: "5", type: "text" },
     ]),
   },
   {
-    name: "メール要約アシスタント",
-    description: "Gmailの未読メールを取得して、重要なものを要約します",
-    prompt: "取得したGmailの未読メールの中から重要なものを{{件数}}件選び、それぞれ差出人・件名・要約（2行以内）を日本語でまとめてください。緊急度が高いものは先に表示してください。",
+    name: "英語ニュース翻訳・要約",
+    description: "海外の英語ニュースを日本語に翻訳して要約します",
+    prompt: "{{分野}}に関する最新の英語ニュースを海外メディア（TechCrunch、The Verge、Reuters等）から検索し、重要なもの{{件数}}つを選んで日本語で要約してください。元の記事のソース名も記載してください。",
     trigger: "schedule",
     triggerCron: "0 9 * * *",
+    category: "リサーチ",
+    variables: JSON.stringify([
+      { key: "分野", label: "対象分野", placeholder: "AI・テクノロジー", type: "text" },
+      { key: "件数", label: "記事数", placeholder: "5", type: "text" },
+    ]),
+  },
+  {
+    name: "今日の献立提案",
+    description: "冷蔵庫の食材や気分に合わせて今日の献立を提案します",
+    prompt: "以下の条件で今日の夕食の献立を提案してください。\\n\\n条件：\\n- 食材: {{食材}}\\n- 人数: {{人数}}人分\\n- 調理時間: {{調理時間}}分以内\\n\\nメインディッシュ1品、副菜1〜2品、汁物1品を提案し、それぞれ簡単な作り方（3ステップ以内）を含めてください。日本語で出力してください。",
+    trigger: "manual",
+    triggerCron: "",
+    category: "生活",
+    variables: JSON.stringify([
+      { key: "食材", label: "ある食材", placeholder: "鶏もも肉、じゃがいも、にんじん、玉ねぎ", type: "textarea" },
+      { key: "人数", label: "人数", placeholder: "2", type: "text" },
+      { key: "調理時間", label: "調理時間（分）", placeholder: "30", type: "text" },
+    ]),
+  },
+  {
+    name: "YouTube動画要約",
+    description: "YouTube動画の内容をAIが要約します（URL指定）",
+    prompt: "以下のYouTube動画の内容を検索・要約してください。\\n\\nURL: {{URL}}\\n\\n動画のタイトル、主要なポイント（箇条書き5つ以内）、全体のまとめ（3行以内）を日本語で出力してください。",
+    trigger: "manual",
+    triggerCron: "",
     category: "生産性",
     variables: JSON.stringify([
-      { key: "件数", label: "要約する件数", placeholder: "5", type: "text" },
-    ]),
-  },
-  // --- Phase 2: Tool Use対応テンプレート ---
-  {
-    name: "Webページ要約レポート",
-    description: "指定したURLのページを読み込み、内容を要約してレポートにします（Tool Use）",
-    prompt: "以下のURLのWebページの内容をfetch_urlツールで取得して、重要なポイントを{{形式}}で要約してください。日本語で出力してください。\n\nURL: {{対象URL}}",
-    trigger: "schedule",
-    triggerCron: "0 9 * * *",
-    category: "リサーチ",
-    variables: JSON.stringify([
-      { key: "対象URL", label: "要約したいページのURL", placeholder: "https://example.com/blog/latest", type: "text" },
-      { key: "形式", label: "出力形式", placeholder: "箇条書き5つ以内", type: "text" },
+      { key: "URL", label: "YouTube動画のURL", placeholder: "https://www.youtube.com/watch?v=...", type: "text" },
     ]),
   },
   {
-    name: "複数サイト比較分析",
-    description: "最大3つのWebサイトを読み込んで、内容を比較分析します（Tool Use）",
-    prompt: "以下のWebサイトをfetch_urlツールでそれぞれ読み込み、共通点と相違点を分析して比較レポートを作成してください。日本語で出力してください。\n\nサイト1: {{URL1}}\nサイト2: {{URL2}}\nサイト3: {{URL3}}",
+    name: "議事録自動生成",
+    description: "会議のメモから構造化された議事録を生成します",
+    prompt: "以下の会議メモから正式な議事録を作成してください。\\n\\n会議名: {{会議名}}\\n日時: {{日時}}\\n参加者: {{参加者}}\\n\\nメモ:\\n{{メモ内容}}\\n\\n以下の形式で出力してください：\\n1. 議題\\n2. 決定事項\\n3. アクションアイテム（担当者・期限付き）\\n4. 次回予定",
     trigger: "manual",
     triggerCron: "",
-    category: "リサーチ",
+    category: "ビジネス",
     variables: JSON.stringify([
-      { key: "URL1", label: "サイト1のURL", placeholder: "https://example1.com", type: "text" },
-      { key: "URL2", label: "サイト2のURL", placeholder: "https://example2.com", type: "text" },
-      { key: "URL3", label: "サイト3のURL（空欄可）", placeholder: "", type: "text" },
+      { key: "会議名", label: "会議名", placeholder: "週次定例", type: "text" },
+      { key: "日時", label: "日時", placeholder: "2025年4月3日 14:00", type: "text" },
+      { key: "参加者", label: "参加者", placeholder: "田中、鈴木、佐藤", type: "text" },
+      { key: "メモ内容", label: "会議メモ（箇条書きでOK）", placeholder: "・新機能の進捗確認\n・来月のリリース日程\n・バグ対応の優先度", type: "textarea" },
     ]),
   },
   {
-    name: "ブログ記事→メール配信",
-    description: "指定URLの記事を読んで要約し、Gmailで自動配信します（Tool Use）",
-    prompt: "以下のURLの記事をfetch_urlツールで取得して要約し、send_gmailツールで{{宛先}}にメール送信してください。\n件名は「[Lattice配信] 記事要約」としてください。\n\nURL: {{記事URL}}",
+    name: "Amazonセール・特価チェック",
+    description: "Amazonのタイムセールや特価情報を毎日チェックします",
+    prompt: "Amazon.co.jpで現在開催中のタイムセール、特価情報を検索してください。{{カテゴリ}}カテゴリの中からおすすめの商品を{{件数}}個ピックアップし、商品名・通常価格・セール価格・割引率をまとめてください。日本語で出力してください。",
+    trigger: "schedule",
+    triggerCron: "0 10 * * *",
+    category: "生活",
+    variables: JSON.stringify([
+      { key: "カテゴリ", label: "興味のあるカテゴリ", placeholder: "ガジェット、家電、食品", type: "text" },
+      { key: "件数", label: "商品数", placeholder: "5", type: "text" },
+    ]),
+  },
+  {
+    name: "英単語・英語表現デイリー",
+    description: "毎日5つの英単語・表現をビジネス例文つきで届けます",
+    prompt: "{{レベル}}レベルのビジネス英語で使える英単語・表現を{{件数}}つ選んで、以下の形式で教えてください。\\n\\n各単語について:\\n1. 英単語/表現\\n2. 発音のカタカナ表記\\n3. 意味（日本語）\\n4. ビジネスでの例文（英語+日本語訳）\\n\\n今日のテーマ: {{テーマ}}",
+    trigger: "schedule",
+    triggerCron: "0 7 * * 1-5",
+    category: "学習",
+    variables: JSON.stringify([
+      { key: "レベル", label: "レベル", placeholder: "中級", type: "text" },
+      { key: "件数", label: "単語数", placeholder: "5", type: "text" },
+      { key: "テーマ", label: "テーマ（任意）", placeholder: "会議、メール、プレゼン", type: "text" },
+    ]),
+  },
+  {
+    name: "今日は何の日・雑学",
+    description: "今日の記念日・歴史的出来事・雑学を毎朝お届けします",
+    prompt: "今日（現在の日付）は何の日かを検索し、以下をまとめてください。\\n\\n1. 今日の記念日・祝日（日本の記念日優先）\\n2. 歴史上の今日の出来事（2〜3個）\\n3. 今日が誕生日の有名人（2〜3人）\\n4. 朝のひとこと（今日にちなんだポジティブなメッセージ）\\n\\n日本語で親しみやすいトーンで出力してください。",
+    trigger: "schedule",
+    triggerCron: "0 7 * * *",
+    category: "生活",
+    variables: JSON.stringify([]),
+  },
+  {
+    name: "副業・ビジネスアイデア生成",
+    description: "あなたのスキルや興味に基づいた副業アイデアを提案します",
+    prompt: "以下の条件に基づいて、副業・サイドビジネスのアイデアを{{件数}}個提案してください。\\n\\nスキル: {{スキル}}\\n使える時間: 週{{時間}}時間\\n初期投資: {{予算}}\\n興味のある分野: {{分野}}\\n\\n各アイデアについて、概要・始め方（3ステップ）・想定月収・難易度を記載してください。日本語で出力してください。",
+    trigger: "manual",
+    triggerCron: "",
+    category: "ビジネス",
+    variables: JSON.stringify([
+      { key: "スキル", label: "あなたのスキル", placeholder: "プログラミング、ライティング、デザイン", type: "textarea" },
+      { key: "時間", label: "週に使える時間", placeholder: "10", type: "text" },
+      { key: "予算", label: "初期投資の予算", placeholder: "5万円以内", type: "text" },
+      { key: "分野", label: "興味のある分野", placeholder: "AI、Web制作、コンテンツ", type: "text" },
+      { key: "件数", label: "アイデアの数", placeholder: "5", type: "text" },
+    ]),
+  },
+  {
+    name: "スポーツ結果・ハイライト",
+    description: "応援しているチームの試合結果とハイライトを毎朝報告",
+    prompt: "{{チーム名}}の最新の試合結果を検索してください。スコア、主要なプレー・得点者、チームの現在の順位・成績を報告してください。今後の試合予定（次の2試合）も含めてください。日本語で出力してください。",
     trigger: "schedule",
     triggerCron: "0 8 * * *",
-    category: "SNS",
+    category: "生活",
     variables: JSON.stringify([
-      { key: "記事URL", label: "配信したい記事のURL", placeholder: "https://example.com/article", type: "text" },
-      { key: "宛先", label: "送信先メールアドレス", placeholder: "team@example.com", type: "text" },
-    ]),
-  },
-  {
-    name: "求人情報モニタリング",
-    description: "指定した企業の採用ページを監視して、新しい求人があれば通知します（Tool Use）",
-    prompt: "以下の採用ページをfetch_urlツールで取得し、現在の求人情報をリストアップしてください。特に{{職種}}に関連する求人があれば詳しく分析してください。日本語で出力してください。\n\nURL: {{採用ページURL}}",
-    trigger: "schedule",
-    triggerCron: "0 10 * * 1",
-    category: "営業",
-    variables: JSON.stringify([
-      { key: "採用ページURL", label: "企業の採用ページURL", placeholder: "https://example.com/careers", type: "text" },
-      { key: "職種", label: "気になる職種", placeholder: "エンジニア", type: "text" },
-    ]),
-  },
-  {
-    name: "商品レビュー収集",
-    description: "指定商品のレビューページを読み込み、評価傾向をまとめます（Tool Use）",
-    prompt: "以下のURLから商品レビュー情報をfetch_urlツールで取得し、ポジティブ・ネガティブな意見をそれぞれ{{件数}}つずつまとめてください。全体の評価傾向と購入すべきかのアドバイスも添えてください。日本語で出力してください。\n\nURL: {{レビューページURL}}",
-    trigger: "manual",
-    triggerCron: "",
-    category: "リサーチ",
-    variables: JSON.stringify([
-      { key: "レビューページURL", label: "商品レビューページのURL", placeholder: "https://amazon.co.jp/dp/...", type: "text" },
-      { key: "件数", label: "まとめる件数", placeholder: "3", type: "text" },
+      { key: "チーム名", label: "応援しているチーム", placeholder: "大谷翔平（ドジャース）、三笘薫（ブライトン）", type: "text" },
     ]),
   },
 ];
 
 export async function POST() {
   const session = await auth();
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const user = await prisma.user.findUnique({ where: { email: session.user.email } });
-  if (!user || user.role !== "admin") {
-    return NextResponse.json({ error: "Admin only" }, { status: 403 });
-  }
+  const user = await prisma.user.findUnique({ where: { email: session.user.email }, select: { role: true } });
+  if (user?.role !== "admin") return NextResponse.json({ error: "Admin only" }, { status: 403 });
 
-  // Clear and re-seed
-  await prisma.agentTemplate.deleteMany({});
+  const existingNames = (await prisma.agentTemplate.findMany({ select: { name: true } })).map(t => t.name);
+  const toAdd = NEW_TEMPLATES.filter(t => !existingNames.includes(t.name));
 
-  for (const t of TEMPLATES) {
-    await prisma.agentTemplate.create({ data: t });
-  }
+  if (toAdd.length === 0) return NextResponse.json({ message: "All templates already exist", added: 0 });
 
-  return NextResponse.json({ ok: true, count: TEMPLATES.length });
+  await prisma.agentTemplate.createMany({ data: toAdd });
+
+  return NextResponse.json({ message: `Added ${toAdd.length} new templates`, added: toAdd.length, names: toAdd.map(t => t.name) });
 }
