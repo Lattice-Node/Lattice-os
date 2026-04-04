@@ -2,9 +2,10 @@ import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import Apple from "next-auth/providers/apple";
+import type { Provider } from "next-auth/providers";
 import { sendLoginNotificationEmail } from "@/lib/mailer";
 
-const providers = [
+const providers: Provider[] = [
   GitHub({
     clientId: process.env.GITHUB_CLIENT_ID!,
     clientSecret: process.env.GITHUB_CLIENT_SECRET!,
@@ -20,7 +21,6 @@ const providers = [
   }),
 ];
 
-// Appleプロバイダーは環境変数がある場合のみ追加（欠落時に他プロバイダーを道連れにしない）
 if (process.env.APPLE_CLIENT_ID && process.env.APPLE_CLIENT_SECRET) {
   providers.push(
     Apple({
