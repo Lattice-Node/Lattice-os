@@ -12,9 +12,9 @@ const plans = [
     name: "Free",
     price: "¥0",
     priceNote: "永久無料",
-    color: "#4a5060",
-    bg: "#1c2028",
-    border: "#2e3440",
+    color: "var(--text-disabled)",
+    bg: "var(--surface)",
+    border: "var(--border)",
     features: [
       { text: "エージェント 3体", included: true },
       { text: "5クレジット / 月", included: true },
@@ -31,7 +31,7 @@ const plans = [
     name: "Starter",
     price: "¥980",
     priceNote: "/ 月",
-    color: "#6c71e8",
+    color: "var(--btn-bg)",
     bg: "rgba(108,113,232,0.06)",
     border: "rgba(108,113,232,0.25)",
     features: [
@@ -89,13 +89,13 @@ const plans = [
 
 export default function PricingPage() {
   return (
-    <main style={{ minHeight: "100vh", background: "#0e1117", color: "#e8eaf0" }}>
+    <main style={{ minHeight: "100vh", background: "var(--bg)", color: "var(--text-primary)" }}>
       <Nav />
       <div style={{ maxWidth: 860, margin: "0 auto", padding: "80px 16px 60px" }}>
         <div style={{ textAlign: "center", marginBottom: 40 }}>
-          <p style={{ fontSize: 11, color: "#6c71e8", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 }}>PRICING</p>
+          <p style={{ fontSize: 11, color: "var(--btn-bg)", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 }}>PRICING</p>
           <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.03em", marginBottom: 10 }}>シンプルな料金プラン</h1>
-          <p style={{ fontSize: 14, color: "#6a7080", maxWidth: 400, margin: "0 auto" }}>すべてのプランにWeb検索+AI要約が含まれています。いつでもアップグレード・ダウングレード可能。</p>
+          <p style={{ fontSize: 14, color: "var(--text-secondary)", maxWidth: 400, margin: "0 auto" }}>すべてのプランにWeb検索+AI要約が含まれています。いつでもアップグレード・ダウングレード可能。</p>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: 12, marginBottom: 40 }}>
@@ -106,11 +106,11 @@ export default function PricingPage() {
               )}
               <p style={{ fontSize: 14, fontWeight: 700, color: plan.color, margin: "0 0 8px" }}>{plan.name}</p>
               <div style={{ marginBottom: 16 }}>
-                <span style={{ fontSize: 32, fontWeight: 800, color: "#e8eaf0", letterSpacing: "-0.03em" }}>{plan.price}</span>
-                <span style={{ fontSize: 12, color: "#4a5060", marginLeft: 4 }}>{plan.priceNote}</span>
+                <span style={{ fontSize: 32, fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.03em" }}>{plan.price}</span>
+                <span style={{ fontSize: 12, color: "var(--text-disabled)", marginLeft: 4 }}>{plan.priceNote}</span>
               </div>
 
-              <Link href="/login" style={{ display: "block", padding: "10px", borderRadius: 8, background: plan.popular ? plan.color : "#1c2028", border: plan.popular ? "none" : `1px solid ${plan.border}`, color: plan.popular ? "#fff" : plan.color, fontSize: 13, fontWeight: 600, textDecoration: "none", textAlign: "center", marginBottom: 20 }}>
+              <Link href="/login" style={{ display: "block", padding: "10px", borderRadius: 8, background: plan.popular ? plan.color : "var(--surface)", border: plan.popular ? "none" : `1px solid ${plan.border}`, color: plan.popular ? "#fff" : plan.color, fontSize: 13, fontWeight: 600, textDecoration: "none", textAlign: "center", marginBottom: 20 }}>
                 {plan.price === "¥0" ? "無料で始める" : "このプランを選ぶ"}
               </Link>
 
@@ -120,9 +120,9 @@ export default function PricingPage() {
                     {f.included ? (
                       <span style={{ color: plan.color, fontSize: 12, flexShrink: 0 }}>✓</span>
                     ) : (
-                      <span style={{ color: "#2e3440", fontSize: 12, flexShrink: 0 }}>—</span>
+                      <span style={{ color: "var(--border)", fontSize: 12, flexShrink: 0 }}>—</span>
                     )}
-                    <span style={{ color: f.included ? "#9096a8" : "#3a3f4c" }}>{f.text}</span>
+                    <span style={{ color: f.included ? "var(--text-secondary)" : "#3a3f4c" }}>{f.text}</span>
                   </div>
                 ))}
               </div>
@@ -139,19 +139,19 @@ export default function PricingPage() {
             { q: "解約したらデータはどうなりますか？", a: "解約後もFreeプランとしてアカウントとデータは保持されます。アカウント削除をしない限りデータは消えません。" },
             { q: "支払い方法は？", a: "Stripeを通じてクレジットカードでお支払いいただけます。Visa、Mastercard、JCB、American Expressに対応しています。" },
           ].map((item) => (
-            <div key={item.q} style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, padding: "16px 20px", marginBottom: 8 }}>
-              <p style={{ fontSize: 14, fontWeight: 600, color: "#e8eaf0", margin: "0 0 6px" }}>{item.q}</p>
-              <p style={{ fontSize: 13, color: "#6a7080", lineHeight: 1.7, margin: 0 }}>{item.a}</p>
+            <div key={item.q} style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "16px 20px", marginBottom: 8 }}>
+              <p style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)", margin: "0 0 6px" }}>{item.q}</p>
+              <p style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.7, margin: 0 }}>{item.a}</p>
             </div>
           ))}
         </div>
 
         {/* CTA */}
         <div style={{ textAlign: "center", marginTop: 40 }}>
-          <Link href="/login" style={{ display: "inline-block", padding: "14px 32px", borderRadius: 10, background: "#6c71e8", color: "#fff", fontSize: 15, fontWeight: 600, textDecoration: "none" }}>
+          <Link href="/login" style={{ display: "inline-block", padding: "14px 32px", borderRadius: 10, background: "var(--btn-bg)", color: "#fff", fontSize: 15, fontWeight: 600, textDecoration: "none" }}>
             無料で始める
           </Link>
-          <p style={{ fontSize: 12, color: "#4a5060", marginTop: 10 }}>クレジットカード不要</p>
+          <p style={{ fontSize: 12, color: "var(--text-disabled)", marginTop: 10 }}>クレジットカード不要</p>
         </div>
       </div>
     </main>

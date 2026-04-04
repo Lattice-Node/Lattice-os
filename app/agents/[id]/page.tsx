@@ -131,7 +131,7 @@ export default function AgentDetailPage() {
   if (loading) {
     return (
       <div className="page" style={{ paddingTop: 24 }}>
-        <p style={{ color: "#4a5060", fontSize: 13 }}>読み込み中...</p>
+        <p style={{ color: "var(--text-disabled)", fontSize: 13 }}>読み込み中...</p>
       </div>
     );
   }
@@ -139,12 +139,12 @@ export default function AgentDetailPage() {
   if (!agent) {
     return (
       <div className="page" style={{ paddingTop: 24 }}>
-        <p style={{ color: "#9096a8", fontSize: 14, marginBottom: 12 }}>
+        <p style={{ color: "var(--text-secondary)", fontSize: 14, marginBottom: 12 }}>
           エージェントが見つかりません
         </p>
         <Link
           href="/agents"
-          style={{ color: "#6c71e8", fontSize: 13, textDecoration: "none" }}
+          style={{ color: "var(--btn-bg)", fontSize: 13, textDecoration: "none" }}
         >
           戻る
         </Link>
@@ -155,13 +155,13 @@ export default function AgentDetailPage() {
   if (editing) {
     return (
       <div className="page" style={{ paddingTop: 16 }}>
-        <button onClick={() => setEditing(false)} style={{ fontSize: 13, color: "#4a5060", background: "transparent", border: "none", cursor: "pointer", padding: 0, marginBottom: 16, fontFamily: "inherit" }}>&larr; キャンセル</button>
-        <h2 style={{ fontSize: 18, fontWeight: 600, color: "#e8eaf0", margin: "0 0 20px" }}>エージェントを編集</h2>
-        <p style={{ fontSize: 12, color: "#9096a8", margin: "0 0 6px" }}>名前</p>
-        <input value={editName} onChange={e => setEditName(e.target.value)} style={{ width: "100%", background: "#1c2028", border: "1px solid #2e3440", borderRadius: 10, padding: "12px 14px", fontSize: 14, color: "#e8eaf0", fontFamily: "inherit", boxSizing: "border-box", marginBottom: 16, outline: "none" }} />
-        <p style={{ fontSize: 12, color: "#9096a8", margin: "0 0 6px" }}>説明</p>
-        <textarea value={editDesc} onChange={e => setEditDesc(e.target.value)} rows={3} style={{ width: "100%", background: "#1c2028", border: "1px solid #2e3440", borderRadius: 10, padding: "12px 14px", fontSize: 14, color: "#e8eaf0", fontFamily: "inherit", boxSizing: "border-box", marginBottom: 20, outline: "none", resize: "none" }} />
-        <button onClick={handleSave} style={{ width: "100%", padding: 14, borderRadius: 10, background: "#6c71e8", color: "#fff", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", fontFamily: "inherit" }}>保存する</button>
+        <button onClick={() => setEditing(false)} style={{ fontSize: 13, color: "var(--text-disabled)", background: "transparent", border: "none", cursor: "pointer", padding: 0, marginBottom: 16, fontFamily: "inherit" }}>&larr; キャンセル</button>
+        <h2 style={{ fontSize: 18, fontWeight: 600, color: "var(--text-primary)", margin: "0 0 20px" }}>エージェントを編集</h2>
+        <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: "0 0 6px" }}>名前</p>
+        <input value={editName} onChange={e => setEditName(e.target.value)} style={{ width: "100%", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "12px 14px", fontSize: 14, color: "var(--text-primary)", fontFamily: "inherit", boxSizing: "border-box", marginBottom: 16, outline: "none" }} />
+        <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: "0 0 6px" }}>説明</p>
+        <textarea value={editDesc} onChange={e => setEditDesc(e.target.value)} rows={3} style={{ width: "100%", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "12px 14px", fontSize: 14, color: "var(--text-primary)", fontFamily: "inherit", boxSizing: "border-box", marginBottom: 20, outline: "none", resize: "none" }} />
+        <button onClick={handleSave} style={{ width: "100%", padding: 14, borderRadius: 10, background: "var(--btn-bg)", color: "#fff", fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", fontFamily: "inherit" }}>保存する</button>
       </div>
     );
   }
@@ -172,7 +172,7 @@ export default function AgentDetailPage() {
         href="/agents"
         style={{
           fontSize: 13,
-          color: "#4a5060",
+          color: "var(--text-disabled)",
           textDecoration: "none",
           display: "inline-block",
           marginBottom: 16,
@@ -193,7 +193,7 @@ export default function AgentDetailPage() {
           style={{
             fontSize: 20,
             fontWeight: 600,
-            color: "#e8eaf0",
+            color: "var(--text-primary)",
             margin: 0,
             flex: 1,
             minWidth: 0,
@@ -204,7 +204,7 @@ export default function AgentDetailPage() {
         >
           {agent.name}
         </h1>
-        <button onClick={handleEdit} style={{ background: "transparent", border: "1px solid #2e3440", borderRadius: 8, padding: "5px 10px", fontSize: 12, color: "#9096a8", cursor: "pointer", marginLeft: 8, fontFamily: "inherit", flexShrink: 0 }}>編集</button>
+        <button onClick={handleEdit} style={{ background: "transparent", border: "1px solid var(--border)", borderRadius: 8, padding: "5px 10px", fontSize: 12, color: "var(--text-secondary)", cursor: "pointer", marginLeft: 8, fontFamily: "inherit", flexShrink: 0 }}>編集</button>
         <button
           className={"toggle " + (agent.active ? "on" : "off")}
           onClick={handleToggleActive}
@@ -219,7 +219,7 @@ export default function AgentDetailPage() {
         <p
           style={{
             fontSize: 13,
-            color: "#9096a8",
+            color: "var(--text-secondary)",
             margin: "0 0 16px",
             lineHeight: 1.5,
           }}
@@ -232,15 +232,15 @@ export default function AgentDetailPage() {
       <div style={{
         display: "flex", justifyContent: "space-between", alignItems: "center",
         padding: "12px 16px",
-        background: agent.isPublic ? "rgba(108,113,232,0.08)" : "#1c2028",
-        border: agent.isPublic ? "1px solid rgba(108,113,232,0.3)" : "1px solid #2e3440",
+        background: agent.isPublic ? "rgba(108,113,232,0.08)" : "var(--surface)",
+        border: agent.isPublic ? "1px solid rgba(108,113,232,0.3)" : "1px solid var(--border)",
         borderRadius: 10, marginBottom: 16, transition: "all 0.2s",
       }}>
         <div>
-          <p style={{ fontSize: 13, fontWeight: 600, color: agent.isPublic ? "#6c71e8" : "#9096a8", margin: "0 0 2px" }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: agent.isPublic ? "var(--btn-bg)" : "var(--text-secondary)", margin: "0 0 2px" }}>
             {agent.isPublic ? "\u516C\u958B\u4E2D" : "\u975E\u516C\u958B"}
           </p>
-          <p style={{ fontSize: 11, color: "#6a7080", margin: 0 }}>
+          <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: 0 }}>
             {agent.isPublic
               ? "\u307F\u3093\u306A\u306E\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u306B\u8868\u793A\u4E2D \u00B7 " + (agent.publicUseCount || 0) + "\u4EBA\u304C\u5229\u7528"
               : "\u30B9\u30C8\u30A2\u306B\u516C\u958B\u3057\u3066\u4ED6\u306E\u30E6\u30FC\u30B6\u30FC\u304C\u4F7F\u3048\u308B\u3088\u3046\u306B\u3059\u308B"}
@@ -248,9 +248,9 @@ export default function AgentDetailPage() {
         </div>
         <button onClick={handleTogglePublic} style={{
           padding: "6px 14px", borderRadius: 8,
-          border: agent.isPublic ? "1px solid rgba(108,113,232,0.3)" : "1px solid #2e3440",
-          background: agent.isPublic ? "transparent" : "#6c71e8",
-          color: agent.isPublic ? "#6c71e8" : "#fff",
+          border: agent.isPublic ? "1px solid rgba(108,113,232,0.3)" : "1px solid var(--border)",
+          background: agent.isPublic ? "transparent" : "var(--btn-bg)",
+          color: agent.isPublic ? "var(--btn-bg)" : "#fff",
           fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", flexShrink: 0, marginLeft: 12,
         }}>
           {agent.isPublic ? "\u975E\u516C\u958B\u306B\u3059\u308B" : "\u516C\u958B\u3059\u308B"}
@@ -310,7 +310,7 @@ export default function AgentDetailPage() {
             style={{
               fontSize: 11,
               color:
-                outputStatus === "error" ? "#f87171" : "#4ade80",
+                outputStatus === "error" ? "var(--accent)" : "var(--success)",
               margin: "0 0 6px",
               textTransform: "uppercase",
               letterSpacing: "0.06em",
@@ -322,7 +322,7 @@ export default function AgentDetailPage() {
           <p
             style={{
               fontSize: 12,
-              color: "#9096a8",
+              color: "var(--text-secondary)",
               margin: 0,
               lineHeight: 1.6,
               whiteSpace: "pre-wrap",
@@ -343,7 +343,7 @@ export default function AgentDetailPage() {
 
       {logs.length === 0 ? (
         <div className="card" style={{ textAlign: "center", padding: 24 }}>
-          <p style={{ color: "#4a5060", fontSize: 13, margin: 0 }}>
+          <p style={{ color: "var(--text-disabled)", fontSize: 13, margin: 0 }}>
             まだログがありません
           </p>
         </div>
@@ -363,14 +363,14 @@ export default function AgentDetailPage() {
                   fontSize: 11,
                   fontWeight: 500,
                   color:
-                    log.status === "success" ? "#4ade80" : "#f87171",
+                    log.status === "success" ? "var(--success)" : "var(--accent)",
                   textTransform: "uppercase",
                   letterSpacing: "0.04em",
                 }}
               >
                 {log.status === "success" ? "OK" : "ERR"}
               </span>
-              <span style={{ fontSize: 11, color: "#4a5060" }}>
+              <span style={{ fontSize: 11, color: "var(--text-disabled)" }}>
                 {new Date(log.createdAt).toLocaleString("ja-JP", {
                   month: "numeric",
                   day: "numeric",
@@ -383,7 +383,7 @@ export default function AgentDetailPage() {
               <p
                 style={{
                   fontSize: 12,
-                  color: "#9096a8",
+                  color: "var(--text-secondary)",
                   margin: 0,
                   lineHeight: 1.5,
                   whiteSpace: "pre-wrap",

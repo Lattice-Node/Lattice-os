@@ -24,7 +24,7 @@ export default async function NewAgentPage() {
   const connectedProviders = userConnections.map((c) => c.provider);
 
   return (
-    <Suspense fallback={<div style={{ minHeight: "100vh", backgroundColor: "#0e1117" }} />}>
+    <Suspense fallback={<div style={{ minHeight: "100vh", backgroundColor: "var(--bg)" }} />}>
       <NewAgentClient isPaid={isPaid} connectedProviders={connectedProviders} />
     </Suspense>
   );

@@ -2,6 +2,7 @@
 import { signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { useApp } from "@/lib/theme";
 
 interface Props {
   name: string;
@@ -79,8 +80,8 @@ const SUB_PLANS = [
   },
 ];
 
-const cardStyle = { background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, padding: "20px", marginBottom: 12 };
-const sectionLabel = { fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase" as const, margin: "0 0 14px" };
+const cardStyle = { background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "20px", marginBottom: 12, transition: "background .25s, border-color .25s" };
+const sectionLabel = { fontFamily: "'Space Mono', monospace", fontSize: 10, color: "var(--text-secondary)", letterSpacing: "0.1em", textTransform: "uppercase" as const, margin: "0 0 14px" };
 
 export default function SettingsClient({ name, email, image, credits, plan, currentPeriodEnd, role, profileSection }: Props) {
   const [deleting, setDeleting] = useState(false);
@@ -98,6 +99,7 @@ export default function SettingsClient({ name, email, image, credits, plan, curr
   const [canceling, setCanceling] = useState(false);
   const [cancelConfirm, setCancelConfirm] = useState(false);
   const [isYearly, setIsYearly] = useState(false);
+  const { theme, toggleTheme } = useApp();
 
   useEffect(() => {
     fetch("/api/connections").then(r => r.json()).then(d => setConnections(d.connections || [])).catch(() => {});
@@ -163,27 +165,27 @@ const handleLineGenerate = async () => {
   // Credit purchase view
   if (showCredit) {
     return (
-      <main style={{ minHeight: "100vh", backgroundColor: "#0e1117", color: "#e8eaf0", paddingBottom: 100 }}>
+      <main style={{ minHeight: "100vh", backgroundColor: "var(--bg)", color: "var(--text-primary)", paddingBottom: 100 }}>
         <div style={{ maxWidth: 420, margin: "0 auto", padding: "48px 20px 24px" }}>
-          <button onClick={() => setShowCredit(false)} style={{ background: "none", border: "none", color: "#9096a8", fontSize: 15, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", padding: "8px 0", marginBottom: 20, display: "flex", alignItems: "center", gap: 6 }}>
+          <button onClick={() => setShowCredit(false)} style={{ background: "none", border: "none", color: "var(--text-secondary)", fontSize: 15, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", padding: "8px 0", marginBottom: 20, display: "flex", alignItems: "center", gap: 6 }}>
             戻る
           </button>
           <p style={sectionLabel}>クレジット購入</p>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: "#f0f2f8", margin: "0 0 6px", letterSpacing: "-0.02em" }}>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: "var(--text-display)", margin: "0 0 6px", letterSpacing: "-0.02em" }}>
             クレジット追加
           </h1>
-          <p style={{ fontSize: 13, color: "#6a7080", margin: "0 0 28px" }}>
-            残高: <span style={{ color: "#e8eaf0", fontWeight: 600 }}>{credits} cr</span>
+          <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: "0 0 28px" }}>
+            残高: <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{credits} cr</span>
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {CREDIT_PLANS.map((p) => (
-              <div key={p.id} style={{ background: p.popular ? "#14163a" : "#1c2028", border: `1px solid ${p.popular ? "#6c71e8" : "#2e3440"}`, borderRadius: 12, padding: "20px", position: "relative" }}>
-                {p.popular && <span style={{ position: "absolute", top: -10, left: 16, fontSize: 11, color: "#fff", background: "#6c71e8", padding: "2px 10px", borderRadius: 20, fontWeight: 600 }}>おすすめ</span>}
+              <div key={p.id} style={{ background: p.popular ? "var(--surface-raised)" : "var(--surface)", border: `1px solid ${p.popular ? "var(--btn-bg)" : "var(--border)"}`, borderRadius: 12, padding: "20px", position: "relative" }}>
+                {p.popular && <span style={{ position: "absolute", top: -10, left: 16, fontSize: 11, color: "#fff", background: "var(--btn-bg)", padding: "2px 10px", borderRadius: 20, fontWeight: 600 }}>おすすめ</span>}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                  <p style={{ fontSize: 18, fontWeight: 700, color: "#f0f2f8", margin: 0 }}>{p.label} cr</p>
-                  <p style={{ fontSize: 22, fontWeight: 700, color: "#f0f2f8", margin: 0 }}>{p.price}</p>
+                  <p style={{ fontSize: 18, fontWeight: 700, color: "var(--text-display)", margin: 0 }}>{p.label} cr</p>
+                  <p style={{ fontSize: 22, fontWeight: 700, color: "var(--text-display)", margin: 0 }}>{p.price}</p>
                 </div>
-                <button onClick={() => handlePurchase(p.id)} disabled={purchasing === p.id} style={{ width: "100%", padding: "11px", borderRadius: 8, border: "none", background: p.popular ? "#6c71e8" : "#242830", color: p.popular ? "#fff" : "#9096a8", fontSize: 14, fontWeight: 600, cursor: purchasing === p.id ? "default" : "pointer", fontFamily: "inherit", opacity: purchasing === p.id ? 0.5 : 1 }}>
+                <button onClick={() => handlePurchase(p.id)} disabled={purchasing === p.id} style={{ width: "100%", padding: "11px", borderRadius: 8, border: "none", background: p.popular ? "var(--btn-bg)" : "var(--surface-raised)", color: p.popular ? "#fff" : "var(--text-secondary)", fontSize: 14, fontWeight: 600, cursor: purchasing === p.id ? "default" : "pointer", fontFamily: "inherit", opacity: purchasing === p.id ? 0.5 : 1 }}>
                   {purchasing === p.id ? "..." : "購入する"}
                 </button>
               </div>
@@ -197,25 +199,25 @@ const handleLineGenerate = async () => {
 
   if (showPlans) {
     return (
-      <main style={{ minHeight: "100vh", backgroundColor: "#0e1117", color: "#e8eaf0", paddingBottom: 100 }}>
+      <main style={{ minHeight: "100vh", backgroundColor: "var(--bg)", color: "var(--text-primary)", paddingBottom: 100 }}>
         <div style={{ maxWidth: 420, margin: "0 auto", padding: "48px 20px 24px" }}>
-          <button onClick={() => setShowPlans(false)} style={{ background: "none", border: "none", color: "#9096a8", fontSize: 15, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", padding: "8px 0", marginBottom: 20, display: "flex", alignItems: "center", gap: 6 }}>
+          <button onClick={() => setShowPlans(false)} style={{ background: "none", border: "none", color: "var(--text-secondary)", fontSize: 15, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", padding: "8px 0", marginBottom: 20, display: "flex", alignItems: "center", gap: 6 }}>
             戻る
           </button>
           <p style={sectionLabel}>プラン</p>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: "#f0f2f8", margin: "0 0 6px", letterSpacing: "-0.02em" }}>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: "var(--text-display)", margin: "0 0 6px", letterSpacing: "-0.02em" }}>
             プランを選ぶ
           </h1>
-          <p style={{ fontSize: 13, color: "#6a7080", margin: "0 0 20px" }}>
+          <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: "0 0 20px" }}>
             AIエージェントが、あなたの代わりに働きます
           </p>
 
           {/* Yearly/Monthly toggle */}
-          <div style={{ display: "flex", background: "#1c2028", borderRadius: 12, padding: 4, marginBottom: 20 }}>
-            <button onClick={() => setIsYearly(false)} style={{ flex: 1, padding: "10px 0", background: !isYearly ? "#2e3440" : "transparent", color: !isYearly ? "#fff" : "#6a7080", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s" }}>
+          <div style={{ display: "flex", background: "var(--surface)", borderRadius: 12, padding: 4, marginBottom: 20 }}>
+            <button onClick={() => setIsYearly(false)} style={{ flex: 1, padding: "10px 0", background: !isYearly ? "var(--border)" : "transparent", color: !isYearly ? "#fff" : "var(--text-secondary)", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s" }}>
               月額
             </button>
-            <button onClick={() => setIsYearly(true)} style={{ flex: 1, padding: "10px 0", background: isYearly ? "#2e3440" : "transparent", color: isYearly ? "#fff" : "#6a7080", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s", position: "relative" }}>
+            <button onClick={() => setIsYearly(true)} style={{ flex: 1, padding: "10px 0", background: isYearly ? "var(--border)" : "transparent", color: isYearly ? "#fff" : "var(--text-secondary)", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s", position: "relative" }}>
               年額
               <span style={{ position: "absolute", top: -8, right: 12, background: "#22c55e", color: "#fff", fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 6 }}>2ヶ月無料</span>
             </button>
@@ -231,23 +233,23 @@ const handleLineGenerate = async () => {
 
               return (
                 <div key={p.id} style={{
-                  background: isPro ? "#14163a" : "#1c2028",
-                  border: `${isPro ? "2px" : "1px"} solid ${isPro ? "#6c71e8" : "#2e3440"}`,
+                  background: isPro ? "var(--surface)" : "var(--surface)",
+                  border: `${isPro ? "2px" : "1px"} solid ${isPro ? "var(--btn-bg)" : "var(--border)"}`,
                   borderRadius: 16, padding: "20px", position: "relative",
                 }}>
                   {p.badge && (
-                    <span style={{ position: "absolute", top: -10, right: 16, background: "linear-gradient(135deg, #6c71e8, #5b5fd6)", color: "#fff", fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 8 }}>
+                    <span style={{ position: "absolute", top: -10, right: 16, background: "linear-gradient(135deg, var(--btn-bg), #5b5fd6)", color: "#fff", fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 8 }}>
                       {p.badge}
                     </span>
                   )}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
                     <div>
-                      <p style={{ fontSize: 18, fontWeight: 700, color: "#f0f2f8", margin: "0 0 4px" }}>{p.label}</p>
+                      <p style={{ fontSize: 18, fontWeight: 700, color: "var(--text-display)", margin: "0 0 4px" }}>{p.label}</p>
                       <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
-                        <span style={{ fontSize: 28, fontWeight: 700, color: "#f0f2f8" }}>
+                        <span style={{ fontSize: 28, fontWeight: 700, color: "var(--text-display)" }}>
                           {p.price === 0 ? "¥0" : `¥${monthlyEquiv.toLocaleString()}`}
                         </span>
-                        {p.price > 0 && <span style={{ fontSize: 13, color: "#6a7080" }}>/月</span>}
+                        {p.price > 0 && <span style={{ fontSize: 13, color: "var(--text-secondary)" }}>/月</span>}
                       </div>
                       {isYearly && savings > 0 && (
                         <p style={{ fontSize: 12, color: "#22c55e", fontWeight: 600, margin: "2px 0 0" }}>
@@ -255,18 +257,18 @@ const handleLineGenerate = async () => {
                         </p>
                       )}
                     </div>
-                    <div style={{ textAlign: "right", background: "#0e1117", padding: "8px 12px", borderRadius: 10 }}>
-                      <p style={{ fontSize: 22, fontWeight: 700, color: "#6c71e8", margin: 0 }}>{p.runs.toLocaleString()}</p>
-                      <p style={{ fontSize: 10, color: "#6a7080", margin: 0 }}>回/月</p>
+                    <div style={{ textAlign: "right", background: "var(--bg)", padding: "8px 12px", borderRadius: 10 }}>
+                      <p style={{ fontSize: 22, fontWeight: 700, color: "var(--btn-bg)", margin: 0 }}>{p.runs.toLocaleString()}</p>
+                      <p style={{ fontSize: 10, color: "var(--text-secondary)", margin: 0 }}>回/月</p>
                     </div>
                   </div>
 
                   {/* Cost per run bar */}
                   {p.price > 0 && (
-                    <div style={{ background: "#0e1117", borderRadius: 8, padding: "8px 12px", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: 11, color: "#9096a8", whiteSpace: "nowrap" }}>1回あたり</span>
-                      <div style={{ flex: 1, height: 4, background: "#2e3440", borderRadius: 2 }}>
-                        <div style={{ height: "100%", width: `${Math.max(10, Math.min(100, 100 - costPerRun * 2))}%`, background: "linear-gradient(90deg, #22c55e, #6c71e8)", borderRadius: 2, transition: "width 0.5s ease" }} />
+                    <div style={{ background: "var(--bg)", borderRadius: 8, padding: "8px 12px", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 11, color: "var(--text-secondary)", whiteSpace: "nowrap" }}>1回あたり</span>
+                      <div style={{ flex: 1, height: 4, background: "var(--border)", borderRadius: 2 }}>
+                        <div style={{ height: "100%", width: `${Math.max(10, Math.min(100, 100 - costPerRun * 2))}%`, background: "linear-gradient(90deg, #22c55e, var(--btn-bg))", borderRadius: 2, transition: "width 0.5s ease" }} />
                       </div>
                       <span style={{ fontSize: 13, fontWeight: 700, color: "#22c55e" }}>¥{costPerRun}</span>
                     </div>
@@ -275,11 +277,11 @@ const handleLineGenerate = async () => {
                   {/* Features */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 16 }}>
                     {p.features.map((f, i) => (
-                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: f.ok ? "#c0c4d0" : "#4a5060" }}>
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13, color: f.ok ? "var(--text-primary)" : "var(--text-disabled)" }}>
                         {f.ok ? (
-                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="#6c71e8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.5L5.5 10.5L11.5 3.5" stroke="var(--btn-bg)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                         ) : (
-                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 4L10 10M10 4L4 10" stroke="#4a5060" strokeWidth="1.5" strokeLinecap="round" /></svg>
+                          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 4L10 10M10 4L4 10" stroke="var(--text-disabled)" strokeWidth="1.5" strokeLinecap="round" /></svg>
                         )}
                         <span style={{ textDecoration: f.ok ? "none" : "line-through", opacity: f.ok ? 1 : 0.5 }}>{f.text}</span>
                       </div>
@@ -291,11 +293,11 @@ const handleLineGenerate = async () => {
                     disabled={isCurrent || purchasing === p.id}
                     style={{
                       width: "100%", padding: "12px", borderRadius: 10, border: "none",
-                      background: isCurrent ? "#242830" : isPro ? "linear-gradient(135deg, #6c71e8, #5b5fd6)" : "#1c2028",
-                      color: isCurrent ? "#6a7080" : "#fff",
+                      background: isCurrent ? "var(--surface-raised)" : isPro ? "linear-gradient(135deg, var(--btn-bg), #5b5fd6)" : "var(--surface)",
+                      color: isCurrent ? "var(--text-secondary)" : "#fff",
                       fontSize: 14, fontWeight: 600, cursor: isCurrent ? "default" : "pointer",
                       fontFamily: "inherit", opacity: purchasing === p.id ? 0.5 : 1,
-                      ...((!isCurrent && !isPro) ? { border: "1px solid #2e3440" } : {}),
+                      ...((!isCurrent && !isPro) ? { border: "1px solid var(--border)" } : {}),
                     }}
                   >
                     {isCurrent ? "現在のプラン" : purchasing === p.id ? "..." : p.price === 0 ? "現在のプラン" : `${p.label}を始める`}
@@ -306,20 +308,20 @@ const handleLineGenerate = async () => {
           </div>
 
           {/* Comparison with other AI services */}
-          <div style={{ marginTop: 20, padding: "16px", background: "#1c2028", borderRadius: 16, border: "1px solid #2e3440", textAlign: "center" }}>
-            <p style={{ fontSize: 13, color: "#9096a8", margin: "0 0 10px" }}>他のAIサービスとの比較</p>
+          <div style={{ marginTop: 20, padding: "16px", background: "var(--surface)", borderRadius: 16, border: "1px solid var(--border)", textAlign: "center" }}>
+            <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: "0 0 10px" }}>他のAIサービスとの比較</p>
             <div style={{ display: "flex", justifyContent: "center", gap: 16, fontSize: 12 }}>
               <div>
-                <p style={{ color: "#6a7080", margin: "0 0 2px" }}>ChatGPT Plus</p>
-                <p style={{ fontWeight: 700, fontSize: 16, color: "#9096a8", margin: 0 }}>¥3,000</p>
+                <p style={{ color: "var(--text-secondary)", margin: "0 0 2px" }}>ChatGPT Plus</p>
+                <p style={{ fontWeight: 700, fontSize: 16, color: "var(--text-secondary)", margin: 0 }}>¥3,000</p>
               </div>
               <div>
-                <p style={{ color: "#6a7080", margin: "0 0 2px" }}>Claude Pro</p>
-                <p style={{ fontWeight: 700, fontSize: 16, color: "#9096a8", margin: 0 }}>¥3,000</p>
+                <p style={{ color: "var(--text-secondary)", margin: "0 0 2px" }}>Claude Pro</p>
+                <p style={{ fontWeight: 700, fontSize: 16, color: "var(--text-secondary)", margin: 0 }}>¥3,000</p>
               </div>
               <div>
-                <p style={{ color: "#6c71e8", margin: "0 0 2px" }}>Lattice Pro</p>
-                <p style={{ fontWeight: 700, fontSize: 16, color: "#6c71e8", margin: 0 }}>¥2,480</p>
+                <p style={{ color: "var(--btn-bg)", margin: "0 0 2px" }}>Lattice Pro</p>
+                <p style={{ fontWeight: 700, fontSize: 16, color: "var(--btn-bg)", margin: 0 }}>¥2,480</p>
               </div>
             </div>
             <p style={{ fontSize: 11, color: "#22c55e", marginTop: 8, fontWeight: 600 }}>しかもLatticeは自動で動き続ける</p>
@@ -331,24 +333,24 @@ const handleLineGenerate = async () => {
 
   // Main settings view
   return (
-    <main style={{ minHeight: "100vh", backgroundColor: "#0e1117", color: "#e8eaf0", paddingBottom: 100 }}>
+    <main style={{ minHeight: "100vh", backgroundColor: "var(--bg)", color: "var(--text-primary)", paddingBottom: 100 }}>
       <div style={{ maxWidth: 420, margin: "0 auto", padding: "48px 20px 24px" }}>
         <p style={sectionLabel}>設定</p>
 
         {errorParam === "upgrade" && (
-          <div style={{ background: "#2a1a0f", border: "1px solid #4a3a1a", borderRadius: 10, padding: "12px 16px", marginBottom: 12 }}>
-            <p style={{ fontSize: 13, color: "#fbbf24", margin: 0 }}>外部連携にはパーソナルプラン以上が必要です</p>
+          <div style={{ background: "var(--surface)", border: "1px solid var(--warning)", borderRadius: 10, padding: "12px 16px", marginBottom: 12 }}>
+            <p style={{ fontSize: 13, color: "var(--warning)", margin: 0 }}>外部連携にはパーソナルプラン以上が必要です</p>
           </div>
         )}
 
         {success === "credits" && (
-          <div style={{ background: "#0f2a1a", border: "1px solid #1a4a2a", borderRadius: 10, padding: "12px 16px", marginBottom: 12 }}>
-            <p style={{ fontSize: 13, color: "#4ade80", margin: 0 }}>クレジットを購入しました</p>
+          <div style={{ background: "var(--surface)", border: "1px solid var(--success)", borderRadius: 10, padding: "12px 16px", marginBottom: 12 }}>
+            <p style={{ fontSize: 13, color: "var(--success)", margin: 0 }}>クレジットを購入しました</p>
           </div>
         )}
         {success === "subscription" && (
-          <div style={{ background: "#0f2a1a", border: "1px solid #1a4a2a", borderRadius: 10, padding: "12px 16px", marginBottom: 12 }}>
-            <p style={{ fontSize: 13, color: "#4ade80", margin: 0 }}>プランをアップグレードしました！</p>
+          <div style={{ background: "var(--surface)", border: "1px solid var(--success)", borderRadius: 10, padding: "12px 16px", marginBottom: 12 }}>
+            <p style={{ fontSize: 13, color: "var(--success)", margin: 0 }}>プランをアップグレードしました！</p>
           </div>
         )}
 
@@ -357,15 +359,15 @@ const handleLineGenerate = async () => {
           <p style={sectionLabel}>アカウント</p>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             {image ? (
-              <img src={image} alt={name} width={44} height={44} style={{ borderRadius: "50%", border: "1px solid #2e3440" }} />
+              <img src={image} alt={name} width={44} height={44} style={{ borderRadius: "50%", border: "1px solid var(--border)" }} />
             ) : (
-              <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#2e3440", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#6a7080" strokeWidth="1.5"><circle cx="10" cy="7" r="4" /><path d="M3 18c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5" /></svg>
+              <div style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--border)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-secondary)" strokeWidth="1.5"><circle cx="10" cy="7" r="4" /><path d="M3 18c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5" /></svg>
               </div>
             )}
             <div>
-              <p style={{ fontSize: 15, fontWeight: 600, color: "#e8eaf0", margin: "0 0 3px" }}>{name || "ユーザー"}</p>
-              <p style={{ fontSize: 13, color: "#6a7080", margin: 0 }}>{email}</p>
+              <p style={{ fontSize: 15, fontWeight: 600, color: "var(--text-primary)", margin: "0 0 3px" }}>{name || "ユーザー"}</p>
+              <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: 0 }}>{email}</p>
             </div>
           </div>
         </div>
@@ -375,12 +377,12 @@ const handleLineGenerate = async () => {
         <div style={cardStyle}>
           <p style={sectionLabel}>プラン</p>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-            <span style={{ fontSize: 20, fontWeight: 700, color: "#f0f2f8" }}>{planLabel}</span>
-            {isPaid && <span style={{ fontSize: 11, color: "#4ade80", background: "#0f2a1a", padding: "3px 10px", borderRadius: 20 }}>有効</span>}
+            <span style={{ fontSize: 20, fontWeight: 700, color: "var(--text-display)" }}>{planLabel}</span>
+            {isPaid && <span style={{ fontSize: 11, color: "var(--success)", background: "var(--surface)", padding: "3px 10px", borderRadius: 20 }}>有効</span>}
           </div>
-          {periodEnd && <p style={{ fontSize: 12, color: "#6a7080", margin: "4px 0 14px" }}>次回請求日: {periodEnd}</p>}
-          {!isPaid && <p style={{ fontSize: 12, color: "#6a7080", margin: "4px 0 14px" }}>月15回の自動実行・エージェント3体まで</p>}
-          <button onClick={() => setShowPlans(true)} style={{ width: "100%", padding: "11px 16px", borderRadius: 8, border: "1px solid #2e3440", background: "transparent", color: "#6c71e8", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          {periodEnd && <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: "4px 0 14px" }}>次回請求日: {periodEnd}</p>}
+          {!isPaid && <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: "4px 0 14px" }}>月15回の自動実行・エージェント3体まで</p>}
+          <button onClick={() => setShowPlans(true)} style={{ width: "100%", padding: "11px 16px", borderRadius: 8, border: "1px solid var(--border)", background: "transparent", color: "var(--btn-bg)", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span>{isPaid ? "プラン変更" : "アップグレード"}</span>
             <span style={{ fontSize: 16 }}>...</span>
           </button>
@@ -390,9 +392,9 @@ const handleLineGenerate = async () => {
         <div style={cardStyle}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
             <p style={{ ...sectionLabel, margin: 0 }}>クレジット</p>
-            <span style={{ fontSize: 24, fontWeight: 700, color: "#e8eaf0", letterSpacing: "-0.02em" }}>{credits}</span>
+            <span style={{ fontSize: 24, fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>{credits}</span>
           </div>
-          <button onClick={() => setShowCredit(true)} style={{ width: "100%", padding: "11px 16px", borderRadius: 8, border: "1px solid #2e3440", background: "transparent", color: "#6c71e8", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <button onClick={() => setShowCredit(true)} style={{ width: "100%", padding: "11px 16px", borderRadius: 8, border: "1px solid var(--border)", background: "transparent", color: "var(--btn-bg)", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span>クレジットを追加</span>
             <span style={{ fontSize: 16 }}>...</span>
           </button>
@@ -407,9 +409,9 @@ const handleLineGenerate = async () => {
                 const meta = JSON.parse(c.metadata || "{}");
                 const label = c.provider === "discord" ? `Discord - ${meta.guildName || "サーバー"}` : c.provider === "gmail" ? `Gmail - ${meta.email || ""}` : c.provider;
                 return (
-                  <div key={c.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#0e1117", borderRadius: 8, padding: "10px 14px" }}>
-                    <span style={{ fontSize: 13, color: "#c0c4d0" }}>{label}</span>
-                    <button onClick={() => handleDisconnect(c.id)} disabled={disconnecting === c.id} style={{ background: "none", border: "none", color: "#f87171", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
+                  <div key={c.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bg)", borderRadius: 8, padding: "10px 14px" }}>
+                    <span style={{ fontSize: 13, color: "var(--text-primary)" }}>{label}</span>
+                    <button onClick={() => handleDisconnect(c.id)} disabled={disconnecting === c.id} style={{ background: "none", border: "none", color: "var(--accent)", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>
                       {disconnecting === c.id ? "..." : "解除"}
                     </button>
                   </div>
@@ -419,71 +421,71 @@ const handleLineGenerate = async () => {
           )}
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {!connections.find(c => c.provider === "gmail") && (
-              <a href="/api/connections/gmail" style={{ display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", borderRadius: 8, border: "1px solid #2e3440", textDecoration: "none", cursor: "pointer" }}>
+              <a href="/api/connections/gmail" style={{ display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", borderRadius: 8, border: "1px solid var(--border)", textDecoration: "none", cursor: "pointer" }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 18h-2V9.25L12 13 6 9.25V18H4V6h1.2l6.8 4.25L18.8 6H20v12z" fill="#EA4335"/><rect x="2" y="4" width="20" height="16" rx="2" stroke="#EA4335" strokeWidth="1.5" fill="none"/></svg>
-                <span style={{ fontSize: 14, color: "#c0c4d0" }}>{isPaid ? "Gmailを連携する" : "Gmail連携 (要アップグレード)"}</span>
+                <span style={{ fontSize: 14, color: "var(--text-primary)" }}>{isPaid ? "Gmailを連携する" : "Gmail連携 (要アップグレード)"}</span>
               </a>
             )}
             {!connections.find(c => c.provider === "discord") && (
-              <a href="/api/connections/discord" style={{ display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", borderRadius: 8, border: "1px solid #2e3440", textDecoration: "none", cursor: "pointer" }}>
+              <a href="/api/connections/discord" style={{ display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", borderRadius: 8, border: "1px solid var(--border)", textDecoration: "none", cursor: "pointer" }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="#5865F2"><path d="M20.32 4.37a19.8 19.8 0 00-4.89-1.52.07.07 0 00-.08.04c-.21.38-.44.87-.61 1.26a18.27 18.27 0 00-5.49 0 12.64 12.64 0 00-.62-1.26.08.08 0 00-.08-.04 19.74 19.74 0 00-4.89 1.52.07.07 0 00-.03.03C.53 9.05-.32 13.58.1 18.06a.08.08 0 00.03.06 19.9 19.9 0 005.99 3.03.08.08 0 00.08-.03c.46-.63.87-1.3 1.22-2a.08.08 0 00-.04-.11 13.1 13.1 0 01-1.87-.9.08.08 0 01-.01-.13c.13-.09.25-.19.37-.29a.08.08 0 01.08-.01c3.93 1.79 8.18 1.79 12.07 0a.08.08 0 01.08.01c.12.1.25.2.37.29a.08.08 0 01-.01.13c-.6.35-1.22.65-1.87.9a.08.08 0 00-.04.11c.36.7.77 1.37 1.22 2a.08.08 0 00.08.03 19.83 19.83 0 006-3.03.08.08 0 00.03-.06c.5-5.18-.84-9.68-3.55-13.66a.06.06 0 00-.03-.03zM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.96 2.42-2.16 2.42zm7.97 0c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.95 2.42-2.16 2.42z"/></svg>
-                <span style={{ fontSize: 14, color: "#c0c4d0" }}>{isPaid ? "Discordを連携する" : "Discord連携 (要アップグレード)"}</span>
+                <span style={{ fontSize: 14, color: "var(--text-primary)" }}>{isPaid ? "Discordを連携する" : "Discord連携 (要アップグレード)"}</span>
               </a>
             )}
           </div>
           {(plan === "business" || isAdmin) && !connections.find(c => c.provider === "line") && (
-            <div style={{ marginTop: 14, padding: "16px", background: "#0e1117", borderRadius: 10, border: "1px solid #2e3440" }}>
+            <div style={{ marginTop: 14, padding: "16px", background: "var(--bg)", borderRadius: 10, border: "1px solid var(--border)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="#06C755"><path d="M12 2C6.48 2 2 5.64 2 10.14c0 4.05 3.6 7.44 8.46 8.08.33.07.78.22.89.5.1.26.07.66.03.92l-.14.87c-.04.26-.2 1.03.9.56s5.97-3.52 8.15-6.02C22.14 13.07 22 11.63 22 10.14 22 5.64 17.52 2 12 2z"/></svg>
-                <span style={{ fontSize: 14, color: "#c0c4d0" }}>LINE連携</span>
+                <span style={{ fontSize: 14, color: "var(--text-primary)" }}>LINE連携</span>
               </div>
               <a href="https://lin.ee/P0E0l9c" target="_blank" rel="noopener noreferrer" style={{ display: "block", textAlign: "center", padding: "10px", borderRadius: 8, background: "#06C755", color: "#fff", fontSize: 13, fontWeight: 600, textDecoration: "none", marginBottom: 10 }}>1. Lattice Bot を友だち追加</a>
               {!lineCode ? (
-                <button onClick={handleLineGenerate} disabled={lineConnecting} style={{ width: "100%", padding: "10px", borderRadius: 8, border: "1px solid #2e3440", background: "#1c2028", color: "#c0c4d0", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>{lineConnecting ? "..." : "2. 連携コードを発行"}</button>
+                <button onClick={handleLineGenerate} disabled={lineConnecting} style={{ width: "100%", padding: "10px", borderRadius: 8, border: "1px solid var(--border)", background: "var(--surface)", color: "var(--text-primary)", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>{lineConnecting ? "..." : "2. 連携コードを発行"}</button>
               ) : (
                 <div style={{ textAlign: "center" }}>
-                  <p style={{ fontSize: 12, color: "#6a7080", margin: "0 0 6px" }}>このコードをLINEで送信（10分有効）</p>
-                  <p style={{ fontSize: 32, fontWeight: 700, color: "#e8eaf0", letterSpacing: "0.15em", margin: "0 0 8px" }}>{lineCode}</p>
-                  <p style={{ fontSize: 12, color: "#6a7080", margin: 0 }}>Lattice Bot のトークに入力してください</p>
+                  <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: "0 0 6px" }}>このコードをLINEで送信（10分有効）</p>
+                  <p style={{ fontSize: 32, fontWeight: 700, color: "var(--text-primary)", letterSpacing: "0.15em", margin: "0 0 8px" }}>{lineCode}</p>
+                  <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: 0 }}>Lattice Bot のトークに入力してください</p>
                 </div>
               )}
-              {lineSuccess && <p style={{ fontSize: 12, color: "#4ade80", margin: "8px 0 0", textAlign: "center" }}>LINE連携が完了しました</p>}
+              {lineSuccess && <p style={{ fontSize: 12, color: "var(--success)", margin: "8px 0 0", textAlign: "center" }}>LINE連携が完了しました</p>}
             </div>
           )}
           {plan !== "business" && (
-            <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", borderRadius: 8, border: "1px solid #2e3440" }}>
+            <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", borderRadius: 8, border: "1px solid var(--border)" }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="#06C755"><path d="M12 2C6.48 2 2 5.64 2 10.14c0 4.05 3.6 7.44 8.46 8.08.33.07.78.22.89.5.1.26.07.66.03.92l-.14.87c-.04.26-.2 1.03.9.56s5.97-3.52 8.15-6.02C22.14 13.07 22 11.63 22 10.14 22 5.64 17.52 2 12 2z"/></svg>
-              <span style={{ fontSize: 14, color: "#c0c4d0" }}>LINE連携 (要ビジネスプラン)</span>
+              <span style={{ fontSize: 14, color: "var(--text-primary)" }}>LINE連携 (要ビジネスプラン)</span>
             </div>
           )}
         </div>
 
         {/* Lattice News & About - card buttons */}
-        <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
-          <button onClick={() => setSubView("news")} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", background: "transparent", border: "none", borderBottom: "1px solid #2e3440", cursor: "pointer", fontFamily: "inherit" }}>
+        <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
+          <button onClick={() => setSubView("news")} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", background: "transparent", border: "none", borderBottom: "1px solid var(--border)", cursor: "pointer", fontFamily: "inherit" }}>
             <div style={{ textAlign: "left" }}>
-              <p style={{ fontSize: 15, fontWeight: 600, color: "#e8eaf0", margin: "0 0 4px" }}>Lattice ニュース</p>
-              <p style={{ fontSize: 12, color: "#6a7080", margin: 0 }}>新機能・アップデート情報</p>
+              <p style={{ fontSize: 15, fontWeight: 600, color: "var(--text-primary)", margin: "0 0 4px" }}>Lattice ニュース</p>
+              <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: 0 }}>新機能・アップデート情報</p>
             </div>
-            <span style={{ fontSize: 16, color: "#4a5060" }}>&rsaquo;</span>
+            <span style={{ fontSize: 16, color: "var(--text-disabled)" }}>&rsaquo;</span>
           </button>
           <button onClick={() => setSubView("about")} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", background: "transparent", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
             <div style={{ textAlign: "left" }}>
-              <p style={{ fontSize: 15, fontWeight: 600, color: "#e8eaf0", margin: "0 0 4px" }}>Lattice の性能について</p>
-              <p style={{ fontSize: 12, color: "#6a7080", margin: 0 }}>できること・できないこと</p>
+              <p style={{ fontSize: 15, fontWeight: 600, color: "var(--text-primary)", margin: "0 0 4px" }}>Lattice の性能について</p>
+              <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: 0 }}>できること・できないこと</p>
             </div>
-            <span style={{ fontSize: 16, color: "#4a5060" }}>&rsaquo;</span>
+            <span style={{ fontSize: 16, color: "var(--text-disabled)" }}>&rsaquo;</span>
           </button>
         </div>
 
         {/* News Sub View */}
         {subView === "news" && (
-          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "#0e1117", zIndex: 100, overflowY: "auto", paddingBottom: 100 }}>
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "var(--bg)", zIndex: 100, overflowY: "auto", paddingBottom: 100 }}>
             <div style={{ maxWidth: 420, margin: "0 auto", padding: "20px 16px" }}>
-              {newsDetail === null && (<button onClick={() => { setSubView(null); setNewsDetail(null); }} style={{ background: "none", border: "none", color: "#6c71e8", fontSize: 14, cursor: "pointer", fontFamily: "inherit", marginBottom: 16, padding: 0 }}>&#8592; 戻る</button>)}
+              {newsDetail === null && (<button onClick={() => { setSubView(null); setNewsDetail(null); }} style={{ background: "none", border: "none", color: "var(--btn-bg)", fontSize: 14, cursor: "pointer", fontFamily: "inherit", marginBottom: 16, padding: 0 }}>&#8592; 戻る</button>)}
               {newsDetail === null ? (
                 <>
-                  <h2 style={{ fontSize: 22, fontWeight: 700, color: "#e8eaf0", margin: "0 0 20px" }}>Lattice ニュース</h2>
+                  <h2 style={{ fontSize: 22, fontWeight: 700, color: "var(--text-primary)", margin: "0 0 20px" }}>Lattice ニュース</h2>
                   <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                     {[
                        { id: 4, title: "Tool Useの自律実行機能を追加しました", date: "2026/3/31" },
@@ -493,59 +495,59 @@ const handleLineGenerate = async () => {
                       { id: 2, title: "サブスクリプション機能を追加しました", date: "2026/3/28" },
                       { id: 3, title: "テンプレートストアを追加しました", date: "2026/3/28" },
                     ].map(item => (
-                      <button key={item.id} onClick={() => setNewsDetail(item.id)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 18px", borderRadius: 12, border: "1px solid #2e3440", background: "#1c2028", cursor: "pointer", fontFamily: "inherit" }}>
+                      <button key={item.id} onClick={() => setNewsDetail(item.id)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 18px", borderRadius: 12, border: "1px solid var(--border)", background: "var(--surface)", cursor: "pointer", fontFamily: "inherit" }}>
                         <div style={{ textAlign: "left" }}>
-                          <p style={{ fontSize: 14, fontWeight: 600, color: "#e8eaf0", margin: "0 0 4px" }}>{item.title}</p>
-                          <p style={{ fontSize: 11, color: "#6a7080", margin: 0 }}>{item.date}</p>
+                          <p style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)", margin: "0 0 4px" }}>{item.title}</p>
+                          <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: 0 }}>{item.date}</p>
                         </div>
-                        <span style={{ fontSize: 16, color: "#4a5060" }}>&rsaquo;</span>
+                        <span style={{ fontSize: 16, color: "var(--text-disabled)" }}>&rsaquo;</span>
                       </button>
                     ))}
                   </div>
                 </>
               ) : (
                 <>
-                  <button onClick={() => setNewsDetail(null)} style={{ background: "none", border: "none", color: "#6c71e8", fontSize: 13, cursor: "pointer", fontFamily: "inherit", marginBottom: 12, padding: 0 }}>&#8592; 一覧に戻る</button>
+                  <button onClick={() => setNewsDetail(null)} style={{ background: "none", border: "none", color: "var(--btn-bg)", fontSize: 13, cursor: "pointer", fontFamily: "inherit", marginBottom: 12, padding: 0 }}>&#8592; 一覧に戻る</button>
                   {newsDetail === 1 && (
                     <div>
-                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "#e8eaf0", margin: "0 0 6px" }}>LINE連携機能を追加しました</h3>
-                      <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 16px" }}>2026/3/29</p>
-                      <p style={{ fontSize: 13, color: "#c0c4d0", lineHeight: 1.8 }}>Businessプランのユーザーは、エージェントの実行結果をLINEで受け取れるようになりました。設定画面のサービス連携からLINE Botを友だち追加して、6桁の連携コードを送信するだけで設定できます。</p>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", margin: "0 0 6px" }}>LINE連携機能を追加しました</h3>
+                      <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: "0 0 16px" }}>2026/3/29</p>
+                      <p style={{ fontSize: 13, color: "var(--text-primary)", lineHeight: 1.8 }}>Businessプランのユーザーは、エージェントの実行結果をLINEで受け取れるようになりました。設定画面のサービス連携からLINE Botを友だち追加して、6桁の連携コードを送信するだけで設定できます。</p>
                     </div>
                   )}
                   {newsDetail === 2 && (
                     <div>
-                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "#e8eaf0", margin: "0 0 6px" }}>サブスクリプション機能を追加しました</h3>
-                      <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 16px" }}>2026/3/28</p>
-                      <p style={{ fontSize: 13, color: "#c0c4d0", lineHeight: 1.8 }}>Personal（¥980/月）とBusiness（¥4,980/月）プランが利用可能になりました。有料プランではクレジット追加購入、Gmail/Discord連携、無制限エージェント作成が使えます。</p>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", margin: "0 0 6px" }}>サブスクリプション機能を追加しました</h3>
+                      <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: "0 0 16px" }}>2026/3/28</p>
+                      <p style={{ fontSize: 13, color: "var(--text-primary)", lineHeight: 1.8 }}>Personal（¥980/月）とBusiness（¥4,980/月）プランが利用可能になりました。有料プランではクレジット追加購入、Gmail/Discord連携、無制限エージェント作成が使えます。</p>
                     </div>
                   )}
                   {newsDetail === 3 && (
                     <div>
-                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "#e8eaf0", margin: "0 0 6px" }}>テンプレートストアを追加しました</h3>
-                      <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 16px" }}>2026/3/28</p>
-                      <p style={{ fontSize: 13, color: "#c0c4d0", lineHeight: 1.8 }}>ストアからテンプレートを選んで、設定項目を入力するだけでエージェントを即作成できるようになりました。AIニュース要約、競合サイト監視、天気予報など8種類のテンプレートを用意しています。</p>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", margin: "0 0 6px" }}>テンプレートストアを追加しました</h3>
+                      <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: "0 0 16px" }}>2026/3/28</p>
+                      <p style={{ fontSize: 13, color: "var(--text-primary)", lineHeight: 1.8 }}>ストアからテンプレートを選んで、設定項目を入力するだけでエージェントを即作成できるようになりました。AIニュース要約、競合サイト監視、天気予報など8種類のテンプレートを用意しています。</p>
                     </div>
                   )}
                   {newsDetail === 4 && (
                     <div>
-                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "#e8eaf0", margin: "0 0 6px" }}>Tool Useの自律実行機能を追加しました</h3>
-                      <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 16px" }}>2026/3/31</p>
-                      <p style={{ fontSize: 13, color: "#c0c4d0", lineHeight: 1.8 }}>エージェントがWebページの取得やGmail送信を自分で判断して実行するTool Use機能を追加しました。Pro/Businessプランで利用可能です。</p>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", margin: "0 0 6px" }}>Tool Useの自律実行機能を追加しました</h3>
+                      <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: "0 0 16px" }}>2026/3/31</p>
+                      <p style={{ fontSize: 13, color: "var(--text-primary)", lineHeight: 1.8 }}>エージェントがWebページの取得やGmail送信を自分で判断して実行するTool Use機能を追加しました。Pro/Businessプランで利用可能です。</p>
                     </div>
                   )}
                   {newsDetail === 5 && (
                     <div>
-                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "#e8eaf0", margin: "0 0 6px" }}>AI記憶 / AI学習機能を追加しました</h3>
-                      <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 16px" }}>2026/3/31</p>
-                      <p style={{ fontSize: 13, color: "#c0c4d0", lineHeight: 1.8 }}>エージェントが過去の実行結果を覚えて、次回の出力を改善するAI記憶機能を実装しました。直近5件の成功ログを参照し、同じ内容の繰り返しを避け変化点を強調します。Pro/Business限定。</p>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", margin: "0 0 6px" }}>AI記憶 / AI学習機能を追加しました</h3>
+                      <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: "0 0 16px" }}>2026/3/31</p>
+                      <p style={{ fontSize: 13, color: "var(--text-primary)", lineHeight: 1.8 }}>エージェントが過去の実行結果を覚えて、次回の出力を改善するAI記憶機能を実装しました。直近5件の成功ログを参照し、同じ内容の繰り返しを避け変化点を強調します。Pro/Business限定。</p>
                     </div>
                   )}
                   {newsDetail === 6 && (
                     <div>
-                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "#e8eaf0", margin: "0 0 6px" }}>エージェント編集・次回実行表示を改嚄しました</h3>
-                      <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 16px" }}>2026/3/31</p>
-                      <p style={{ fontSize: 13, color: "#c0c4d0", lineHeight: 1.8 }}>エージェントの詳細画面から名前や説明を直接編集できるようになりました。また、次回実行日時が「今日」「明日」「4/2」など正確に表示されるようになりました。</p>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", margin: "0 0 6px" }}>エージェント編集・次回実行表示を改嚄しました</h3>
+                      <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: "0 0 16px" }}>2026/3/31</p>
+                      <p style={{ fontSize: 13, color: "var(--text-primary)", lineHeight: 1.8 }}>エージェントの詳細画面から名前や説明を直接編集できるようになりました。また、次回実行日時が「今日」「明日」「4/2」など正確に表示されるようになりました。</p>
                     </div>
                   )}
                 </>
@@ -556,56 +558,67 @@ const handleLineGenerate = async () => {
 
         {/* About Sub View */}
         {subView === "about" && (
-          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "#0e1117", zIndex: 100, overflowY: "auto", paddingBottom: 100 }}>
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "var(--bg)", zIndex: 100, overflowY: "auto", paddingBottom: 100 }}>
             <div style={{ maxWidth: 420, margin: "0 auto", padding: "20px 16px" }}>
-              <button onClick={() => setSubView(null)} style={{ background: "none", border: "none", color: "#6c71e8", fontSize: 14, cursor: "pointer", fontFamily: "inherit", marginBottom: 16, padding: 0 }}>&#8592; 戻る</button>
-              <h2 style={{ fontSize: 22, fontWeight: 700, color: "#e8eaf0", margin: "0 0 20px" }}>Lattice の性能について</h2>
+              <button onClick={() => setSubView(null)} style={{ background: "none", border: "none", color: "var(--btn-bg)", fontSize: 14, cursor: "pointer", fontFamily: "inherit", marginBottom: 16, padding: 0 }}>&#8592; 戻る</button>
+              <h2 style={{ fontSize: 22, fontWeight: 700, color: "var(--text-primary)", margin: "0 0 20px" }}>Lattice の性能について</h2>
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <div style={{ padding: "18px", borderRadius: 12, border: "1px solid #2e3440", background: "#1c2028" }}>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: "#e8eaf0", margin: "0 0 10px" }}>できること</p>
-                  <p style={{ fontSize: 13, color: "#c0c4d0", lineHeight: 1.8, margin: 0 }}>
+                <div style={{ padding: "18px", borderRadius: 12, border: "1px solid var(--border)", background: "var(--surface)" }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)", margin: "0 0 10px" }}>できること</p>
+                  <p style={{ fontSize: 13, color: "var(--text-primary)", lineHeight: 1.8, margin: 0 }}>
                     ・Web上の最新情報を検索して要約・分析<br/>
                     ・スケジュール実行（毎日・毎週など）で定期自動実行<br/>
                     ・結果をアプリ内・Gmail・Discord・LINEに自動送信<br/>
                     ・日本語の自然文から自動でエージェントを設定
                   </p>
                 </div>
-                <div style={{ padding: "18px", borderRadius: 12, border: "1px solid #2e3440", background: "#1c2028" }}>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: "#e8eaf0", margin: "0 0 10px" }}>現在できないこと</p>
-                  <p style={{ fontSize: 13, color: "#c0c4d0", lineHeight: 1.8, margin: 0 }}>
+                <div style={{ padding: "18px", borderRadius: 12, border: "1px solid var(--border)", background: "var(--surface)" }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)", margin: "0 0 10px" }}>現在できないこと</p>
+                  <p style={{ fontSize: 13, color: "var(--text-primary)", lineHeight: 1.8, margin: 0 }}>
                     ・SNSのリアルタイム監視（API未連携のため）<br/>
                     ・ファイルのアップロード・処理<br/>
                     ・リアルタイムの即時通知（スケジュール実行ベース）<br/>
                     ・100%正確な情報の保証（AI生成のため誤りの可能性あり）
                   </p>
                 </div>
-                <div style={{ padding: "18px", borderRadius: 12, border: "1px solid #2e3440", background: "#1c2028" }}>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: "#e8eaf0", margin: "0 0 10px" }}>開発者より</p>
-                  <p style={{ fontSize: 13, color: "#c0c4d0", lineHeight: 1.8, margin: 0 }}>Latticeは現在ベータ版です。費用が貯まり次第、順次機能を追加していくのでよろしくお願いします。ご要望やバグ報告は X（@Lattice_Node）までお気軽にどうぞ。</p>
+                <div style={{ padding: "18px", borderRadius: 12, border: "1px solid var(--border)", background: "var(--surface)" }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)", margin: "0 0 10px" }}>開発者より</p>
+                  <p style={{ fontSize: 13, color: "var(--text-primary)", lineHeight: 1.8, margin: 0 }}>Latticeは現在ベータ版です。費用が貯まり次第、順次機能を追加していくのでよろしくお願いします。ご要望やバグ報告は X（@Lattice_Node）までお気軽にどうぞ。</p>
                 </div>
               </div>
             </div>
           </div>
         )}
         {/* Links */}
-        <div style={{ background: "#1c2028", border: "1px solid #2e3440", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
-          <a href="/privacy" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid #2e3440", textDecoration: "none" }}>
-            <span style={{ fontSize: 14, color: "#c0c4d0" }}>プライバシーポリシー</span>
-            <span style={{ fontSize: 14, color: "#4a5060" }}>&rarr;</span>
+        <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
+          <a href="/privacy" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid var(--border)", textDecoration: "none" }}>
+            <span style={{ fontSize: 14, color: "var(--text-primary)" }}>プライバシーポリシー</span>
+            <span style={{ fontSize: 14, color: "var(--text-disabled)" }}>&rarr;</span>
           </a>
           <a href="/terms" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", textDecoration: "none" }}>
-            <span style={{ fontSize: 14, color: "#c0c4d0" }}>利用規約</span>
-            <span style={{ fontSize: 14, color: "#4a5060" }}>&rarr;</span>
+            <span style={{ fontSize: 14, color: "var(--text-primary)" }}>利用規約</span>
+            <span style={{ fontSize: 14, color: "var(--text-disabled)" }}>&rarr;</span>
           </a>
         </div>
 
-        <p style={{ fontSize: 12, color: "#4a5060", textAlign: "center", margin: "16px 0" }}>Lattice v0.1.0 beta</p>
+        <p style={{ fontSize: 12, color: "var(--text-disabled)", textAlign: "center", margin: "16px 0" }}>Lattice v0.1.0 beta</p>
 
-        <button onClick={() => signOut({ callbackUrl: "/" })} style={{ width: "100%", padding: "13px", borderRadius: 10, border: "1px solid #2e3440", background: "transparent", color: "#f87171", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", marginBottom: 10 }}>
+        {/* テーマ切替 */}
+        <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "14px 16px", marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div>
+            <p style={{ fontSize: 13, color: "var(--text-primary)", margin: "0 0 2px", fontWeight: 500 }}>外観モード</p>
+            <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: 0 }}>{theme === "dark" ? "ダーク" : "ライト"}</p>
+          </div>
+          <button onClick={toggleTheme} className={`toggle ${theme === "dark" ? "on" : "off"}`}>
+            <div className="toggle-knob" />
+          </button>
+        </div>
+
+        <button onClick={() => signOut({ callbackUrl: "/" })} style={{ width: "100%", padding: "13px", borderRadius: 999, border: "1px solid var(--border-visible)", background: "transparent", color: "var(--accent)", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", marginBottom: 10 }}>
           ログアウト
         </button>
 
-        <button onClick={handleDelete} disabled={deleting} style={{ width: "100%", padding: "13px", borderRadius: 10, border: "1px solid #3a1a1a", background: "transparent", color: confirm ? "#f87171" : "#6a7080", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>
+        <button onClick={handleDelete} disabled={deleting} style={{ width: "100%", padding: "13px", borderRadius: 10, border: "1px solid var(--border)", background: "transparent", color: confirm ? "var(--accent)" : "var(--text-secondary)", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>
           {deleting ? "削除中..." : confirm ? "もう一度タップで確定" : "アカウントを削除"}
         </button>
       </div>

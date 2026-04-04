@@ -6,26 +6,21 @@ interface Task { id: string; label: string; credits: number; type: string; categ
 interface Props { name: string; avatarUrl: string | null; credits: number; plan: string; agentCount: number; isLoggedIn: boolean; }
 
 const MENU = [
-  { href: "/agents", label: "マイAgent", color: "#818cf8", bg: "#1e2252", border: "#3b3fa0", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.8"><circle cx="11" cy="11" r="8"/><path d="M11 7v4l3 2"/></svg> },
-  { href: "/inbox", label: "受信箱", color: "#6ee7b7", bg: "#0f2a1e", border: "#1a5c3a", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.8"><path d="M4 6h14M4 11h14M4 16h10"/></svg> },
-  { href: "#tasks", label: "タスク", color: "#fbbf24", bg: "#2a2008", border: "#5c4a10", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.8"><path d="M5 11l4 4 8-8"/><rect x="3" y="3" width="16" height="16" rx="3"/></svg> },
-  { href: "/store", label: "ストア", color: "#c084fc", bg: "#261540", border: "#5a2d8c", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="12" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="12" width="7" height="7" rx="1.5"/><rect x="12" y="12" width="7" height="7" rx="1.5"/></svg> },
-  { href: "/agents/new", label: "新規作成", color: "#818cf8", bg: "#1a1d40", border: "#3b3fa0", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="2"><path d="M11 4v14M4 11h14"/></svg> },
-  { href: "#invite", label: "招待", color: "#fca5a5", bg: "#2a0f0f", border: "#7c2d2d", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.8"><circle cx="9" cy="8" r="4"/><path d="M2 19c0-3.3 3.1-6 7-6s7 2.7 7 6"/><path d="M16 7v6M13 10h6"/></svg> },
-  { href: "/pricing", label: "プラン", color: "#6ee7b7", bg: "#0a2018", border: "#1a5c3a", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.8"><rect x="3" y="5" width="16" height="12" rx="2"/><path d="M3 9h16"/></svg> },
-  { href: "/settings", label: "設定", color: "#a1a5b0", bg: "#1a1c22", border: "#3a3d48", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.8"><circle cx="11" cy="11" r="3"/><path d="M11 3v2M11 17v2M3 11h2M17 11h2M5.6 5.6l1.4 1.4M15 15l1.4 1.4M5.6 16.4l1.4-1.4M15 7l1.4-1.4"/></svg> },
+  { href: "/agents", label: "マイAgent", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l2.5 1.5"/></svg> },
+  { href: "/inbox", label: "受信箱", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><path d="M3 5h14M3 10h14M3 15h9"/></svg> },
+  { href: "#tasks", label: "タスク", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><path d="M4 10l4 4 8-8"/></svg> },
+  { href: "/store", label: "ストア", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="11" y="3" width="6" height="6" rx="1"/><rect x="3" y="11" width="6" height="6" rx="1"/><rect x="11" y="11" width="6" height="6" rx="1"/></svg> },
+  { href: "/agents/new", label: "新規作成", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.5"><path d="M10 4v12M4 10h12"/></svg> },
+  { href: "#invite", label: "招待", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><circle cx="8" cy="7" r="3.5"/><path d="M2 17c0-3 2.5-5 6-5s6 2 6 5"/><path d="M14 6v5M11.5 8.5h5"/></svg> },
+  { href: "/pricing", label: "プラン", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><rect x="3" y="5" width="14" height="10" rx="1.5"/><path d="M3 8h14"/></svg> },
+  { href: "/settings", label: "設定", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><circle cx="10" cy="10" r="2.5"/><path d="M10 3v2M10 15v2M3 10h2M15 10h2M5.3 5.3l1.4 1.4M13.3 13.3l1.4 1.4M5.3 14.7l1.4-1.4M13.3 6.7l1.4-1.4"/></svg> },
 ];
 
-const AVATARS: Record<string, { emoji: string; bg: string }> = {
-  "avatar:wolf": { emoji: "🐺", bg: "#1e2044" }, "avatar:cat": { emoji: "🐱", bg: "#2a1e3a" }, "avatar:dog": { emoji: "🐶", bg: "#1e2a1a" },
-  "avatar:fox": { emoji: "🦊", bg: "#2a2010" }, "avatar:robot": { emoji: "🤖", bg: "#1a2a2a" }, "avatar:alien": { emoji: "👾", bg: "#2a1a2a" },
-};
-
-function Av({ url, name, size = 40 }: { url: string | null; name: string; size?: number }) {
+function Av({ url, name, size = 36 }: { url: string | null; name: string; size?: number }) {
   if (url?.startsWith("data:image")) return <img src={url} alt="" width={size} height={size} style={{ borderRadius: "50%", objectFit: "cover" }} />;
-  if (url && AVATARS[url]) return <div style={{ width: size, height: size, borderRadius: "50%", background: AVATARS[url].bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: size * 0.55 }}>{AVATARS[url].emoji}</div>;
   if (url?.startsWith("http")) return <img src={url} alt="" width={size} height={size} style={{ borderRadius: "50%" }} />;
-  return <div style={{ width: size, height: size, borderRadius: "50%", background: "#6c71e8", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: size * 0.4, fontWeight: 700 }}>{(name || "U")[0].toUpperCase()}</div>;
+  const initial = (name || "U")[0].toUpperCase();
+  return <div style={{ width: size, height: size, borderRadius: "50%", background: "var(--btn-bg)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--btn-text)", fontSize: size * 0.4, fontWeight: 600 }}>{initial}</div>;
 }
 
 export default function HomeClient({ name, avatarUrl, credits: initCr, plan, agentCount, isLoggedIn }: Props) {
@@ -59,7 +54,6 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
 
   useEffect(() => { if (isLoggedIn) fetchTasks(); }, [fetchTasks, isLoggedIn]);
 
-  // Apply referral code from login page ?ref= param
   useEffect(() => {
     const ref = sessionStorage.getItem("lattice_ref");
     if (!ref) return;
@@ -103,34 +97,35 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
   const pct = dailyTotal > 0 ? Math.round((dailyDone / dailyTotal) * 100) : 0;
   const taskList = tab === "daily" ? daily : tab === "start" ? start : feature;
 
-  return (
-    <div style={{ minHeight: "100vh", background: "#0e1117", color: "#e8eaf0", paddingBottom: 100 }}>
-      <div style={{ maxWidth: 420, margin: "0 auto", padding: "24px 20px 0" }}>
+  const S = {
+    mono: { fontFamily: "'Space Mono', monospace" } as const,
+    label: { fontFamily: "'Space Mono', monospace", fontSize: 10, color: "var(--text-secondary)", textTransform: "uppercase" as const, letterSpacing: "0.1em" },
+  };
 
-        {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+  return (
+    <div style={{ minHeight: "100vh", background: "var(--bg)", color: "var(--text-primary)", paddingBottom: 100, transition: "background .25s, color .25s" }}>
+      <div style={{ maxWidth: 420, margin: "0 auto", padding: "20px 20px 0" }}>
+
+        {/* ヘッダー */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
           {isLoggedIn ? (
             <>
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <Av url={avatarUrl} name={name} size={40} />
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <Av url={avatarUrl} name={name} size={36} />
                 <div>
-                  <p style={{ fontSize: 12, color: "#6a7080", margin: "0 0 1px" }}>おかえりなさい</p>
-                  <p style={{ fontSize: 17, fontWeight: 700, color: "#e8eaf0", margin: 0 }}>{name || "ユーザー"}</p>
+                  <p style={{ ...S.label, margin: "0 0 1px", fontSize: 9 }}>おかえりなさい</p>
+                  <p style={{ fontSize: 18, fontWeight: 500, color: "var(--text-display)", margin: 0 }}>{name || "ユーザー"}</p>
                 </div>
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0f2a1e", border: "1px solid #1a5c3a", padding: "6px 14px", borderRadius: 20 }}>
-                <span style={{ fontSize: 13, color: "#6ee7b7", fontWeight: 700 }}>{credits} cr</span>
+              <div style={{ border: "1px solid var(--border-visible)", padding: "5px 10px", borderRadius: 999, display: "flex", alignItems: "center", gap: 4 }}>
+                <span style={{ ...S.mono, fontSize: 13, color: "var(--text-primary)" }}>{credits}</span>
+                <span style={{ ...S.mono, fontSize: 9, color: "var(--text-secondary)" }}>CR</span>
               </div>
             </>
           ) : (
             <>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 32, height: 32, background: "#6c71e8", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
-                </div>
-                <p style={{ fontSize: 17, fontWeight: 700, color: "#e8eaf0", margin: 0 }}>Lattice</p>
-              </div>
-              <button onClick={() => router.push("/login")} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#6c71e8", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+              <p style={{ fontSize: 20, fontWeight: 500, color: "var(--text-display)", margin: 0 }}>Lattice</p>
+              <button onClick={() => router.push("/login")} style={{ padding: "7px 18px", borderRadius: 999, border: "none", background: "var(--btn-bg)", color: "var(--btn-text)", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>
                 ログイン
               </button>
             </>
@@ -138,190 +133,169 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
         </div>
 
         {isLoggedIn && refApplied && (
-          <div style={{ background: "#0f2a1e", border: "1px solid #1a5c3a", borderRadius: 10, padding: "12px 16px", marginBottom: 12, textAlign: "center" }}>
-            <p style={{ fontSize: 14, color: "#6ee7b7", fontWeight: 700, margin: "0 0 2px" }}>+10cr ボーナス獲得!</p>
-            <p style={{ fontSize: 11, color: "#4a7a5a", margin: 0 }}>招待コードが適用されました</p>
+          <div style={{ background: "var(--surface)", border: "1px solid var(--success)", borderRadius: 8, padding: "10px 14px", marginBottom: 10, textAlign: "center" }}>
+            <p style={{ fontSize: 13, color: "var(--success)", fontWeight: 600, margin: 0 }}>+10cr ボーナス獲得!</p>
           </div>
         )}
 
-        {/* Welcome banner (guest) or Daily progress (logged in) */}
+        {/* デイリー進捗 or ゲストバナー */}
         {isLoggedIn ? (
-          <div style={{ background: "#1a1f52", border: "1px solid #3b40a0", borderRadius: 14, padding: "16px 18px", marginBottom: 24 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-              <div>
-                <p style={{ fontSize: 14, color: "#a5b4fc", fontWeight: 700, margin: "0 0 3px" }}>今日のデイリー</p>
-                <p style={{ fontSize: 12, color: "#9096a8", margin: 0 }}>{dailyDone}/{dailyTotal} 完了</p>
-              </div>
-              <div style={{ width: 44, height: 44, borderRadius: "50%", background: `conic-gradient(#818cf8 ${pct * 3.6}deg, #2a2f5c 0deg)`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#141838", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: 11, color: "#a5b4fc", fontWeight: 700 }}>{pct}%</span>
-                </div>
-              </div>
+          <div style={{ marginBottom: 18 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+              <span style={S.label}>デイリー</span>
+              <span style={{ ...S.mono, fontSize: 10, color: "var(--text-secondary)" }}>{dailyDone}/{dailyTotal}</span>
             </div>
-            <div style={{ height: 5, borderRadius: 3, background: "#2a2f5c" }}>
-              <div style={{ height: "100%", borderRadius: 3, background: "linear-gradient(90deg, #818cf8, #a5b4fc)", width: `${pct}%`, transition: "width 0.5s" }} />
+            <div style={{ display: "flex", gap: 3 }}>
+              {Array.from({ length: dailyTotal || 5 }).map((_, i) => (
+                <div key={i} style={{ flex: 1, height: 4, background: i < dailyDone ? "var(--progress-on)" : "var(--progress-off)", transition: "background .3s" }} />
+              ))}
             </div>
           </div>
         ) : (
-          <div style={{ background: "#1a1f52", border: "1px solid #3b40a0", borderRadius: 14, padding: "20px 18px", marginBottom: 24, textAlign: "center" }}>
-            <p style={{ fontSize: 16, fontWeight: 700, color: "#a5b4fc", margin: "0 0 4px" }}>AIエージェントで業務を自動化</p>
-            <p style={{ fontSize: 12, color: "#6a7080", margin: "0 0 14px" }}>ログインすると30クレジットで無料スタート</p>
-            <button onClick={() => router.push("/login")} style={{ padding: "10px 24px", borderRadius: 8, border: "none", background: "#6c71e8", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+          <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "18px 16px", marginBottom: 18, textAlign: "center" }}>
+            <p style={{ fontSize: 15, fontWeight: 500, color: "var(--text-display)", margin: "0 0 4px" }}>AIエージェントで業務を自動化</p>
+            <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: "0 0 12px" }}>ログインすると30クレジットで無料スタート</p>
+            <button onClick={() => router.push("/login")} style={{ padding: "10px 24px", borderRadius: 999, border: "none", background: "var(--btn-bg)", color: "var(--btn-text)", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>
               無料で始める
             </button>
           </div>
         )}
 
-        {/* Menu grid */}
-        <p style={{ fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 12px" }}>メニュー</p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 28 }}>
+        {/* メニューグリッド */}
+        <p style={{ ...S.label, margin: "0 0 8px" }}>メニュー</p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 20 }}>
           {MENU.map(m => (
             <div key={m.href} onClick={() => nav(m.href)} style={{ textAlign: "center", cursor: "pointer" }}>
-              <div style={{ width: 48, height: 48, borderRadius: 14, background: m.bg, border: `1px solid ${m.border}`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 6px" }}>{m.icon(m.color)}</div>
-              <span style={{ fontSize: 10, color: "#c0c4d0", fontWeight: 500 }}>{m.label}</span>
+              <div style={{ width: 44, height: 44, borderRadius: 10, background: "var(--surface)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 4px", transition: "background .2s, border-color .2s" }}>{m.icon()}</div>
+              <span style={{ fontSize: 9, color: "var(--text-secondary)" }}>{m.label}</span>
             </div>
           ))}
         </div>
 
         {isLoggedIn && (<>
-        {/* Stats */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 28 }}>
-          <div style={{ background: "#1e2252", border: "1px solid #3b3fa0", borderRadius: 12, padding: "14px 14px", textAlign: "center" }}>
-            <p style={{ fontSize: 22, fontWeight: 800, color: "#818cf8", margin: "0 0 2px" }}>{agentCount}</p>
-            <p style={{ fontSize: 10, color: "#c0c4d0", fontWeight: 500, margin: 0 }}>エージェント</p>
+        {/* 統計 */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 20 }}>
+          <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "14px 8px", textAlign: "center", transition: "background .2s" }}>
+            <p style={{ ...S.mono, fontSize: 24, fontWeight: 700, color: "var(--text-display)", margin: "0 0 2px" }}>{agentCount}</p>
+            <p style={{ ...S.mono, fontSize: 9, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", margin: 0 }}>エージェント</p>
           </div>
-          <div style={{ background: "#0f2a1e", border: "1px solid #1a5c3a", borderRadius: 12, padding: "14px 14px", textAlign: "center" }}>
-            <p style={{ fontSize: 22, fontWeight: 800, color: "#6ee7b7", margin: "0 0 2px" }}>{credits}</p>
-            <p style={{ fontSize: 10, color: "#c0c4d0", fontWeight: 500, margin: 0 }}>クレジット</p>
+          <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "14px 8px", textAlign: "center", transition: "background .2s" }}>
+            <p style={{ ...S.mono, fontSize: 24, fontWeight: 700, color: "var(--text-display)", margin: "0 0 2px" }}>{credits}</p>
+            <p style={{ ...S.mono, fontSize: 9, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", margin: 0 }}>クレジット</p>
           </div>
-          <div style={{ background: "#2a0f0f", border: "1px solid #7c2d2d", borderRadius: 12, padding: "14px 14px", textAlign: "center" }}>
-            <p style={{ fontSize: 22, fontWeight: 800, color: "#fca5a5", margin: "0 0 2px" }}>{referralCount}</p>
-            <p style={{ fontSize: 10, color: "#c0c4d0", fontWeight: 500, margin: 0 }}>招待</p>
+          <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "14px 8px", textAlign: "center", transition: "background .2s" }}>
+            <p style={{ ...S.mono, fontSize: 24, fontWeight: 700, color: "var(--text-display)", margin: "0 0 2px" }}>{referralCount}</p>
+            <p style={{ ...S.mono, fontSize: 9, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", margin: 0 }}>招待済み</p>
           </div>
         </div>
 
-        {/* Tasks */}
+        {/* タスク */}
         <div id="tasks-section">
-          <p style={{ fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 10px" }}>タスク</p>
-
-          {/* Tabs */}
-          <div style={{ display: "flex", gap: 0, marginBottom: 12, borderBottom: "1px solid #2e3440" }}>
+          <p style={{ ...S.label, margin: "0 0 8px" }}>タスク</p>
+          <div style={{ display: "flex", border: "1px solid var(--border-visible)", borderRadius: 6, overflow: "hidden", marginBottom: 10 }}>
             {([["daily", "デイリー"], ["start", "初回"], ["feature", "機能"]] as const).map(([key, label]) => (
               <button key={key} onClick={() => setTab(key)} style={{
-                flex: 1, padding: "8px 0", background: "none", border: "none",
-                borderBottom: tab === key ? "2px solid #6c71e8" : "2px solid transparent",
-                color: tab === key ? "#6c71e8" : "#4a5060", fontSize: 12, fontWeight: 600,
-                cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s",
+                flex: 1, padding: "7px 0", background: tab === key ? "var(--tab-on-bg)" : "transparent", border: "none",
+                color: tab === key ? "var(--tab-on-text)" : "var(--tab-off-text)",
+                fontSize: 11, fontFamily: "'Space Mono', monospace", cursor: "pointer", transition: "all .15s",
               }}>{label}</button>
             ))}
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 24 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 20 }}>
             {taskList.map(t => (
               <div key={t.id} style={{
                 display: "flex", alignItems: "center", justifyContent: "space-between",
-                padding: "12px 14px", borderRadius: 10,
-                background: t.completed ? "#0f2a1a" : "#161a24",
-                border: `1px solid ${t.completed ? "#1a5c3a" : "#2a2f3c"}`,
+                padding: "10px 12px", borderRadius: 8,
+                background: "var(--surface)", border: "1px solid var(--border)", transition: "background .2s",
               }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1 }}>
                   {t.completed ? (
-                    <div style={{ width: 22, height: 22, borderRadius: "50%", background: "#4ade80", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#0a1a0e" strokeWidth="2"><path d="M2 6l3 3 5-5"/></svg>
-                    </div>
+                    <span style={{ ...S.mono, fontSize: 11, color: "var(--success)" }}>[OK]</span>
                   ) : (
-                    <div style={{ width: 22, height: 22, borderRadius: "50%", border: "1.5px solid #4a5060", flexShrink: 0 }} />
+                    <div style={{ width: 14, height: 14, border: "1.5px solid var(--border-visible)", borderRadius: 2, flexShrink: 0 }} />
                   )}
-                  <span style={{ fontSize: 13, color: t.completed ? "#6a7080" : "#e8eaf0", textDecoration: t.completed ? "line-through" : "none" }}>{t.label}</span>
+                  <span style={{ fontSize: 12, color: t.completed ? "var(--text-disabled)" : "var(--text-primary)", textDecoration: t.completed ? "line-through" : "none" }}>{t.label}</span>
                 </div>
                 {feedback?.id === t.id ? (
-                  <span style={{ fontSize: 12, color: "#4ade80", fontWeight: 700 }}>+{feedback.cr}cr!</span>
+                  <span style={{ ...S.mono, fontSize: 11, color: "var(--success)", fontWeight: 700 }}>+{feedback.cr}cr!</span>
                 ) : t.completed ? (
-                  <span style={{ fontSize: 11, color: "#4ade80", fontWeight: 600 }}>+{t.credits}cr</span>
+                  <span style={{ ...S.mono, fontSize: 10, color: "var(--success)" }}>+{t.credits}</span>
                 ) : t.claimable ? (
                   <button onClick={() => claim(t.id)} disabled={claiming === t.id} style={{
-                    padding: "4px 12px", borderRadius: 6, border: "none", background: "#f59e0b",
-                    color: "#1a1400", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit",
+                    padding: "3px 10px", borderRadius: 999, border: "none", background: "var(--warning)",
+                    color: "#1a1400", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "'Space Mono', monospace",
                     opacity: claiming === t.id ? 0.5 : 1,
-                  }}>{claiming === t.id ? "..." : `+${t.credits}cr`}</button>
+                  }}>{claiming === t.id ? "..." : `+${t.credits}`}</button>
                 ) : (
-                  <span style={{ fontSize: 11, color: "#6a7080" }}>+{t.credits}cr</span>
+                  <span style={{ ...S.mono, fontSize: 10, color: "var(--text-disabled)" }}>+{t.credits}</span>
                 )}
               </div>
             ))}
           </div>
         </div>
 
-        {/* Invite */}
+        {/* 招待 */}
         <div id="invite-section">
-          <p style={{ fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 10px" }}>友達を招待</p>
-          <div style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.15)", borderRadius: 12, padding: "18px 16px" }}>
+          <p style={{ ...S.label, margin: "0 0 8px" }}>友達を招待</p>
+          <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "16px 14px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-              <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(239,68,68,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#f87171" strokeWidth="1.6"><circle cx="9" cy="8" r="4"/><path d="M2 19c0-3.3 3.1-6 7-6s7 2.7 7 6"/><path d="M16 7v6M13 10h6"/></svg>
-              </div>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--accent)" strokeWidth="1.4"><circle cx="8" cy="7" r="3.5"/><path d="M2 17c0-3 2.5-5 6-5s6 2 6 5"/><path d="M14 6v5M11.5 8.5h5"/></svg>
               <div>
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#e8eaf0", margin: "0 0 2px" }}>1人招待で +10cr</p>
-                <p style={{ fontSize: 11, color: "#6a7080", margin: 0 }}>招待された友達にも+10crプレゼント</p>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)", margin: "0 0 1px" }}>1人招待で +10cr</p>
+                <p style={{ fontSize: 10, color: "var(--text-secondary)", margin: 0 }}>友達にも+10crプレゼント</p>
               </div>
             </div>
 
             {referralCode ? (
               <>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                  <div style={{ flex: 1, padding: "10px 14px", borderRadius: 8, background: "#0e1117", border: "1px solid #2e3440" }}>
-                    <p style={{ fontSize: 11, color: "#6a7080", margin: "0 0 2px" }}>招待コード</p>
-                    <p style={{ fontSize: 18, fontWeight: 700, color: "#e8eaf0", margin: 0, letterSpacing: "0.1em", fontFamily: "monospace" }}>{referralCode}</p>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                  <div style={{ flex: 1, padding: "8px 12px", borderRadius: 6, background: "var(--bg)", border: "1px solid var(--border)" }}>
+                    <p style={{ ...S.mono, fontSize: 9, color: "var(--text-secondary)", margin: "0 0 1px", textTransform: "uppercase", letterSpacing: "0.08em" }}>招待コード</p>
+                    <p style={{ ...S.mono, fontSize: 16, fontWeight: 700, color: "var(--text-display)", margin: 0, letterSpacing: "0.1em" }}>{referralCode}</p>
                   </div>
                   <button onClick={copyLink} style={{
-                    padding: "10px 16px", borderRadius: 8, border: "none",
-                    background: copied ? "#4ade80" : "#f87171", color: copied ? "#0a1a0e" : "#fff",
-                    fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
-                  }}>{copied ? "コピー済み!" : "リンクをコピー"}</button>
+                    padding: "8px 14px", borderRadius: 999, border: "none",
+                    background: copied ? "var(--success)" : "var(--accent)", color: "#fff",
+                    fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+                  }}>{copied ? "コピー済み" : "コピー"}</button>
                 </div>
                 {referralCount > 0 && (
-                  <p style={{ fontSize: 12, color: "#4ade80", margin: "0 0 8px" }}>{referralCount}人が参加しました</p>
+                  <p style={{ ...S.mono, fontSize: 11, color: "var(--success)", margin: "0 0 6px" }}>{referralCount}人が参加</p>
                 )}
-                {/* Claim invite rewards */}
                 {social.length > 0 && social[0].claimable && (
                   <button onClick={() => claim("invite")} disabled={claiming === "invite"} style={{
-                    width: "100%", padding: "10px", borderRadius: 8, border: "none",
-                    background: "#f59e0b", color: "#1a1400", fontSize: 13, fontWeight: 700,
+                    width: "100%", padding: "8px", borderRadius: 999, border: "none",
+                    background: "var(--warning)", color: "#1a1400", fontSize: 12, fontWeight: 700,
                     cursor: "pointer", fontFamily: "inherit",
                   }}>{claiming === "invite" ? "..." : `招待報酬を受け取る (+${social[0].unclaimed! * 10}cr)`}</button>
                 )}
               </>
             ) : (
               <button onClick={genReferral} style={{
-                width: "100%", padding: "12px", borderRadius: 8, border: "none",
-                background: "#f87171", color: "#fff", fontSize: 13, fontWeight: 700,
+                width: "100%", padding: "10px", borderRadius: 999, border: "none",
+                background: "var(--accent)", color: "#fff", fontSize: 12, fontWeight: 600,
                 cursor: "pointer", fontFamily: "inherit",
               }}>招待コードを発行する</button>
             )}
           </div>
         </div>
 
-        {/* Roadmap */}
-        <div style={{ marginTop: 28 }}>
-          <p style={{ fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 10px" }}>今後の予定</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {/* ロードマップ */}
+        <div style={{ marginTop: 24 }}>
+          <p style={{ ...S.label, margin: "0 0 8px" }}>今後の予定</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             {[
-              { label: "フィードバック機能", desc: "要望・バグ報告をアプリ内から送信", status: "soon", color: "#818cf8" },
-              { label: "日本特化テンプレート追加", desc: "天気・電車遅延・花粉・ニュースなど15種+", status: "soon", color: "#818cf8" },
-              { label: "SNS機能", desc: "ユーザー同士の交流・エージェント共有", status: "planned", color: "#6a7080" },
-              { label: "クレジット売買", desc: "クレジットの購入・ポイント交換", status: "planned", color: "#6a7080" },
-              { label: "Lattice Protocol v0", desc: "AIエージェント間通信の公開API", status: "planned", color: "#6a7080" },
-              { label: "Lattice Token (LTC)", desc: "プラットフォーム内通貨のトークン化", status: "future", color: "#4a5060" },
+              { label: "フィードバック機能", status: "まもなく" },
+              { label: "日本特化テンプレート追加", status: "まもなく" },
+              { label: "SNS機能", status: "開発中" },
+              { label: "クレジット売買", status: "開発中" },
+              { label: "Lattice Protocol v0", status: "開発中" },
+              { label: "Lattice Token (LTC)", status: "将来" },
             ].map(item => (
-              <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 10, background: "#161a24", border: "1px solid #2a2f3c" }}>
-                <div style={{ width: 8, height: 8, borderRadius: "50%", background: item.color, flexShrink: 0 }} />
-                <div style={{ flex: 1 }}>
-                  <p style={{ fontSize: 13, fontWeight: 600, color: "#e8eaf0", margin: "0 0 1px" }}>{item.label}</p>
-                  <p style={{ fontSize: 11, color: "#6a7080", margin: 0 }}>{item.desc}</p>
-                </div>
-                <span style={{ fontSize: 9, fontWeight: 700, color: item.status === "soon" ? "#818cf8" : item.status === "planned" ? "#6a7080" : "#4a5060", background: item.status === "soon" ? "#1e2252" : "#1a1c22", padding: "2px 8px", borderRadius: 4, whiteSpace: "nowrap", textTransform: "uppercase" }}>
-                  {item.status === "soon" ? "まもなく" : item.status === "planned" ? "開発中" : "将来"}
-                </span>
+              <div key={item.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderRadius: 8, background: "var(--surface)", border: "1px solid var(--border)" }}>
+                <span style={{ fontSize: 12, color: "var(--text-primary)" }}>{item.label}</span>
+                <span style={{ ...S.mono, fontSize: 9, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{item.status}</span>
               </div>
             ))}
           </div>
@@ -329,7 +303,6 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
         </>)}
 
       </div>
-      <style>{`@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }`}</style>
     </div>
   );
 }

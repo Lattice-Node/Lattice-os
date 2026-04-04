@@ -10,7 +10,7 @@ export default function Loading() {
         width: 32,
         height: 32,
         border: "3px solid #2a2d35",
-        borderTop: "3px solid #6c71e8",
+        borderTop: "3px solid var(--btn-bg)",
         borderRadius: "50%",
         animation: "spin 0.8s linear infinite",
       }} />
