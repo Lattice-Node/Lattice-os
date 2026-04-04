@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
 interface Task { id: string; label: string; credits: number; type: string; category: string; completed: boolean; claimable: boolean; count?: number; unclaimed?: number; }
-interface Props { name: string; avatarUrl: string | null; credits: number; plan: string; agentCount: number; }
+interface Props { name: string; avatarUrl: string | null; credits: number; plan: string; agentCount: number; isLoggedIn: boolean; }
 
 const MENU = [
   { href: "/agents", label: "マイAgent", color: "#818cf8", bg: "#1e2252", border: "#3b3fa0", icon: (c: string) => <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={c} strokeWidth="1.8"><circle cx="11" cy="11" r="8"/><path d="M11 7v4l3 2"/></svg> },
@@ -28,7 +28,7 @@ function Av({ url, name, size = 40 }: { url: string | null; name: string; size?:
   return <div style={{ width: size, height: size, borderRadius: "50%", background: "#6c71e8", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: size * 0.4, fontWeight: 700 }}>{(name || "U")[0].toUpperCase()}</div>;
 }
 
-export default function HomeClient({ name, avatarUrl, credits: initCr, plan, agentCount }: Props) {
+export default function HomeClient({ name, avatarUrl, credits: initCr, plan, agentCount, isLoggedIn }: Props) {
   const [daily, setDaily] = useState<Task[]>([]);
   const [start, setStart] = useState<Task[]>([]);
   const [feature, setFeature] = useState<Task[]>([]);
@@ -57,7 +57,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
     } catch {}
   }, []);
 
-  useEffect(() => { fetchTasks(); }, [fetchTasks]);
+  useEffect(() => { if (isLoggedIn) fetchTasks(); }, [fetchTasks, isLoggedIn]);
 
   // Apply referral code from login page ?ref= param
   useEffect(() => {
@@ -92,9 +92,11 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
     setCopied(true); setTimeout(() => setCopied(false), 2000);
   };
 
+  const guestAllowed = ["/store", "/pricing", "#tasks", "#invite"];
   const nav = (href: string) => {
     if (href === "#tasks") { document.getElementById("tasks-section")?.scrollIntoView({ behavior: "smooth" }); return; }
     if (href === "#invite") { document.getElementById("invite-section")?.scrollIntoView({ behavior: "smooth" }); return; }
+    if (!isLoggedIn && !guestAllowed.includes(href)) { router.push("/login"); return; }
     router.push(href);
   };
 
@@ -107,42 +109,68 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
 
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <Av url={avatarUrl} name={name} size={40} />
-            <div>
-              <p style={{ fontSize: 12, color: "#6a7080", margin: "0 0 1px" }}>おかえりなさい</p>
-              <p style={{ fontSize: 17, fontWeight: 700, color: "#e8eaf0", margin: 0 }}>{name || "ユーザー"}</p>
-            </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0f2a1e", border: "1px solid #1a5c3a", padding: "6px 14px", borderRadius: 20 }}>
-            <span style={{ fontSize: 13, color: "#6ee7b7", fontWeight: 700 }}>{credits} cr</span>
-          </div>
+          {isLoggedIn ? (
+            <>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <Av url={avatarUrl} name={name} size={40} />
+                <div>
+                  <p style={{ fontSize: 12, color: "#6a7080", margin: "0 0 1px" }}>おかえりなさい</p>
+                  <p style={{ fontSize: 17, fontWeight: 700, color: "#e8eaf0", margin: 0 }}>{name || "ユーザー"}</p>
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0f2a1e", border: "1px solid #1a5c3a", padding: "6px 14px", borderRadius: 20 }}>
+                <span style={{ fontSize: 13, color: "#6ee7b7", fontWeight: 700 }}>{credits} cr</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 32, height: 32, background: "#6c71e8", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
+                </div>
+                <p style={{ fontSize: 17, fontWeight: 700, color: "#e8eaf0", margin: 0 }}>Lattice</p>
+              </div>
+              <button onClick={() => router.push("/login")} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#6c71e8", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                ログイン
+              </button>
+            </>
+          )}
         </div>
 
-        {refApplied && (
+        {isLoggedIn && refApplied && (
           <div style={{ background: "#0f2a1e", border: "1px solid #1a5c3a", borderRadius: 10, padding: "12px 16px", marginBottom: 12, textAlign: "center" }}>
             <p style={{ fontSize: 14, color: "#6ee7b7", fontWeight: 700, margin: "0 0 2px" }}>+10cr ボーナス獲得!</p>
             <p style={{ fontSize: 11, color: "#4a7a5a", margin: 0 }}>招待コードが適用されました</p>
           </div>
         )}
 
-        {/* Daily progress */}
-        <div style={{ background: "#1a1f52", border: "1px solid #3b40a0", borderRadius: 14, padding: "16px 18px", marginBottom: 24 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-            <div>
-              <p style={{ fontSize: 14, color: "#a5b4fc", fontWeight: 700, margin: "0 0 3px" }}>今日のデイリー</p>
-              <p style={{ fontSize: 12, color: "#9096a8", margin: 0 }}>{dailyDone}/{dailyTotal} 完了</p>
-            </div>
-            <div style={{ width: 44, height: 44, borderRadius: "50%", background: `conic-gradient(#818cf8 ${pct * 3.6}deg, #2a2f5c 0deg)`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#141838", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontSize: 11, color: "#a5b4fc", fontWeight: 700 }}>{pct}%</span>
+        {/* Welcome banner (guest) or Daily progress (logged in) */}
+        {isLoggedIn ? (
+          <div style={{ background: "#1a1f52", border: "1px solid #3b40a0", borderRadius: 14, padding: "16px 18px", marginBottom: 24 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+              <div>
+                <p style={{ fontSize: 14, color: "#a5b4fc", fontWeight: 700, margin: "0 0 3px" }}>今日のデイリー</p>
+                <p style={{ fontSize: 12, color: "#9096a8", margin: 0 }}>{dailyDone}/{dailyTotal} 完了</p>
+              </div>
+              <div style={{ width: 44, height: 44, borderRadius: "50%", background: `conic-gradient(#818cf8 ${pct * 3.6}deg, #2a2f5c 0deg)`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#141838", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <span style={{ fontSize: 11, color: "#a5b4fc", fontWeight: 700 }}>{pct}%</span>
+                </div>
               </div>
             </div>
+            <div style={{ height: 5, borderRadius: 3, background: "#2a2f5c" }}>
+              <div style={{ height: "100%", borderRadius: 3, background: "linear-gradient(90deg, #818cf8, #a5b4fc)", width: `${pct}%`, transition: "width 0.5s" }} />
+            </div>
           </div>
-          <div style={{ height: 5, borderRadius: 3, background: "#2a2f5c" }}>
-            <div style={{ height: "100%", borderRadius: 3, background: "linear-gradient(90deg, #818cf8, #a5b4fc)", width: `${pct}%`, transition: "width 0.5s" }} />
+        ) : (
+          <div style={{ background: "#1a1f52", border: "1px solid #3b40a0", borderRadius: 14, padding: "20px 18px", marginBottom: 24, textAlign: "center" }}>
+            <p style={{ fontSize: 16, fontWeight: 700, color: "#a5b4fc", margin: "0 0 4px" }}>AIエージェントで業務を自動化</p>
+            <p style={{ fontSize: 12, color: "#6a7080", margin: "0 0 14px" }}>ログインすると30クレジットで無料スタート</p>
+            <button onClick={() => router.push("/login")} style={{ padding: "10px 24px", borderRadius: 8, border: "none", background: "#6c71e8", color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+              無料で始める
+            </button>
           </div>
-        </div>
+        )}
 
         {/* Menu grid */}
         <p style={{ fontSize: 11, color: "#6a7080", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 12px" }}>メニュー</p>
@@ -155,6 +183,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
           ))}
         </div>
 
+        {isLoggedIn && (<>
         {/* Stats */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 28 }}>
           <div style={{ background: "#1e2252", border: "1px solid #3b3fa0", borderRadius: 12, padding: "14px 14px", textAlign: "center" }}>
@@ -297,6 +326,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
             ))}
           </div>
         </div>
+        </>)}
 
       </div>
       <style>{`@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }`}</style>

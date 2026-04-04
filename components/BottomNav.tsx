@@ -26,8 +26,8 @@ export default function BottomNav() {
     }
   }, [pathname, status]);
 
-  const publicPaths = ["/", "/login", "/privacy", "/terms", "/pricing"];
-  if (publicPaths.includes(pathname) || status !== "authenticated") return null;
+  const hiddenPaths = ["/login", "/privacy", "/terms", "/pricing"];
+  if (hiddenPaths.includes(pathname)) return null;
 
   const click = (href: string) => {
     const cur = href === "/home" ? pathname === "/home" : href === "/agents/new" ? pathname === "/agents/new" : pathname.startsWith(href);

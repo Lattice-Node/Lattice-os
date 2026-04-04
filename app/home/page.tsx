@@ -1,30 +1,43 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import HomeClient from "./HomeClient";
 
 export default async function HomePage() {
   const session = await auth();
-  if (!session?.user?.email) redirect("/login");
+  const isLoggedIn = !!session?.user?.email;
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    select: {
-      id: true, name: true, displayName: true, handle: true,
-      avatarUrl: true, credits: true, plan: true, role: true,
-    },
-  });
-  if (!user) redirect("/login");
+  let name = "";
+  let avatarUrl: string | null = null;
+  let credits = 0;
+  let plan = "free";
+  let agentCount = 0;
 
-  const agentCount = await prisma.userAgent.count({ where: { userId: user.id } });
+  if (isLoggedIn) {
+    const user = await prisma.user.findUnique({
+      where: { email: session!.user!.email! },
+      select: {
+        id: true, name: true, displayName: true, handle: true,
+        avatarUrl: true, credits: true, plan: true, role: true,
+      },
+    });
+
+    if (user) {
+      name = user.displayName || session!.user!.name || "";
+      avatarUrl = user.avatarUrl || session!.user!.image || null;
+      credits = user.credits;
+      plan = user.role === "admin" ? "business" : (user.plan || "free");
+      agentCount = await prisma.userAgent.count({ where: { userId: user.id } });
+    }
+  }
 
   return (
     <HomeClient
-      name={user.displayName || session.user.name || ""}
-      avatarUrl={user.avatarUrl || session.user.image || null}
-      credits={user.credits}
-      plan={user.role === "admin" ? "business" : (user.plan || "free")}
+      name={name}
+      avatarUrl={avatarUrl}
+      credits={credits}
+      plan={plan}
       agentCount={agentCount}
+      isLoggedIn={isLoggedIn}
     />
   );
 }
