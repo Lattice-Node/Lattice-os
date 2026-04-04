@@ -4,26 +4,34 @@ import Google from "next-auth/providers/google";
 import Apple from "next-auth/providers/apple";
 import { sendLoginNotificationEmail } from "@/lib/mailer";
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
-  providers: [
-    GitHub({
-      clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    }),
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          prompt: "select_account",
-        },
+const providers = [
+  GitHub({
+    clientId: process.env.GITHUB_CLIENT_ID!,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+  }),
+  Google({
+    clientId: process.env.GOOGLE_CLIENT_ID!,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    authorization: {
+      params: {
+        prompt: "select_account",
       },
-    }),
+    },
+  }),
+];
+
+// Appleプロバイダーは環境変数がある場合のみ追加（欠落時に他プロバイダーを道連れにしない）
+if (process.env.APPLE_CLIENT_ID && process.env.APPLE_CLIENT_SECRET) {
+  providers.push(
     Apple({
-      clientId: process.env.APPLE_CLIENT_ID!,
-      clientSecret: process.env.APPLE_CLIENT_SECRET!,
-    }),
-  ],
+      clientId: process.env.APPLE_CLIENT_ID,
+      clientSecret: process.env.APPLE_CLIENT_SECRET,
+    })
+  );
+}
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  providers,
   callbacks: {
     session({ session, token }) {
       if (session.user && token.sub) {
