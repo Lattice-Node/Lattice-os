@@ -7,11 +7,26 @@ const config: CapacitorConfig = {
   server: {
     url: 'https://www.lattice-protocol.com/home',
     cleartext: false,
+    allowNavigation: [
+      'accounts.google.com',
+      '*.google.com',
+      '*.googleapis.com',
+      'github.com',
+      '*.github.com',
+      'appleid.apple.com',
+      '*.apple.com',
+      '*.icloud.com',
+      'www.lattice-protocol.com',
+    ],
   },
   plugins: {
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert'],
     },
+  },
+  ios: {
+    contentInset: 'automatic',
+    scheme: 'Lattice',
   },
 };
 
