@@ -9,8 +9,11 @@ function LoginContent() {
   const errParam = searchParams.get("error");
   const [refSaved, setRefSaved] = useState(false);
   const [isNative, setIsNative] = useState(false);
+  // Configurationエラーはブラウザのprerender起因なのでユーザーには見せない
   const [loginError] = useState<string | null>(
-    errParam ? "ログインに失敗しました。もう一度お試しください。" : null
+    errParam && errParam !== "Configuration"
+      ? "ログインに失敗しました。もう一度お試しください。"
+      : null
   );
 
   const appleFormRef = useRef<HTMLFormElement>(null);
@@ -26,7 +29,14 @@ function LoginContent() {
       setRefSaved(true);
     }
     setIsNative(!!(window as any).Capacitor);
-  }, [ref]);
+
+    // URL上のerror=Configurationパラメータをクリーンアップ（履歴汚染を防ぐ）
+    if (errParam === "Configuration" && typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("error");
+      window.history.replaceState(null, "", url.toString());
+    }
+  }, [ref, errParam]);
 
   // サブミット直前に必ず最新のCSRFトークンを取得
   const handleSubmit = async (
