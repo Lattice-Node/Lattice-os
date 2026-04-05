@@ -32,6 +32,10 @@ if (process.env.APPLE_CLIENT_ID && process.env.APPLE_CLIENT_SECRET) {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers,
+  pages: {
+    signIn: "/login",
+    error: "/login",
+  },
   callbacks: {
     session({ session, token }) {
       if (session.user && token.sub) {
