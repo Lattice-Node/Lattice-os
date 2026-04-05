@@ -36,17 +36,34 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/login",
   },
   callbacks: {
-    async session({ session, token }) {
-      if (session.user && token.sub) {
-        session.user.id = token.sub;
-      }
-      if (token.sub) {
+    async jwt({ token, user, account }) {
+      if (user?.email && account) {
         const { prisma } = await import("@/lib/prisma");
-        const user = await prisma.user.findUnique({
-          where: { id: token.sub },
-          select: { onboardingCompleted: true },
+        const dbUser = await prisma.user.upsert({
+          where: { email: user.email },
+          update: {},
+          create: { email: user.email, name: user.name ?? "" },
         });
-        (session as any).onboardingCompleted = user?.onboardingCompleted ?? false;
+        token.userId = dbUser.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      const userId = token.userId as string | undefined;
+      if (session.user && userId) {
+        session.user.id = userId;
+      }
+      if (userId) {
+        try {
+          const { prisma } = await import("@/lib/prisma");
+          const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { onboardingCompleted: true },
+          });
+          (session as any).onboardingCompleted = user?.onboardingCompleted ?? false;
+        } catch {
+          (session as any).onboardingCompleted = true;
+        }
       }
       return session;
     },
