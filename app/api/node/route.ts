@@ -27,13 +27,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Name is required" }, { status: 400 });
   }
 
-  const node = await prisma.node.create({
-    data: {
-      userId: session.user.id,
-      name: name.trim(),
-      description: typeof description === "string" ? description.trim() : "",
-    },
-  });
-
-  return NextResponse.json({ node });
+  try {
+    const node = await prisma.node.create({
+      data: {
+        userId: session.user.id,
+        name: name.trim(),
+        description: typeof description === "string" ? description.trim() : "",
+      },
+    });
+    return NextResponse.json({ node });
+  } catch (e) {
+    console.error("[Node Create] Error:", e);
+    return NextResponse.json({ error: "Nodeテーブルが未作成です。DBマイグレーションを実行してください。" }, { status: 500 });
+  }
 }
