@@ -98,12 +98,14 @@ export default function NodeClient({ nodes }: { nodes: Node[] }) {
               return (
                 <div
                   key={node.id}
+                  onClick={() => router.push(`/node/${node.id}`)}
                   style={{
                     background: "var(--surface)",
                     border: "1px solid var(--border)",
                     borderRadius: 12,
                     padding: "16px",
                     transition: "border-color 0.15s",
+                    cursor: "pointer",
                   }}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
