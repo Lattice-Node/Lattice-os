@@ -6,10 +6,10 @@ interface Task { id: string; label: string; credits: number; type: string; categ
 interface Props { name: string; avatarUrl: string | null; credits: number; plan: string; agentCount: number; isLoggedIn: boolean; }
 
 const MENU = [
+  { href: "/node", label: "ノード", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><circle cx="10" cy="10" r="6"/><circle cx="10" cy="10" r="2"/><line x1="10" y1="4" x2="10" y2="6"/><line x1="10" y1="14" x2="10" y2="16"/><line x1="4" y1="10" x2="6" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/></svg> },
   { href: "/agents", label: "マイAgent", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><circle cx="10" cy="10" r="7"/><path d="M10 6v4l2.5 1.5"/></svg> },
   { href: "/inbox", label: "受信箱", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><path d="M3 5h14M3 10h14M3 15h9"/></svg> },
   { href: "#tasks", label: "タスク", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><path d="M4 10l4 4 8-8"/></svg> },
-  { href: "/store", label: "ストア", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="11" y="3" width="6" height="6" rx="1"/><rect x="3" y="11" width="6" height="6" rx="1"/><rect x="11" y="11" width="6" height="6" rx="1"/></svg> },
   { href: "/agents/new", label: "新規作成", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.5"><path d="M10 4v12M4 10h12"/></svg> },
   { href: "#invite", label: "招待", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><circle cx="8" cy="7" r="3.5"/><path d="M2 17c0-3 2.5-5 6-5s6 2 6 5"/><path d="M14 6v5M11.5 8.5h5"/></svg> },
   { href: "/pricing", label: "プラン", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><rect x="3" y="5" width="14" height="10" rx="1.5"/><path d="M3 8h14"/></svg> },
@@ -86,7 +86,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
     setCopied(true); setTimeout(() => setCopied(false), 2000);
   };
 
-  const guestAllowed = ["/store", "/pricing", "#tasks", "#invite"];
+  const guestAllowed = ["/node", "/store", "/pricing", "#tasks", "#invite"];
   const nav = (href: string) => {
     if (href === "#tasks") { document.getElementById("tasks-section")?.scrollIntoView({ behavior: "smooth" }); return; }
     if (href === "#invite") { document.getElementById("invite-section")?.scrollIntoView({ behavior: "smooth" }); return; }

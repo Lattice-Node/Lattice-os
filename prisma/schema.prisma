@@ -38,6 +38,7 @@ model User {
   deviceTokens   DeviceToken[]
   taskCompletions TaskCompletion[]
   creditTransactions CreditTransaction[]
+  nodes          Node[]
 }
 
 model TaskCompletion {
@@ -152,4 +153,17 @@ model CreditTransaction {
   user       User     @relation(fields: [userId], references: [id])
 
   @@index([userId, createdAt])
+}
+
+model Node {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  description String   @default("")
+  status      String   @default("active")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
