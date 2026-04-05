@@ -1,5 +1,6 @@
 "use client";
 
+import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 
@@ -30,52 +31,15 @@ function LoginContent() {
     }
   }, [ref, errParam]);
 
-  // 動的にフォームを作成してsubmit
-  // action URLは /latticeauth/* に変更（Chrome履歴に無い新URL）
-  // next.config.tsのrewritesで /api/auth/* にルーティングされる
-  const handleLogin = async (provider: "apple" | "google" | "github") => {
+  const handleLogin = (provider: "apple" | "google" | "github") => {
     if (loading) return;
     setLoading(provider);
-
-    try {
-      // CSRFトークン取得（rewriteされたURLでもNextAuthが認識）
-      const res = await fetch("/latticeauth/csrf", {
-        credentials: "include",
-        cache: "no-store",
-      });
-      if (!res.ok) throw new Error(`CSRF fetch failed: ${res.status}`);
-      const { csrfToken } = await res.json();
-
-      // フォーム動的生成
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.action = `/latticeauth/signin/${provider}`;
-      form.style.display = "none";
-
-      const csrfInput = document.createElement("input");
-      csrfInput.type = "hidden";
-      csrfInput.name = "csrfToken";
-      csrfInput.value = csrfToken;
-      form.appendChild(csrfInput);
-
-      const callbackInput = document.createElement("input");
-      callbackInput.type = "hidden";
-      callbackInput.name = "callbackUrl";
-      callbackInput.value = "/home";
-      form.appendChild(callbackInput);
-
-      document.body.appendChild(form);
-      form.submit();
-    } catch (err) {
-      console.error(`${provider} login failed:`, err);
-      setLoading(null);
-      alert("ログインの準備に失敗しました。ページを再読み込みしてください。");
-    }
+    signIn(provider, { callbackUrl: "/home" });
   };
 
-  const handleNativeGoogle = () => {
+  const handleNativeLogin = (provider: string) => {
     window.open(
-      `https://www.lattice-protocol.com/latticeauth/signin/google?callbackUrl=${encodeURIComponent(
+      `https://www.lattice-protocol.com/api/auth/signin/${provider}?callbackUrl=${encodeURIComponent(
         "https://www.lattice-protocol.com/home"
       )}`,
       "_blank"
@@ -196,7 +160,7 @@ function LoginContent() {
 
         {isNative ? (
           <button
-            onClick={handleNativeGoogle}
+            onClick={() => handleNativeLogin("google")}
             style={{
               ...btnBase,
               background: "var(--surface)",
