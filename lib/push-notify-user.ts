@@ -10,7 +10,7 @@ export async function notifyUser(params: {
   executionId?: string;
 }) {
   try {
-    if (!process.env.APNS_KEY_P8 || !process.env.APNS_KEY_ID) {
+    if (!process.env.APNS_KEY_P8 || !process.env.APNS_KEY_ID || !process.env.APNS_TEAM_ID) {
       console.log('[Push] APNs not configured, skipping notification');
       return { sent: 0 };
     }

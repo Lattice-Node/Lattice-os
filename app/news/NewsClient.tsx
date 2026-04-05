@@ -23,6 +23,7 @@ function formatDate(iso: string | null) {
 
 function renderMarkdown(text: string) {
   return text
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
     .replace(/^### (.+)$/gm, '<h3 style="font-size:13px;font-weight:600;color:#e8eaf0;margin:12px 0 4px">$1</h3>')
     .replace(/^## (\d+)\. (.+)$/gm, '<h2 style="font-size:15px;font-weight:600;color:#e8eaf0;margin:18px 0 6px;padding-top:12px;border-top:1px solid #2e3440"><span style="color:#6c71e8;margin-right:6px">$1.</span>$2</h2>')
     .replace(/^## (.+)$/gm, '<h2 style="font-size:15px;font-weight:600;color:#e8eaf0;margin:18px 0 6px">$1</h2>')

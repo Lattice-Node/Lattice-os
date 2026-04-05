@@ -44,6 +44,7 @@ export default function AgentDetailPage() {
   );
 
   useEffect(() => {
+    if (!id) return;
     fetch(`/api/agents/${id}`)
       .then((r) => r.json())
       .then((data) => {
@@ -108,8 +109,9 @@ export default function AgentDetailPage() {
   }
 
   async function handleEdit() {
-    setEditName(agent!.name);
-    setEditDesc(agent!.description || "");
+    if (!agent) return;
+    setEditName(agent.name);
+    setEditDesc(agent.description || "");
     setEditing(true);
   }
   async function handleSave() {

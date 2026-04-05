@@ -549,7 +549,7 @@ const handleLineGenerate = async () => {
                   )}
                   {newsDetail === 6 && (
                     <div>
-                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", margin: "0 0 6px" }}>エージェント編集・次回実行表示を改嚄しました</h3>
+                      <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", margin: "0 0 6px" }}>エージェント編集・次回実行表示を改善しました</h3>
                       <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: "0 0 16px" }}>2026/3/31</p>
                       <p style={{ fontSize: 13, color: "var(--text-primary)", lineHeight: 1.8 }}>エージェントの詳細画面から名前や説明を直接編集できるようになりました。また、次回実行日時が「今日」「明日」「4/2」など正確に表示されるようになりました。</p>
                     </div>

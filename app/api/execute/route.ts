@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { consumeCredits } from "@/lib/credits";
 import { getGmailToken, sendGmailMessage, readGmailMessages } from "@/lib/gmail";

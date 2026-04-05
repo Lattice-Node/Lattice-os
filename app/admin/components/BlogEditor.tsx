@@ -20,6 +20,7 @@ function slugify(text: string) {
 
 function renderMarkdown(md: string): string {
   return md
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
     .replace(/^### (.+)$/gm, '<h3 style="font-size:1.1rem;font-weight:600;margin:1rem 0 0.5rem">$1</h3>')
     .replace(/^## (.+)$/gm, '<h2 style="font-size:1.3rem;font-weight:700;margin:1.5rem 0 0.75rem">$1</h2>')
     .replace(/^# (.+)$/gm, '<h1 style="font-size:1.6rem;font-weight:800;margin:2rem 0 1rem">$1</h1>')

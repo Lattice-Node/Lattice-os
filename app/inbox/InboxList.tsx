@@ -36,6 +36,7 @@ function formatTime(iso: string) {
 
 function renderMarkdown(text: string) {
   return text
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
     .replace(/^### (.+)$/gm, '<h3 style="font-size:14px;font-weight:600;color:#e8eaf0;margin:14px 0 6px">$1</h3>')
     .replace(/^## (\d+)\. (.+)$/gm, '<h2 style="font-size:16px;font-weight:700;color:#e8eaf0;margin:20px 0 6px"><span style="color:#6c71e8;margin-right:6px">$1.</span>$2</h2>')
     .replace(/^## (.+)$/gm, '<h2 style="font-size:16px;font-weight:700;color:#e8eaf0;margin:20px 0 6px">$1</h2>')

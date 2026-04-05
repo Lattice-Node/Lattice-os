@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
-  const onboardingCompleted = (req.auth as any)?.onboardingCompleted ?? true;
+  const onboardingCompleted = (req.auth as any)?.onboardingCompleted ?? false;
 
   // 未ログインは対象外（NextAuthのデフォルト動作に任せる）
   if (!isLoggedIn) return NextResponse.next();

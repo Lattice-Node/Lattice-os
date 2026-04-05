@@ -1,4 +1,4 @@
-﻿import { auth } from "@/auth";
+﻿import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -16,6 +16,11 @@ export async function DELETE() {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
+  await prisma.creditTransaction.deleteMany({ where: { userId: user.id } });
+  await prisma.taskCompletion.deleteMany({ where: { userId: user.id } });
+  await prisma.deviceToken.deleteMany({ where: { userId: user.id } });
+  await prisma.linkCode.deleteMany({ where: { userId: user.id } });
+  await prisma.userConnection.deleteMany({ where: { userId: user.id } });
   await prisma.agentLog.deleteMany({ where: { userId: user.id } });
   await prisma.userAgent.deleteMany({ where: { userId: user.id } });
   await prisma.user.delete({ where: { id: user.id } });

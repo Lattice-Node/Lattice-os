@@ -72,7 +72,7 @@ export async function sendPushNotification(
     const response = await fetch(`${host}/3/device/${deviceToken}`, {
       method: 'POST',
       headers: {
-        'Authorization': `bearer ${jwt}`,
+        'Authorization': `Bearer ${jwt}`,
         'apns-topic': bundleId,
         'apns-push-type': 'alert',
         'apns-priority': '10',
