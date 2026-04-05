@@ -69,7 +69,7 @@ export async function POST(req: Request) {
 
     const user = await prisma.user.findFirst({
       where: { stripeSubscriptionId: subscriptionId },
-      select: { id: true, plan: true, purchasedCredits: true },
+      select: { id: true, plan: true },
     });
     if (!user) return NextResponse.json({ received: true });
 
@@ -83,7 +83,7 @@ export async function POST(req: Request) {
       where: { id: user.id },
       data: { currentPeriodEnd: periodEnd },
     });
-    await resetCredits(user.id, credits, user.purchasedCredits, "plan_renewal", subscriptionId);
+    await resetCredits(user.id, credits, 0, "plan_renewal", subscriptionId);
   }
 
   if (event.type === "customer.subscription.deleted") {

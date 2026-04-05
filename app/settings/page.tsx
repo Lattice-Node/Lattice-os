@@ -12,8 +12,7 @@ export default async function SettingsPage() {
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
     select: {
-      distributedCredits: true,
-      purchasedCredits: true,
+      credits: true,
       plan: true,
       currentPeriodEnd: true,
       role: true,
@@ -30,9 +29,9 @@ export default async function SettingsPage() {
         name={session.user.name ?? ""}
         email={session.user.email ?? ""}
         image={session.user.image ?? ""}
-        credits={(user?.distributedCredits ?? 30) + (user?.purchasedCredits ?? 0)}
-        distributedCredits={user?.distributedCredits ?? 30}
-        purchasedCredits={user?.purchasedCredits ?? 0}
+        credits={user?.credits ?? 30}
+        distributedCredits={0}
+        purchasedCredits={0}
         plan={user?.plan ?? "free"}
         currentPeriodEnd={user?.currentPeriodEnd?.toISOString() ?? null}
         role={user?.role ?? "user"}

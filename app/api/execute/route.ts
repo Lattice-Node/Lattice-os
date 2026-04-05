@@ -243,7 +243,7 @@ export async function POST(request: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { email },
-      select: { id: true, distributedCredits: true, purchasedCredits: true, role: true, plan: true },
+      select: { id: true, credits: true, role: true, plan: true },
     });
 
     if (!user) {
@@ -253,7 +253,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (user.role !== "admin" && (user.distributedCredits + user.purchasedCredits) < 2) {
+    if (user.role !== "admin" && (user.credits ?? 0) < 2) {
       return NextResponse.json(
         { ok: false, error: "クレジットが不足しています。設定画面から追加してください。" },
         { status: 402 }

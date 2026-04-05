@@ -47,7 +47,7 @@ export async function GET() {
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
-    select: { id: true, handle: true, displayName: true, distributedCredits: true, purchasedCredits: true, referralCode: true, referralCount: true },
+    select: { id: true, handle: true, displayName: true, credits: true, referralCode: true, referralCount: true },
   });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
@@ -121,7 +121,7 @@ export async function GET() {
     dailyCompleted, dailyTotal: dailyTasks.length,
     startCompleted, startTotal: startTasks.length,
     featureCompleted, featureTotal: featureTasks.length,
-    userCredits: user.distributedCredits + user.purchasedCredits,
+    userCredits: user.credits ?? 0,
     referralCode: user.referralCode,
     referralCount: user.referralCount || 0,
   });

@@ -10,7 +10,7 @@ export default async function NodePage() {
   const nodes = await prisma.node.findMany({
     where: { userId: session.user.id },
     orderBy: { createdAt: "desc" },
-  });
+  }).catch(() => []);
 
   return <NodeClient nodes={JSON.parse(JSON.stringify(nodes))} />;
 }
