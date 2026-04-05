@@ -9,6 +9,8 @@ interface Props {
   email: string;
   image: string;
   credits: number;
+  distributedCredits: number;
+  purchasedCredits: number;
   plan: string;
   currentPeriodEnd: string | null;
   role: string;
@@ -83,7 +85,7 @@ const SUB_PLANS = [
 const cardStyle = { background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "20px", marginBottom: 12, transition: "background .25s, border-color .25s" };
 const sectionLabel = { fontFamily: "'Space Mono', monospace", fontSize: 10, color: "var(--text-secondary)", letterSpacing: "0.1em", textTransform: "uppercase" as const, margin: "0 0 14px" };
 
-export default function SettingsClient({ name, email, image, credits, plan, currentPeriodEnd, role, profileSection }: Props) {
+export default function SettingsClient({ name, email, image, credits, distributedCredits, purchasedCredits, plan, currentPeriodEnd, role, profileSection }: Props) {
   const [deleting, setDeleting] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [subView, setSubView] = useState<string | null>(null);
@@ -176,6 +178,7 @@ const handleLineGenerate = async () => {
           </h1>
           <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: "0 0 28px" }}>
             残高: <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{credits} cr</span>
+            <span style={{ fontSize: 11, color: "var(--text-disabled)", marginLeft: 8 }}>(配布 {distributedCredits} + 購入 {purchasedCredits})</span>
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {CREDIT_PLANS.map((p) => (
@@ -394,6 +397,7 @@ const handleLineGenerate = async () => {
             <p style={{ ...sectionLabel, margin: 0 }}>クレジット</p>
             <span style={{ fontSize: 24, fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>{credits}</span>
           </div>
+          <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: "0 0 12px" }}>配布 {distributedCredits} cr + 購入 {purchasedCredits} cr</p>
           <button onClick={() => setShowCredit(true)} style={{ width: "100%", padding: "11px 16px", borderRadius: 8, border: "1px solid var(--border)", background: "transparent", color: "var(--btn-bg)", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span>クレジットを追加</span>
             <span style={{ fontSize: 16 }}>...</span>

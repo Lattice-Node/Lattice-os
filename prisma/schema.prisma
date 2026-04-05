@@ -12,7 +12,10 @@ model User {
   email          String           @unique
   name           String           @default("")
   plan           String           @default("free")
-  credits        Int              @default(30)
+  /// @deprecated distributedCredits + purchasedCredits に移行中
+  credits             Int              @default(30)
+  distributedCredits  Int              @default(30)
+  purchasedCredits    Int              @default(0)
   role           String           @default("user")
   handle         String?          @unique
   displayName    String           @default("")
@@ -34,6 +37,7 @@ model User {
   linkCodes      LinkCode[]
   deviceTokens   DeviceToken[]
   taskCompletions TaskCompletion[]
+  creditTransactions CreditTransaction[]
 }
 
 model TaskCompletion {
@@ -132,4 +136,20 @@ model DeviceToken {
   user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
+}
+
+model CreditTransaction {
+  id         String   @id @default(cuid())
+  userId     String
+  amount     Int
+  type       String
+  category   String
+  creditKind String
+  balance    Int
+  relatedId  String?
+  note       String   @default("")
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
 }

@@ -17,14 +17,14 @@ export default async function HomePage() {
       where: { email: session!.user!.email! },
       select: {
         id: true, name: true, displayName: true, handle: true,
-        avatarUrl: true, credits: true, plan: true, role: true,
+        avatarUrl: true, distributedCredits: true, purchasedCredits: true, plan: true, role: true,
       },
     });
 
     if (user) {
       name = user.displayName || session!.user!.name || "";
       avatarUrl = user.avatarUrl || session!.user!.image || null;
-      credits = user.credits;
+      credits = user.distributedCredits + user.purchasedCredits;
       plan = user.role === "admin" ? "business" : (user.plan || "free");
       agentCount = await prisma.userAgent.count({ where: { userId: user.id } });
     }

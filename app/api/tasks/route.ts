@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { addCredits } from "@/lib/credits";
 
 interface TaskDef {
   id: string;
@@ -46,7 +47,7 @@ export async function GET() {
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
-    select: { id: true, handle: true, displayName: true, credits: true, referralCode: true, referralCount: true },
+    select: { id: true, handle: true, displayName: true, distributedCredits: true, purchasedCredits: true, referralCode: true, referralCount: true },
   });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
@@ -120,7 +121,7 @@ export async function GET() {
     dailyCompleted, dailyTotal: dailyTasks.length,
     startCompleted, startTotal: startTasks.length,
     featureCompleted, featureTotal: featureTasks.length,
-    userCredits: user.credits,
+    userCredits: user.distributedCredits + user.purchasedCredits,
     referralCode: user.referralCode,
     referralCount: user.referralCount || 0,
   });
@@ -180,10 +181,8 @@ export async function POST(req: Request) {
   const err = await validateTask(taskId, user.id, start, user);
   if (err) return NextResponse.json({ error: err }, { status: 400 });
 
-  await prisma.$transaction([
-    prisma.taskCompletion.create({ data: { userId: user.id, taskId, credits: taskDef.credits } }),
-    prisma.user.update({ where: { id: user.id }, data: { credits: { increment: taskDef.credits } } }),
-  ]);
+  await prisma.taskCompletion.create({ data: { userId: user.id, taskId, credits: taskDef.credits } });
+  await addCredits(user.id, taskDef.credits, "distributed", "task", taskId);
 
   return NextResponse.json({ success: true, credits: taskDef.credits });
 }

@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { addCredits } from "@/lib/credits";
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -24,10 +25,9 @@ export async function POST(req: Request) {
   if (!inviter) return NextResponse.json({ error: "無効な招待コードです" }, { status: 404 });
   if (inviter.id === user.id) return NextResponse.json({ error: "自分の招待コードは使用できません" }, { status: 400 });
 
-  await prisma.$transaction([
-    prisma.user.update({ where: { id: user.id }, data: { referredBy: inviter.id, credits: { increment: 10 } } }),
-    prisma.user.update({ where: { id: inviter.id }, data: { referralCount: { increment: 1 } } }),
-  ]);
+  await prisma.user.update({ where: { id: user.id }, data: { referredBy: inviter.id } });
+  await prisma.user.update({ where: { id: inviter.id }, data: { referralCount: { increment: 1 } } });
+  await addCredits(user.id, 10, "distributed", "referral", inviter.id);
 
   return NextResponse.json({ success: true, bonus: 10 });
 }

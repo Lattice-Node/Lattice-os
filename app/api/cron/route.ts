@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { consumeCredits } from "@/lib/credits";
 import Anthropic from "@anthropic-ai/sdk";
 import { extractTextFromClaudeResponse, isDailyAiNewsAgent, normalizeDailyAiNewsOutput, buildDailyAiNewsSystemPrompt, buildDailyAiNewsUserPrompt } from "@/lib/agents/daily-ai-news";
 import { getGmailToken, sendGmailMessage, readGmailMessages } from "@/lib/gmail";
@@ -87,7 +88,7 @@ export async function GET(req: NextRequest) {
       nextRunAt: { lte: now },
     },
     include: {
-      user: { select: { id: true, email: true, credits: true, role: true, plan: true } },
+      user: { select: { id: true, email: true, distributedCredits: true, purchasedCredits: true, role: true, plan: true } },
     },
   });
 
@@ -102,7 +103,7 @@ export async function GET(req: NextRequest) {
     if (!user) continue;
 
     // Check credits (skip for admin)
-    if (user.role !== "admin" && (user.credits ?? 0) < 2) {
+    if (user.role !== "admin" && (user.distributedCredits + user.purchasedCredits) < 2) {
       results.push({ id: agent.id, name: agent.name, status: "skipped", reason: "no credits" });
       continue;
     }
@@ -261,7 +262,7 @@ export async function GET(req: NextRequest) {
 
       // Deduct credits
       if (user.role !== "admin") {
-        await prisma.user.update({ where: { id: user.id }, data: { credits: { decrement: 2 } } });
+        await consumeCredits(user.id, 2, "agent_exec", agent.id);
       }
 
       // External output

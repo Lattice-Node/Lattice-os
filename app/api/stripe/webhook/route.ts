@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
+import { addCredits, resetCredits } from "@/lib/credits";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -32,10 +33,8 @@ export async function POST(req: Request) {
     if (type === "credits") {
       const credits = parseInt(session.metadata?.credits ?? "0");
       if (credits > 0) {
-        await prisma.user.update({
-          where: { email },
-          data: { credits: { increment: credits } },
-        });
+        const user = await prisma.user.findUnique({ where: { email }, select: { id: true } });
+        if (user) await addCredits(user.id, credits, "purchased", "credit_purchase", session.id);
       }
     }
 
@@ -47,15 +46,14 @@ export async function POST(req: Request) {
       const subscription = await stripe.subscriptions.retrieve(subscriptionId) as any;
       const periodEnd = new Date(subscription.current_period_end * 1000);
 
-      await prisma.user.update({
-        where: { email },
-        data: {
-          plan,
-          credits,
-          stripeSubscriptionId: subscriptionId,
-          currentPeriodEnd: periodEnd,
-        },
-      });
+      const subUser = await prisma.user.findUnique({ where: { email }, select: { id: true } });
+      if (subUser) {
+        await prisma.user.update({
+          where: { email },
+          data: { plan, stripeSubscriptionId: subscriptionId, currentPeriodEnd: periodEnd },
+        });
+        await resetCredits(subUser.id, credits, 0, "plan_start", subscriptionId);
+      }
     }
   }
 
@@ -71,6 +69,7 @@ export async function POST(req: Request) {
 
     const user = await prisma.user.findFirst({
       where: { stripeSubscriptionId: subscriptionId },
+      select: { id: true, plan: true, purchasedCredits: true },
     });
     if (!user) return NextResponse.json({ received: true });
 
@@ -82,11 +81,9 @@ export async function POST(req: Request) {
 
     await prisma.user.update({
       where: { id: user.id },
-      data: {
-        credits,
-        currentPeriodEnd: periodEnd,
-      },
+      data: { currentPeriodEnd: periodEnd },
     });
+    await resetCredits(user.id, credits, user.purchasedCredits, "plan_renewal", subscriptionId);
   }
 
   if (event.type === "customer.subscription.deleted") {
@@ -97,13 +94,9 @@ export async function POST(req: Request) {
     if (user) {
       await prisma.user.update({
         where: { id: user.id },
-        data: {
-          plan: "free",
-          credits: 30,
-          stripeSubscriptionId: null,
-          currentPeriodEnd: null,
-        },
+        data: { plan: "free", stripeSubscriptionId: null, currentPeriodEnd: null },
       });
+      await resetCredits(user.id, 30, 0, "plan_cancel", subscription.id);
     }
   }
 

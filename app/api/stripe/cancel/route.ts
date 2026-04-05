@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
+import { resetCredits } from "@/lib/credits";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -23,13 +24,9 @@ export async function POST() {
 
   await prisma.user.update({
     where: { id: user.id },
-    data: {
-      plan: "free",
-      credits: 30,
-      stripeSubscriptionId: null,
-      currentPeriodEnd: null,
-    },
+    data: { plan: "free", stripeSubscriptionId: null, currentPeriodEnd: null },
   });
+  await resetCredits(user.id, 30, 0, "plan_cancel");
 
   return NextResponse.json({ success: true });
 }

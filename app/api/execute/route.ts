@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { consumeCredits } from "@/lib/credits";
 import { getGmailToken, sendGmailMessage, readGmailMessages } from "@/lib/gmail";
 import {
   buildDailyAiNewsFallback,
@@ -242,7 +243,7 @@ export async function POST(request: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { email },
-      select: { id: true, credits: true, role: true, plan: true },
+      select: { id: true, distributedCredits: true, purchasedCredits: true, role: true, plan: true },
     });
 
     if (!user) {
@@ -252,7 +253,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (user.role !== "admin" && (user.credits ?? 0) < 2) {
+    if (user.role !== "admin" && (user.distributedCredits + user.purchasedCredits) < 2) {
       return NextResponse.json(
         { ok: false, error: "クレジットが不足しています。設定画面から追加してください。" },
         { status: 402 }
@@ -414,10 +415,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (user.role !== "admin") {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { credits: { decrement: 2 } },
-      });
+      await consumeCredits(user.id, 2, "agent_exec", agentId);
     }
 
     // 外部出力先への送信
