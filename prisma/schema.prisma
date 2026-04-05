@@ -24,6 +24,8 @@ model User {
   stripeCustomerId    String?
   stripeSubscriptionId String?
   currentPeriodEnd    DateTime?
+  onboardingCompleted Boolean          @default(false)
+  interests          String[]         @default([])
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   agents         UserAgent[]

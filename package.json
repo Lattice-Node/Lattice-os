@@ -19,6 +19,7 @@
     "@stripe/stripe-js": "^8.10.0",
     "firebase": "^12.11.0",
     "firebase-admin": "^13.7.0",
+    "framer-motion": "^12.38.0",
     "next": "^15.5.0",
     "next-auth": "^5.0.0-beta.30",
     "openai": "^6.32.0",

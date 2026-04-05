@@ -36,9 +36,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: "/login",
   },
   callbacks: {
-    session({ session, token }) {
+    async session({ session, token }) {
       if (session.user && token.sub) {
         session.user.id = token.sub;
+      }
+      if (token.sub) {
+        const { prisma } = await import("@/lib/prisma");
+        const user = await prisma.user.findUnique({
+          where: { id: token.sub },
+          select: { onboardingCompleted: true },
+        });
+        (session as any).onboardingCompleted = user?.onboardingCompleted ?? false;
       }
       return session;
     },
