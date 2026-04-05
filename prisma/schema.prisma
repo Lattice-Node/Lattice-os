@@ -167,6 +167,7 @@ model Node {
   messages    NodeMessage[]
   memories    NodeMemory[]
   diaries     NodeDiary[]
+  exchanges   NodeExchange[]
 
   @@index([userId])
 }
@@ -201,4 +202,15 @@ model NodeDiary {
   node      Node     @relation(fields: [nodeId], references: [id], onDelete: Cascade)
 
   @@index([nodeId])
+}
+
+model NodeExchange {
+  id           String   @id @default(cuid())
+  nodeId       String
+  userMessage  String   @db.Text
+  nodeResponse String   @db.Text
+  createdAt    DateTime @default(now())
+  node         Node     @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  @@index([nodeId, createdAt])
 }

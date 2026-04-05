@@ -12,15 +12,16 @@ export async function GET(
   }
 
   const { id } = await params;
-  const node = await prisma.node.findUnique({ where: { id }, select: { userId: true } });
+  const node = await prisma.node.findUnique({ where: { id }, select: { userId: true } }).catch(() => null);
   if (!node || node.userId !== session.user.id) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const messages = await prisma.nodeMessage.findMany({
+  const exchanges = await prisma.nodeExchange.findMany({
     where: { nodeId: id },
-    orderBy: { createdAt: "asc" },
-  });
+    orderBy: { createdAt: "desc" },
+    take: 10,
+  }).catch(() => []);
 
-  return NextResponse.json({ messages });
+  return NextResponse.json({ exchanges });
 }

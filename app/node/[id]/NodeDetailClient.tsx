@@ -16,15 +16,34 @@ interface Diary {
   createdAt: string;
 }
 
+interface Exchange {
+  id: string;
+  userMessage: string;
+  nodeResponse: string;
+  createdAt: string;
+}
+
 interface Props {
   node: Node;
   memoryCount: number;
-  messageCount: number;
+  exchangeCount: number;
   latestDiary: Diary | null;
+  recentExchanges: Exchange[];
 }
 
 function getDaysAlive(createdAt: string): number {
   return Math.floor((Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24));
+}
+
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "今";
+  if (mins < 60) return `${mins}分前`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}時間前`;
+  const days = Math.floor(hours / 24);
+  return `${days}日前`;
 }
 
 const card = {
@@ -35,7 +54,7 @@ const card = {
   marginBottom: 10,
 };
 
-export default function NodeDetailClient({ node, memoryCount, messageCount, latestDiary }: Props) {
+export default function NodeDetailClient({ node, memoryCount, exchangeCount, latestDiary, recentExchanges }: Props) {
   const router = useRouter();
   const days = getDaysAlive(node.createdAt);
 
@@ -53,7 +72,7 @@ export default function NodeDetailClient({ node, memoryCount, messageCount, late
         <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--text-display)", margin: 0 }}>{node.name}</h1>
       </div>
       <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: "0 0 24px" }}>
-        {days}日生存 &middot; {messageCount}回の会話
+        {days}日生存 &middot; {exchangeCount}回の会話
       </p>
 
       {node.description && (
@@ -63,7 +82,7 @@ export default function NodeDetailClient({ node, memoryCount, messageCount, late
       )}
 
       <button
-        onClick={() => router.push(`/node/${node.id}/chat`)}
+        onClick={() => router.push(`/node/${node.id}/talk`)}
         style={{
           width: "100%",
           padding: "14px 20px",
@@ -82,17 +101,11 @@ export default function NodeDetailClient({ node, memoryCount, messageCount, late
       </button>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
-        <div
-          onClick={() => router.push(`/node/${node.id}/memories`)}
-          style={{ ...card, cursor: "pointer" }}
-        >
+        <div onClick={() => router.push(`/node/${node.id}/memories`)} style={{ ...card, cursor: "pointer" }}>
           <p style={{ fontSize: 24, fontWeight: 700, color: "var(--accent)", margin: "0 0 4px" }}>{memoryCount}</p>
           <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: 0 }}>記憶</p>
         </div>
-        <div
-          onClick={() => router.push(`/node/${node.id}/diaries`)}
-          style={{ ...card, cursor: "pointer" }}
-        >
+        <div onClick={() => router.push(`/node/${node.id}/diaries`)} style={{ ...card, cursor: "pointer" }}>
           <p style={{ fontSize: 24, fontWeight: 700, color: "var(--text-primary)", margin: "0 0 4px" }}>{latestDiary ? "1+" : "0"}</p>
           <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: 0 }}>日記</p>
         </div>
@@ -106,6 +119,30 @@ export default function NodeDetailClient({ node, memoryCount, messageCount, late
           <p style={{ fontSize: 13, color: "var(--text-primary)", lineHeight: 1.7, margin: 0 }}>
             {latestDiary.content}
           </p>
+        </div>
+      )}
+
+      {/* 過去の会話 */}
+      {recentExchanges.length > 0 && (
+        <div style={{ marginTop: 12 }}>
+          <p style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: "var(--text-secondary)", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 12px" }}>
+            過去の会話
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {recentExchanges.map((ex) => (
+              <div key={ex.id} style={{ ...card, marginBottom: 0 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                  <span style={{ fontSize: 11, color: "var(--text-disabled)" }}>{timeAgo(ex.createdAt)}</span>
+                </div>
+                <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: "0 0 6px", lineHeight: 1.5 }}>
+                  {ex.userMessage.length > 60 ? ex.userMessage.slice(0, 60) + "..." : ex.userMessage}
+                </p>
+                <p style={{ fontSize: 13, color: "var(--text-primary)", margin: 0, lineHeight: 1.5 }}>
+                  {ex.nodeResponse.length > 80 ? ex.nodeResponse.slice(0, 80) + "..." : ex.nodeResponse}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

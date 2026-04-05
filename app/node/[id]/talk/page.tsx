@@ -1,9 +1,9 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import ChatClient from "./ChatClient";
+import TalkClient from "./TalkClient";
 
-export default async function ChatPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function TalkPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
@@ -11,16 +11,16 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
   const node = await prisma.node.findUnique({ where: { id } }).catch(() => null);
   if (!node || node.userId !== session.user.id) redirect("/node");
 
-  const messages = await prisma.nodeMessage.findMany({
+  const latestExchange = await prisma.nodeExchange.findFirst({
     where: { nodeId: id },
-    orderBy: { createdAt: "asc" },
-  }).catch(() => []);
+    orderBy: { createdAt: "desc" },
+  }).catch(() => null);
 
   return (
-    <ChatClient
+    <TalkClient
       nodeId={node.id}
       nodeName={node.name}
-      initialMessages={JSON.parse(JSON.stringify(messages))}
+      latestExchange={latestExchange ? JSON.parse(JSON.stringify(latestExchange)) : null}
     />
   );
 }
