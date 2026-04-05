@@ -9,6 +9,7 @@ export default async function AgentsPage() {
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
+    select: { id: true, distributedCredits: true, purchasedCredits: true },
   });
   if (!user) redirect("/login");
 
@@ -40,7 +41,7 @@ export default async function AgentsPage() {
           <p className="stat-label">稼働中</p>
         </div>
         <div className="stat-box animate-in">
-          <p className="stat-number" style={{ color: "var(--green)" }}>{user.credits}</p>
+          <p className="stat-number" style={{ color: "var(--green)" }}>{user.distributedCredits + user.purchasedCredits}</p>
           <p className="stat-label">残りクレジット</p>
         </div>
         <div className="stat-box animate-in">
