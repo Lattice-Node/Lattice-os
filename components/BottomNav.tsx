@@ -27,6 +27,7 @@ export default function BottomNav() {
 
   const hiddenPaths = ["/login", "/privacy", "/terms", "/pricing"];
   if (hiddenPaths.includes(pathname)) return null;
+  if (pathname.match(/^\/node\/[^/]+\/chat$/)) return null;
 
   const click = (href: string) => {
     const cur = href === "/home" ? pathname === "/home" : href === "/agents/new" ? pathname === "/agents/new" : pathname.startsWith(href);
