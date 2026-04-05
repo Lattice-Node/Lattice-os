@@ -66,6 +66,10 @@ export default function PushNotificationSetup() {
     async function setupWeb() {
       if (!("Notification" in window) || !("serviceWorker" in navigator))
         return;
+      if (!process.env.NEXT_PUBLIC_FIREBASE_APP_ID || !process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY) {
+        console.warn("[Push] Firebase env not configured, skipping web push");
+        return;
+      }
       try {
         const permission = await Notification.requestPermission();
         if (permission !== "granted") return;
@@ -77,6 +81,7 @@ export default function PushNotificationSetup() {
         const { getMessaging, getToken } = await import("firebase/messaging");
         if (!getApps().length) {
           initializeApp({
+            apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "",
             projectId: "lattice-os-68cd6",
             messagingSenderId: "374198713259",
             appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "",
