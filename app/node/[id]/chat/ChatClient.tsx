@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
 interface Message {
@@ -21,45 +21,72 @@ export default function ChatClient({ nodeId, nodeName, initialMessages }: Props)
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // マウント時に body overflow: hidden、アンマウント時に解除
+  // body固定 + visualViewport対応
   useEffect(() => {
+    const orig = {
+      overflow: document.body.style.overflow,
+      position: document.body.style.position,
+      width: document.body.style.width,
+      height: document.body.style.height,
+      top: document.body.style.top,
+    };
     document.body.style.overflow = "hidden";
     document.body.style.position = "fixed";
     document.body.style.width = "100%";
     document.body.style.height = "100%";
+    document.body.style.top = "0";
+
     return () => {
-      document.body.style.overflow = "";
-      document.body.style.position = "";
-      document.body.style.width = "";
-      document.body.style.height = "";
+      document.body.style.overflow = orig.overflow;
+      document.body.style.position = orig.position;
+      document.body.style.width = orig.width;
+      document.body.style.height = orig.height;
+      document.body.style.top = orig.top;
     };
   }, []);
 
+  // visualViewport リサイズ（キーボード開閉）
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    if (typeof window === "undefined" || !window.visualViewport) return;
 
-  // visualViewport リサイズ対応（iOS キーボード）
-  useEffect(() => {
-    const vv = window.visualViewport;
-    if (!vv) return;
-    const onResize = () => {
-      const root = document.getElementById("chat-root");
-      if (root) {
-        root.style.height = `${vv.height}px`;
-      }
+    const handleResize = () => {
+      const vv = window.visualViewport;
+      if (!vv) return;
+      document.documentElement.style.setProperty("--viewport-height", `${vv.height}px`);
+      document.documentElement.style.setProperty("--keyboard-height", `${window.innerHeight - vv.height}px`);
+      window.scrollTo(0, 0);
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     };
-    vv.addEventListener("resize", onResize);
-    return () => vv.removeEventListener("resize", onResize);
+
+    window.visualViewport.addEventListener("resize", handleResize);
+    window.visualViewport.addEventListener("scroll", handleResize);
+    handleResize();
+
+    return () => {
+      window.visualViewport?.removeEventListener("resize", handleResize);
+      window.visualViewport?.removeEventListener("scroll", handleResize);
+      document.documentElement.style.removeProperty("--viewport-height");
+      document.documentElement.style.removeProperty("--keyboard-height");
+    };
   }, []);
+
+  const scrollToBottom = useCallback(() => {
+    requestAnimationFrame(() => {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    });
+  }, []);
+
+  useEffect(() => { scrollToBottom(); }, [messages, scrollToBottom]);
 
   const send = async () => {
     const text = input.trim();
     if (!text || sending) return;
+    setError("");
 
     const userMsg: Message = { id: `tmp-${Date.now()}`, role: "user", content: text, createdAt: new Date().toISOString() };
     setMessages((prev) => [...prev, userMsg]);
@@ -72,6 +99,12 @@ export default function ChatClient({ nodeId, nodeName, initialMessages }: Props)
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: text }),
       });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `サーバーエラー (${res.status})`);
+      }
+
       const data = await res.json();
       const assistantMsg: Message = {
         id: `tmp-${Date.now()}-a`,
@@ -89,10 +122,12 @@ export default function ChatClient({ nodeId, nodeName, initialMessages }: Props)
           body: JSON.stringify({}),
         }).catch(() => {});
       }
-    } catch {
+    } catch (e) {
+      const errMsg = e instanceof Error ? e.message : "通信エラーが発生しました";
+      setError(errMsg);
       setMessages((prev) => [
         ...prev,
-        { id: `err-${Date.now()}`, role: "assistant", content: "通信エラーが発生しました", createdAt: new Date().toISOString() },
+        { id: `err-${Date.now()}`, role: "assistant", content: errMsg, createdAt: new Date().toISOString() },
       ]);
     } finally {
       setSending(false);
@@ -101,15 +136,17 @@ export default function ChatClient({ nodeId, nodeName, initialMessages }: Props)
 
   return (
     <div
-      id="chat-root"
       style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: "var(--viewport-height, 100dvh)",
         display: "flex",
         flexDirection: "column",
-        height: "100dvh",
-        maxHeight: "-webkit-fill-available",
+        overflow: "hidden",
         background: "var(--bg)",
-        position: "fixed",
-        inset: 0,
         zIndex: 100,
       }}
     >
@@ -128,7 +165,7 @@ export default function ChatClient({ nodeId, nodeName, initialMessages }: Props)
       >
         <button
           onClick={() => router.push(`/node/${nodeId}`)}
-          style={{ background: "none", border: "none", color: "var(--text-secondary)", fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}
+          style={{ background: "none", border: "none", color: "var(--text-secondary)", fontSize: 14, cursor: "pointer", fontFamily: "inherit", padding: "4px 8px" }}
         >
           ←
         </button>
@@ -185,20 +222,22 @@ export default function ChatClient({ nodeId, nodeName, initialMessages }: Props)
       {/* Input */}
       <div
         style={{
-          padding: "12px 16px",
-          paddingBottom: "calc(12px + env(safe-area-inset-bottom, 0px))",
+          flexShrink: 0,
+          padding: "10px 16px",
+          paddingBottom: "calc(10px + env(safe-area-inset-bottom, 0px))",
           borderTop: "1px solid var(--border)",
           display: "flex",
           gap: 8,
-          flexShrink: 0,
           background: "var(--bg)",
         }}
       >
         <input
+          ref={inputRef}
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
+          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) { e.preventDefault(); send(); } }}
+          onFocus={() => { setTimeout(scrollToBottom, 300); }}
           placeholder="メッセージを入力..."
           style={{
             flex: 1,
@@ -226,6 +265,7 @@ export default function ChatClient({ nodeId, nodeName, initialMessages }: Props)
             cursor: sending ? "default" : "pointer",
             fontFamily: "inherit",
             opacity: sending || !input.trim() ? 0.5 : 1,
+            flexShrink: 0,
           }}
         >
           送信
