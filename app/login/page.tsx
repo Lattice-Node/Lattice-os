@@ -116,7 +116,8 @@ function LoginContent() {
   return (
     <div
       style={{
-        minHeight: "100dvh",
+        position: "fixed",
+        inset: 0,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -124,7 +125,11 @@ function LoginContent() {
         padding: "0 24px",
         background: "var(--bg)",
         transition: "background .25s",
-      }}
+        overflow: "hidden",
+        overscrollBehavior: "none",
+        WebkitOverflowScrolling: "auto",
+        touchAction: "none",
+      } as React.CSSProperties}
     >
       <div style={{ textAlign: "center", marginBottom: 36 }}>
         <p
