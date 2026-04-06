@@ -12,17 +12,14 @@ workflows:
     scripts:
       - name: Install dependencies
         script: |
-          npm install
-          npm install @capacitor/ios@6 @capacitor/cli@6 @capacitor/core@6
-          npm install @capacitor/push-notifications@6
-      - name: Add iOS platform
-        script: npx cap add ios || true
+          npm ci
+      - name: Capacitor sync
+        script: |
+          npx cap sync ios
       - name: Install CocoaPods
         script: |
           cd ios/App
           pod install
-      - name: Sync Capacitor
-        script: npx cap sync ios
       - name: Set app icon
         script: |
           ICON_SET="ios/App/App/Assets.xcassets/AppIcon.appiconset"
@@ -43,30 +40,11 @@ workflows:
             }
           }
           ICONEOF
-      - name: Add Push Notification entitlement
-        script: |
-          ENTITLEMENTS="ios/App/App/App.entitlements"
-          cat > "$ENTITLEMENTS" << 'ENTEOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>aps-environment</key>
-            <string>production</string>
-          </dict>
-          </plist>
-          ENTEOF
-          cd ios/App
-          PBXPROJ="App.xcodeproj/project.pbxproj"
-          if ! grep -q "CODE_SIGN_ENTITLEMENTS" "$PBXPROJ"; then
-            sed -i '' 's/CODE_SIGN_IDENTITY/CODE_SIGN_ENTITLEMENTS = "App\/App.entitlements";\n\t\t\t\tCODE_SIGN_IDENTITY/g' "$PBXPROJ"
-          fi
       - name: Set up keychain
         script: keychain initialize
       - name: Fetch signing files
         script: |
           echo "$APP_STORE_CONNECT_PRIVATE_KEY" > /tmp/api_key.p8
-          cat /tmp/api_key.p8
           app-store-connect fetch-signing-files "$BUNDLE_ID" \
             --type IOS_APP_STORE \
             --private-key @file:/tmp/api_key.p8 \
