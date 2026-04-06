@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Loading from "@/components/Loading";
 
 interface Memory {
   id: string;
@@ -36,7 +37,7 @@ export default function MemoriesPage() {
       <h1 className="page-title">Nodeの記憶</h1>
 
       {loading ? (
-        <p style={{ color: "var(--text-disabled)", fontSize: 14 }}>読み込み中...</p>
+        <Loading />
       ) : memories.length === 0 ? (
         <div style={{ textAlign: "center", padding: "40px 20px", color: "var(--text-secondary)" }}>
           <p style={{ fontSize: 14, margin: 0 }}>まだ記憶がありません</p>
