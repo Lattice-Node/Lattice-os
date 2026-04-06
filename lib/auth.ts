@@ -4,8 +4,6 @@ import Apple from "next-auth/providers/apple";
 import Credentials from "next-auth/providers/credentials";
 import type { Provider } from "next-auth/providers";
 import { sendLoginNotificationEmail } from "@/lib/mailer";
-import { verifyGoogleIdToken } from "./verify-google-token";
-import { verifyAppleIdToken } from "./verify-apple-token";
 
 const providers: Provider[] = [
   Google({
@@ -18,41 +16,47 @@ const providers: Provider[] = [
     },
   }),
   Credentials({
-    id: "native-google",
-    name: "Google (Native)",
+    id: "native",
+    name: "Native Firebase",
     credentials: {
-      idToken: { label: "Google ID Token", type: "text" },
+      idToken: { label: "ID Token", type: "text" },
     },
     async authorize(credentials) {
       const idToken = credentials?.idToken as string | undefined;
-      if (!idToken) return null;
-      const payload = await verifyGoogleIdToken(idToken);
-      if (!payload) return null;
-      return {
-        id: payload.sub,
-        email: payload.email ?? null,
-        name: payload.name ?? null,
-        image: payload.picture ?? null,
-      };
-    },
-  }),
-  Credentials({
-    id: "native-apple",
-    name: "Apple (Native)",
-    credentials: {
-      idToken: { label: "Apple ID Token", type: "text" },
-    },
-    async authorize(credentials) {
-      const idToken = credentials?.idToken as string | undefined;
-      if (!idToken) return null;
-      const payload = await verifyAppleIdToken(idToken);
-      if (!payload) return null;
-      return {
-        id: payload.sub,
-        email: payload.email ?? null,
-        name: null,
-        image: null,
-      };
+      if (!idToken) {
+        console.error("[native-auth] No idToken provided");
+        return null;
+      }
+
+      try {
+        const baseUrl = process.env.NEXTAUTH_URL || "https://www.lattice-protocol.com";
+        const res = await fetch(`${baseUrl}/api/auth/verify-native`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken }),
+        });
+
+        if (!res.ok) {
+          console.error("[native-auth] verify-native API failed:", res.status);
+          return null;
+        }
+
+        const decoded = await res.json();
+        if (!decoded.email) {
+          console.error("[native-auth] No email in decoded token");
+          return null;
+        }
+
+        return {
+          id: decoded.uid,
+          email: decoded.email,
+          name: decoded.name ?? null,
+          image: decoded.picture ?? null,
+        };
+      } catch (error) {
+        console.error("[native-auth] verifyIdToken failed:", error);
+        return null;
+      }
     },
   }),
 ];

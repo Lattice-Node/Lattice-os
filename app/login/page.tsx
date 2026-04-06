@@ -31,23 +31,6 @@ function LoginContent() {
     }
   }, [ref, errParam]);
 
-  // ネイティブ Google Auth 初期化
-  useEffect(() => {
-    if (!isNative) return;
-    (async () => {
-      try {
-        const { GoogleAuth } = await import("@codetrix-studio/capacitor-google-auth");
-        await GoogleAuth.initialize({
-          clientId: "643476365562-bk9t1bbga3jkd4i440tutbl8v9ca0tsd.apps.googleusercontent.com",
-          scopes: ["profile", "email"],
-          grantOfflineAccess: true,
-        });
-      } catch (e) {
-        console.warn("[login] GoogleAuth init failed:", e);
-      }
-    })();
-  }, [isNative]);
-
   const handleGoogleLogin = async () => {
     if (loading) return;
     setLoading("google");
@@ -55,13 +38,12 @@ function LoginContent() {
 
     if (isNative) {
       try {
-        const { GoogleAuth } = await import("@codetrix-studio/capacitor-google-auth");
-        const user = await GoogleAuth.signIn();
-        const idToken = user.authentication.idToken;
-        const res = await signIn("native-google", { idToken, redirect: false });
-        if (res?.error) {
-          throw new Error(res.error);
-        }
+        const { FirebaseAuthentication } = await import("@capacitor-firebase/authentication");
+        const result = await FirebaseAuthentication.signInWithGoogle();
+        const idToken = result.credential?.idToken;
+        if (!idToken) throw new Error("Firebase did not return idToken for Google");
+        const res = await signIn("native", { idToken, redirect: false });
+        if (res?.error) throw new Error(res.error);
         window.location.href = "/home";
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
@@ -81,20 +63,12 @@ function LoginContent() {
 
     if (isNative) {
       try {
-        const { SignInWithApple } = await import("@capacitor-community/apple-sign-in");
-        const result = await SignInWithApple.authorize({
-          clientId: "com.lattice.protocol",
-          redirectURI: "https://www.lattice-protocol.com/api/auth/callback/apple",
-          scopes: "email name",
-          state: "lattice-native",
-          nonce: crypto.randomUUID(),
-        });
-        const idToken = result.response.identityToken;
-        if (!idToken) throw new Error("no identity token");
-        const res = await signIn("native-apple", { idToken, redirect: false });
-        if (res?.error) {
-          throw new Error(res.error);
-        }
+        const { FirebaseAuthentication } = await import("@capacitor-firebase/authentication");
+        const result = await FirebaseAuthentication.signInWithApple();
+        const idToken = result.credential?.idToken;
+        if (!idToken) throw new Error("Firebase did not return idToken for Apple");
+        const res = await signIn("native", { idToken, redirect: false });
+        if (res?.error) throw new Error(res.error);
         window.location.href = "/home";
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);

@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ["firebase-admin", "google-auth-library"],
   // ビルド時のESLintエラーを無視
   eslint: {
     ignoreDuringBuilds: true,
