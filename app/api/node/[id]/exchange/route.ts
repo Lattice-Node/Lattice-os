@@ -24,14 +24,14 @@ export async function POST(
   }
 
   try {
-    // 直近10件のExchange取得
+    // 直近10件のExchange取得（テーブル未作成でも空配列）
     const recentExchanges = await prisma.nodeExchange.findMany({
       where: { nodeId: id },
       orderBy: { createdAt: "desc" },
       take: 10,
     }).catch(() => []);
 
-    // 記憶取得
+    // 記憶取得（テーブル未作成でも空配列）
     const memories = await prisma.nodeMemory.findMany({
       where: { nodeId: id },
       orderBy: { importance: "desc" },
@@ -40,7 +40,7 @@ export async function POST(
 
     // 会話履歴を古い順に
     const historyBlock = recentExchanges.length > 0
-      ? `\n直近の会話:\n${recentExchanges.reverse().map((e) => `User: ${e.userMessage}\nYou: ${e.nodeResponse}`).join("\n\n")}`
+      ? `\n直近の会話:\n${[...recentExchanges].reverse().map((e) => `User: ${e.userMessage}\nYou: ${e.nodeResponse}`).join("\n\n")}`
       : "";
 
     const memoryBlock = memories.length > 0
@@ -54,7 +54,12 @@ export async function POST(
 返答は2-4文程度。長すぎず、簡潔に。
 日本語で返答してください。`;
 
-    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: "API key not configured" }, { status: 500 });
+    }
+
+    const client = new Anthropic({ apiKey });
     const response = await client.messages.create({
       model: "claude-sonnet-4-5-20250514",
       max_tokens: 1024,
@@ -64,41 +69,49 @@ export async function POST(
 
     const nodeResponse = response.content[0].type === "text" ? response.content[0].text : "...";
 
-    // Exchange保存
-    const exchange = await prisma.nodeExchange.create({
-      data: { nodeId: id, userMessage: message.trim(), nodeResponse },
-    });
-
-    // バックグラウンド: 記憶抽出 + 古いExchangeの要約・削除
-    const origin = req.headers.get("origin") || req.headers.get("host") || "";
-    const baseUrl = origin.startsWith("http") ? origin : `https://${origin}`;
-
-    fetch(`${baseUrl}/api/node/${id}/extract-memory`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ _internal: true }),
-    }).catch(() => {});
-
-    // 11件以上あれば古いものを削除
-    const totalCount = await prisma.nodeExchange.count({ where: { nodeId: id } }).catch(() => 0);
-    if (totalCount > 10) {
-      const oldExchanges = await prisma.nodeExchange.findMany({
-        where: { nodeId: id },
-        orderBy: { createdAt: "asc" },
-        take: totalCount - 10,
+    // Exchange保存（テーブル未作成なら無視）
+    let exchangeId = "";
+    try {
+      const exchange = await prisma.nodeExchange.create({
+        data: { nodeId: id, userMessage: message.trim(), nodeResponse },
       });
-      if (oldExchanges.length > 0) {
-        await prisma.nodeExchange.deleteMany({
-          where: { id: { in: oldExchanges.map((e) => e.id) } },
+      exchangeId = exchange.id;
+
+      // 11件以上あれば古いものを削除
+      const totalCount = await prisma.nodeExchange.count({ where: { nodeId: id } });
+      if (totalCount > 10) {
+        const oldExchanges = await prisma.nodeExchange.findMany({
+          where: { nodeId: id },
+          orderBy: { createdAt: "asc" },
+          take: totalCount - 10,
         });
+        if (oldExchanges.length > 0) {
+          await prisma.nodeExchange.deleteMany({
+            where: { id: { in: oldExchanges.map((e) => e.id) } },
+          });
+        }
       }
+    } catch (dbErr) {
+      console.warn("[Node Exchange] DB save failed (table may not exist):", dbErr);
     }
 
-    return NextResponse.json({ response: nodeResponse, exchangeId: exchange.id });
+    // バックグラウンド: 記憶抽出
+    try {
+      const origin = req.headers.get("origin") || req.headers.get("host") || "";
+      const baseUrl = origin.startsWith("http") ? origin : `https://${origin}`;
+      fetch(`${baseUrl}/api/node/${id}/extract-memory`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ _internal: true }),
+      }).catch(() => {});
+    } catch {}
+
+    return NextResponse.json({ response: nodeResponse, exchangeId });
   } catch (e) {
     console.error("[Node Exchange] Error:", e);
+    const errMsg = e instanceof Error ? e.message : "Unknown error";
     return NextResponse.json(
-      { error: "応答の生成に失敗しました。しばらくしてからお試しください。" },
+      { error: `応答の生成に失敗しました: ${errMsg}` },
       { status: 500 }
     );
   }
