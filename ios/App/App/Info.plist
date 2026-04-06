@@ -45,6 +45,14 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Lattice uses photo access to let you set a profile photo for your Node.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Lattice saves generated images to your photo library when you choose to export them.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Lattice uses the camera to let you take a profile photo for your Node.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Lattice uses the microphone for voice input during conversations with your Node.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
