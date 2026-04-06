@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { hapticImpact, hapticNotification, nativeShare } from "@/lib/native";
 
 interface Exchange {
   id: string;
@@ -72,6 +73,7 @@ export default function TalkClient({ nodeId, nodeName, latestExchange }: Props) 
       if (i >= nodeResponse.length) {
         clearInterval(interval);
         setIsTyping(false);
+        hapticNotification("success");
       }
     }, 30);
     return () => clearInterval(interval);
@@ -91,6 +93,7 @@ export default function TalkClient({ nodeId, nodeName, latestExchange }: Props) 
     setSending(true);
     setDisplayedResponse("");
     setNodeResponse("");
+    hapticImpact("medium");
 
     try {
       const res = await fetch(`/api/node/${nodeId}/exchange`, {
@@ -146,7 +149,20 @@ export default function TalkClient({ nodeId, nodeName, latestExchange }: Props) 
           ←
         </button>
         <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--success, #34d399)", boxShadow: "0 0 6px var(--success, #34d399)" }} />
-        <span style={{ fontSize: 15, fontWeight: 600, color: "var(--text-primary)", fontFamily: "'Space Grotesk', sans-serif" }}>{nodeName}</span>
+        <span style={{ fontSize: 15, fontWeight: 600, color: "var(--text-primary)", fontFamily: "'Space Grotesk', sans-serif", flex: 1 }}>{nodeName}</span>
+        {displayedResponse && !isTyping && (
+          <button
+            onClick={() => {
+              hapticImpact("light");
+              nativeShare({ title: nodeName, text: `${nodeName}: ${displayedResponse}` });
+            }}
+            style={{ background: "none", border: "none", color: "var(--text-secondary)", fontSize: 14, cursor: "pointer", padding: "4px 8px" }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" />
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* Node Response Card */}

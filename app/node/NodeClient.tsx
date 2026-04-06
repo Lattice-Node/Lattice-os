@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { hapticImpact } from "@/lib/native";
 
 interface Node {
   id: string;
@@ -98,7 +99,7 @@ export default function NodeClient({ nodes }: { nodes: Node[] }) {
               return (
                 <div
                   key={node.id}
-                  onClick={() => router.push(`/node/${node.id}`)}
+                  onClick={() => { hapticImpact("light"); router.push(`/node/${node.id}`); }}
                   style={{
                     background: "var(--surface)",
                     border: "1px solid var(--border)",

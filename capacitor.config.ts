@@ -23,6 +23,13 @@ const config: CapacitorConfig = {
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert'],
     },
+    LocalNotifications: {
+      smallIcon: 'ic_stat_icon',
+      iconColor: '#6c71e8',
+    },
+    Camera: {
+      presentationStyle: 'fullScreen',
+    },
   },
   ios: {
     contentInset: 'automatic',

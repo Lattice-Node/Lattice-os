@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
+import { hapticImpact } from "@/lib/native";
 
 const tabs = [
   { href: "/home", label: "ホーム", icon: (a: boolean) => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke={a ? "var(--nav-active)" : "var(--nav-inactive)"} strokeWidth="1.4"><path d="M3 9l7-6 7 6"/><path d="M5 8v8a1 1 0 001 1h8a1 1 0 001-1V8"/></svg> },
@@ -32,6 +33,7 @@ export default function BottomNav() {
   const click = (href: string) => {
     const cur = href === "/home" ? pathname === "/home" : href === "/agents/new" ? pathname === "/agents/new" : pathname.startsWith(href);
     if (!cur) setLoading(true);
+    hapticImpact("light");
   };
 
   return (

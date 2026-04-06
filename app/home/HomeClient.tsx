@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { hapticImpact } from "@/lib/native";
 
 interface Task { id: string; label: string; credits: number; type: string; category: string; completed: boolean; claimable: boolean; count?: number; unclaimed?: number; }
 interface Props { name: string; avatarUrl: string | null; credits: number; plan: string; agentCount: number; isLoggedIn: boolean; }
@@ -88,6 +89,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
 
   const guestAllowed = ["/node", "/store", "/pricing", "#tasks", "#invite"];
   const nav = (href: string) => {
+    hapticImpact("light");
     if (href === "#tasks") { document.getElementById("tasks-section")?.scrollIntoView({ behavior: "smooth" }); return; }
     if (href === "#invite") { document.getElementById("invite-section")?.scrollIntoView({ behavior: "smooth" }); return; }
     if (!isLoggedIn && !guestAllowed.includes(href)) { router.push("/login"); return; }

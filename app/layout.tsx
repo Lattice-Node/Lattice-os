@@ -3,6 +3,8 @@ import type { Metadata, Viewport } from "next";
 import { Providers } from "./providers";
 import PushNotificationSetup from "@/components/PushNotificationSetup";
 import BottomNav from "@/components/BottomNav";
+import NetworkStatus from "@/components/NetworkStatus";
+import MorningBriefingSetup from "@/components/MorningBriefingSetup";
 
 export const metadata: Metadata = {
   title: "Lattice - 自然言語で動くAIエージェント",
@@ -35,6 +37,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="app-shell">{children}</div>
           <BottomNav />
           <PushNotificationSetup />
+          <NetworkStatus />
+          <MorningBriefingSetup />
         </Providers>
       </body>
     </html>
