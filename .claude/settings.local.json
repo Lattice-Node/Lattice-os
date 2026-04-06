@@ -9,7 +9,8 @@
       "Bash(sed:*)",
       "Bash(grep -rn \"^import.*from.*next/headers\\\\|^import.*redirect.*from.*next/navigation\" app/**/page.tsx app/**/layout.tsx)",
       "Bash(npm ls:*)",
-      "Bash(npx cap:*)"
+      "Bash(npx cap:*)",
+      "Bash(grep -r \"ios.deployment_target\\\\|IPHONEOS_DEPLOYMENT_TARGET\\\\|platform :ios\" node_modules/@capacitor/ios/*.podspec)"
     ]
   }
 }

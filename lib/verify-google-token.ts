@@ -27,14 +27,16 @@ export async function verifyGoogleIdToken(
       (v): v is string => !!v
     );
 
+    console.log("[verify-google-token] allowedAudiences:", allowedAudiences);
     const { payload } = await jwtVerify(idToken, GOOGLE_JWKS, {
       issuer: ["https://accounts.google.com", "accounts.google.com"],
       audience: allowedAudiences,
     });
 
+    console.log("[verify-google-token] success, sub:", payload.sub, "email:", payload.email);
     return payload as unknown as GoogleIdTokenPayload;
   } catch (e) {
-    console.error("[verify-google-token] failed", e);
+    console.error("[verify-google-token] failed:", e);
     return null;
   }
 }

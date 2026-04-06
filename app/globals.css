@@ -19,6 +19,7 @@
   --progress-on:#E8E8E8; --progress-off:#282828;
   --tab-on-bg:#E8E8E8; --tab-on-text:#000; --tab-off-text:#555;
   --card-hover:#1A1A1A;
+  --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   /* legacy compat */
   --card:#111; --text:#E8E8E8; --muted:#888; --dim:#555; --green:#4A9E5C; --red:#D71921;
@@ -43,6 +44,7 @@ html, body {
   font-size: 16px; font-weight: 400; line-height: 1.5;
   -webkit-font-smoothing: antialiased; overscroll-behavior: none;
   transition: background .25s, color .25s;
+  padding-top: var(--safe-top);
 }
 
 .app-shell { min-height:100dvh; padding-bottom: calc(72px + var(--safe-bottom)); }

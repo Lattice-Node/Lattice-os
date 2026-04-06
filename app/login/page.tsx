@@ -58,10 +58,15 @@ function LoginContent() {
         const { GoogleAuth } = await import("@codetrix-studio/capacitor-google-auth");
         const user = await GoogleAuth.signIn();
         const idToken = user.authentication.idToken;
-        await signIn("native-google", { idToken, callbackUrl: "/home" });
+        const res = await signIn("native-google", { idToken, redirect: false });
+        if (res?.error) {
+          throw new Error(res.error);
+        }
+        window.location.href = "/home";
       } catch (e) {
-        console.error("[login] google native failed", e);
-        setLoginError("Googleログインに失敗しました");
+        const msg = e instanceof Error ? e.message : String(e);
+        console.error("[login] google native failed", msg);
+        setLoginError(`Googleログインに失敗: ${msg}`);
         setLoading(null);
       }
     } else {
@@ -86,10 +91,15 @@ function LoginContent() {
         });
         const idToken = result.response.identityToken;
         if (!idToken) throw new Error("no identity token");
-        await signIn("native-apple", { idToken, callbackUrl: "/home" });
+        const res = await signIn("native-apple", { idToken, redirect: false });
+        if (res?.error) {
+          throw new Error(res.error);
+        }
+        window.location.href = "/home";
       } catch (e) {
-        console.error("[login] apple native failed", e);
-        setLoginError("Appleログインに失敗しました");
+        const msg = e instanceof Error ? e.message : String(e);
+        console.error("[login] apple native failed", msg);
+        setLoginError(`Appleログインに失敗: ${msg}`);
         setLoading(null);
       }
     } else {
@@ -122,7 +132,7 @@ function LoginContent() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: "0 24px",
+        padding: "env(safe-area-inset-top, 0px) 24px env(safe-area-inset-bottom, 0px)",
         background: "var(--bg)",
         transition: "background .25s",
         overflow: "hidden",

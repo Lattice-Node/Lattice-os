@@ -21,14 +21,16 @@ export async function verifyAppleIdToken(
       (v): v is string => !!v
     );
 
+    console.log("[verify-apple-token] allowedAudiences:", allowedAudiences);
     const { payload } = await jwtVerify(idToken, APPLE_JWKS, {
       issuer: "https://appleid.apple.com",
       audience: allowedAudiences,
     });
 
+    console.log("[verify-apple-token] success, sub:", payload.sub, "email:", payload.email);
     return payload as unknown as AppleIdTokenPayload;
   } catch (e) {
-    console.error("[verify-apple-token] failed", e);
+    console.error("[verify-apple-token] failed:", e);
     return null;
   }
 }
