@@ -299,7 +299,7 @@ export async function GET(req: NextRequest) {
         }
       }
 
-await notifyCronComplete({ userId: user.id, agentName: agent.name, agentId: agent.id, success: true });
+await notifyCronComplete({ userId: user.id, agentName: agent.name, agentId: agent.id, success: true, output });
 
       results.push({ id: agent.id, name: agent.name, status: "success" });
     } catch (err) {
@@ -313,7 +313,7 @@ await notifyCronComplete({ userId: user.id, agentName: agent.name, agentId: agen
       if (nextRun) {
         await prisma.userAgent.update({ where: { id: agent.id }, data: { nextRunAt: nextRun } });
       }
-await notifyCronComplete({ userId: user.id, agentName: agent.name, agentId: agent.id, success: false });
+await notifyCronComplete({ userId: user.id, agentName: agent.name, agentId: agent.id, success: false, error: errMsg });
       results.push({ id: agent.id, name: agent.name, status: "error", error: errMsg });
     }
   }
