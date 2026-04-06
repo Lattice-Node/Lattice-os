@@ -6,7 +6,8 @@
       "mcp__claude_ai_Vercel__list_deployments",
       "Bash(gh pr create --title 'feat: Node Talk UI \\(Exchange方式 + タイピングアニメーション\\)' --body ':*)",
       "Bash(npm install:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(grep -rn \"^import.*from.*next/headers\\\\|^import.*redirect.*from.*next/navigation\" app/**/page.tsx app/**/layout.tsx)"
     ]
   }
 }
