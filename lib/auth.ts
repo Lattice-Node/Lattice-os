@@ -1,8 +1,11 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Apple from "next-auth/providers/apple";
+import Credentials from "next-auth/providers/credentials";
 import type { Provider } from "next-auth/providers";
 import { sendLoginNotificationEmail } from "@/lib/mailer";
+import { verifyGoogleIdToken } from "./verify-google-token";
+import { verifyAppleIdToken } from "./verify-apple-token";
 
 const providers: Provider[] = [
   Google({
@@ -12,6 +15,44 @@ const providers: Provider[] = [
       params: {
         prompt: "select_account",
       },
+    },
+  }),
+  Credentials({
+    id: "native-google",
+    name: "Google (Native)",
+    credentials: {
+      idToken: { label: "Google ID Token", type: "text" },
+    },
+    async authorize(credentials) {
+      const idToken = credentials?.idToken as string | undefined;
+      if (!idToken) return null;
+      const payload = await verifyGoogleIdToken(idToken);
+      if (!payload) return null;
+      return {
+        id: payload.sub,
+        email: payload.email ?? null,
+        name: payload.name ?? null,
+        image: payload.picture ?? null,
+      };
+    },
+  }),
+  Credentials({
+    id: "native-apple",
+    name: "Apple (Native)",
+    credentials: {
+      idToken: { label: "Apple ID Token", type: "text" },
+    },
+    async authorize(credentials) {
+      const idToken = credentials?.idToken as string | undefined;
+      if (!idToken) return null;
+      const payload = await verifyAppleIdToken(idToken);
+      if (!payload) return null;
+      return {
+        id: payload.sub,
+        email: payload.email ?? null,
+        name: null,
+        image: null,
+      };
     },
   }),
 ];
@@ -27,6 +68,8 @@ if (process.env.APPLE_CLIENT_ID && process.env.APPLE_CLIENT_SECRET) {
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers,
+  session: { strategy: "jwt" },
+  secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/login",
   },
