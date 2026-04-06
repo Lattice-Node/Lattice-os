@@ -38,7 +38,7 @@ function LoginContent() {
       try {
         const { GoogleAuth } = await import("@codetrix-studio/capacitor-google-auth");
         await GoogleAuth.initialize({
-          clientId: "REPLACE_WITH_GOOGLE_WEB_CLIENT_ID",
+          clientId: "643476365562-f0868s7f84dpghofgrkd3t68like1pb0.apps.googleusercontent.com",
           scopes: ["profile", "email"],
           grantOfflineAccess: true,
         });

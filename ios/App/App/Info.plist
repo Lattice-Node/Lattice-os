@@ -50,7 +50,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>REPLACE_WITH_GOOGLE_REVERSED_CLIENT_ID</string>
+				<string>com.googleusercontent.apps.643476365562-f0868s7f84dpghofgrkd3t68like1pb0</string>
 			</array>
 		</dict>
 	</array>
