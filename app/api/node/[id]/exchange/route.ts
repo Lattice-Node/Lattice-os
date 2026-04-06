@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { generateOpeningVoice } from "@/lib/opening-voice";
 
 export async function POST(
   req: Request,
@@ -123,7 +124,14 @@ export async function POST(
       }).catch(() => {});
     } catch {}
 
-    return NextResponse.json({ response: nodeResponse, exchangeId });
+    const resp = NextResponse.json({ response: nodeResponse, exchangeId });
+
+    // fire-and-forget: 次回Opening Voice生成
+    void generateOpeningVoice(id).catch((e) =>
+      console.error("[opening-voice] generation failed", e)
+    );
+
+    return resp;
   } catch (e) {
     console.error("[Node Exchange] Error:", e);
     const errMsg = e instanceof Error ? e.message : "Unknown error";

@@ -167,7 +167,9 @@ model Node {
   messages    NodeMessage[]
   memories    NodeMemory[]
   diaries     NodeDiary[]
-  exchanges   NodeExchange[]
+  exchanges             NodeExchange[]
+  openingVoice          String?   @db.Text
+  openingVoiceCreatedAt DateTime?
 
   @@index([userId])
 }

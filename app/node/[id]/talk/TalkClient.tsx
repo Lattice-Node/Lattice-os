@@ -15,9 +15,17 @@ interface Props {
   nodeId: string;
   nodeName: string;
   latestExchange: Exchange | null;
+  openingVoice: string | null;
+  openingVoiceCreatedAt: string | null;
 }
 
-export default function TalkClient({ nodeId, nodeName, latestExchange }: Props) {
+function isOpeningVoiceFresh(createdAt: string | null): boolean {
+  if (!createdAt) return false;
+  const hoursSince = (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60);
+  return hoursSince < 72;
+}
+
+export default function TalkClient({ nodeId, nodeName, latestExchange, openingVoice, openingVoiceCreatedAt }: Props) {
   const router = useRouter();
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -27,6 +35,17 @@ export default function TalkClient({ nodeId, nodeName, latestExchange }: Props) 
   const [error, setError] = useState("");
   const nodeCardRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const openingVoiceShown = useRef(false);
+
+  // Opening Voice: マウント時に表示
+  useEffect(() => {
+    if (openingVoiceShown.current) return;
+    if (openingVoice && isOpeningVoiceFresh(openingVoiceCreatedAt)) {
+      openingVoiceShown.current = true;
+      setNodeResponse(openingVoice);
+      setIsTyping(true);
+    }
+  }, [openingVoice, openingVoiceCreatedAt]);
 
   // body固定
   useEffect(() => {

@@ -8,7 +8,10 @@ export default async function TalkPage({ params }: { params: Promise<{ id: strin
   if (!session?.user?.id) redirect("/login");
 
   const { id } = await params;
-  const node = await prisma.node.findUnique({ where: { id } }).catch(() => null);
+  const node = await prisma.node.findUnique({
+    where: { id },
+    select: { id: true, name: true, userId: true, openingVoice: true, openingVoiceCreatedAt: true },
+  }).catch(() => null);
   if (!node || node.userId !== session.user.id) redirect("/node");
 
   const latestExchange = await prisma.nodeExchange.findFirst({
@@ -21,6 +24,8 @@ export default async function TalkPage({ params }: { params: Promise<{ id: strin
       nodeId={node.id}
       nodeName={node.name}
       latestExchange={latestExchange ? JSON.parse(JSON.stringify(latestExchange)) : null}
+      openingVoice={node.openingVoice ?? null}
+      openingVoiceCreatedAt={node.openingVoiceCreatedAt?.toISOString() ?? null}
     />
   );
 }
