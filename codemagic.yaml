@@ -19,7 +19,7 @@ workflows:
       - name: Install CocoaPods
         script: |
           cd ios/App
-          pod install
+          pod install --repo-update
       - name: Set app icon
         script: |
           ICON_SET="ios/App/App/Assets.xcassets/AppIcon.appiconset"

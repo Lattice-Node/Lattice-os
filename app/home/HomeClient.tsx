@@ -108,7 +108,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
     <div style={{
       ...(isLoggedIn
         ? { minHeight: "100vh", paddingBottom: 100 }
-        : { position: "fixed" as const, inset: 0, overflow: "hidden", overscrollBehavior: "none", touchAction: "none" }),
+        : { position: "fixed" as const, inset: 0, overflow: "hidden", overscrollBehavior: "none", touchAction: "none", paddingTop: "env(safe-area-inset-top, 0px)", paddingBottom: "env(safe-area-inset-bottom, 0px)" }),
       background: "var(--bg)", color: "var(--text-primary)", transition: "background .25s, color .25s",
     }}>
       <div style={{ maxWidth: 420, margin: "0 auto", padding: "20px 20px 0" }}>
