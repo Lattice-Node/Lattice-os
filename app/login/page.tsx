@@ -11,7 +11,7 @@ function LoginContent() {
   const [refSaved, setRefSaved] = useState(false);
   const [isNative, setIsNative] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
-  const [loginError] = useState<string | null>(
+  const [loginError, setLoginError] = useState<string | null>(
     errParam && errParam !== "Configuration"
       ? "ログインに失敗しました。もう一度お試しください。"
       : null
@@ -22,7 +22,7 @@ function LoginContent() {
       sessionStorage.setItem("lattice_ref", ref);
       setRefSaved(true);
     }
-    setIsNative(!!(window as any).Capacitor);
+    setIsNative(!!(window as any).Capacitor?.isNativePlatform?.());
 
     if (errParam === "Configuration" && typeof window !== "undefined") {
       const url = new URL(window.location.href);
@@ -31,17 +31,70 @@ function LoginContent() {
     }
   }, [ref, errParam]);
 
-  const handleLogin = (provider: "apple" | "google" | "github") => {
+  // ネイティブ Google Auth 初期化
+  useEffect(() => {
+    if (!isNative) return;
+    (async () => {
+      try {
+        const { GoogleAuth } = await import("@codetrix-studio/capacitor-google-auth");
+        await GoogleAuth.initialize({
+          clientId: "REPLACE_WITH_GOOGLE_WEB_CLIENT_ID",
+          scopes: ["profile", "email"],
+          grantOfflineAccess: true,
+        });
+      } catch (e) {
+        console.warn("[login] GoogleAuth init failed:", e);
+      }
+    })();
+  }, [isNative]);
+
+  const handleGoogleLogin = async () => {
     if (loading) return;
-    setLoading(provider);
-    signIn(provider, { callbackUrl: "/home" });
+    setLoading("google");
+    setLoginError(null);
+
+    if (isNative) {
+      try {
+        const { GoogleAuth } = await import("@codetrix-studio/capacitor-google-auth");
+        const user = await GoogleAuth.signIn();
+        const idToken = user.authentication.idToken;
+        await signIn("native-google", { idToken, callbackUrl: "/home" });
+      } catch (e) {
+        console.error("[login] google native failed", e);
+        setLoginError("Googleログインに失敗しました");
+        setLoading(null);
+      }
+    } else {
+      signIn("google", { callbackUrl: "/home" });
+    }
   };
 
-  const handleNativeLogin = (provider: string) => {
-    window.open(
-      `https://www.lattice-protocol.com/native-auth/${provider}`,
-      "_blank"
-    );
+  const handleAppleLogin = async () => {
+    if (loading) return;
+    setLoading("apple");
+    setLoginError(null);
+
+    if (isNative) {
+      try {
+        const { SignInWithApple } = await import("@capacitor-community/apple-sign-in");
+        const result = await SignInWithApple.authorize({
+          clientId: "com.lattice.protocol",
+          redirectURI: "https://www.lattice-protocol.com/api/auth/callback/apple",
+          scopes: "email name",
+          state: "lattice-native",
+          nonce: crypto.randomUUID(),
+        });
+        const idToken = result.response.identityToken;
+        if (!idToken) throw new Error("no identity token");
+        await signIn("native-apple", { idToken, callbackUrl: "/home" });
+      } catch (e) {
+        console.error("[login] apple native failed", e);
+        setLoginError("Appleログインに失敗しました");
+        setLoading(null);
+      }
+    } else {
+      signIn("apple", { callbackUrl: "/home" });
+    }
   };
 
   const btnBase = {
@@ -140,14 +193,14 @@ function LoginContent() {
         }}
       >
         <button
-          onClick={() => isNative ? handleNativeLogin("apple") : handleLogin("apple")}
-          disabled={!isNative && loading !== null}
+          onClick={handleAppleLogin}
+          disabled={loading !== null}
           style={{
             ...btnBase,
             background: "#fff",
             color: "#000",
             border: "1px solid #3a3a3c",
-            opacity: !isNative && loading && loading !== "apple" ? 0.5 : 1,
+            opacity: loading && loading !== "apple" ? 0.5 : 1,
           }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="#000">
@@ -157,14 +210,14 @@ function LoginContent() {
         </button>
 
         <button
-          onClick={() => isNative ? handleNativeLogin("google") : handleLogin("google")}
-          disabled={!isNative && loading !== null}
+          onClick={handleGoogleLogin}
+          disabled={loading !== null}
           style={{
             ...btnBase,
             background: "var(--surface)",
             color: "var(--text-primary)",
             border: "1px solid var(--border-visible)",
-            opacity: !isNative && loading && loading !== "google" ? 0.5 : 1,
+            opacity: loading && loading !== "google" ? 0.5 : 1,
           }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24">
@@ -175,21 +228,7 @@ function LoginContent() {
           </svg>
           {loading === "google" ? "接続中..." : "Googleでログイン"}
         </button>
-
       </div>
-
-      {isNative && (
-        <p
-          style={{
-            color: "var(--text-disabled)",
-            fontSize: 10,
-            marginTop: 12,
-            textAlign: "center",
-          }}
-        >
-          外部ブラウザでログインします
-        </p>
-      )}
 
       <p
         style={{
