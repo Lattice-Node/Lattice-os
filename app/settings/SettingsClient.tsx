@@ -154,7 +154,13 @@ const handleLineGenerate = async () => {
         body: JSON.stringify({ planId }),
       });
       const data = await res.json();
-      if (data.url) window.location.href = data.url;
+      if (data.url) {
+        if (isNativePlatform()) {
+          window.open(data.url, "_system");
+        } else {
+          window.location.href = data.url;
+        }
+      }
     } catch { setPurchasing(null); }
   };
 

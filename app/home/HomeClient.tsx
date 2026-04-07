@@ -84,7 +84,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
 
   const copyLink = () => {
     if (!referralCode) return;
-    navigator.clipboard.writeText(`https://www.lattice-protocol.com/login?ref=${referralCode}`);
+    navigator.clipboard.writeText(`https://www.lattice-protocol.com/login/?ref=${referralCode}`);
     setCopied(true); setTimeout(() => setCopied(false), 2000);
   };
 
