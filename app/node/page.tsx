@@ -1,16 +1,33 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { nativeFetch } from "@/lib/native-fetch";
 import NodeClient from "./NodeClient";
 
-export default async function NodePage() {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/login");
+export default function NodePage() {
+  const router = useRouter();
+  const [nodes, setNodes] = useState<any[] | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const nodes = await prisma.node.findMany({
-    where: { userId: session.user.id },
-    orderBy: { createdAt: "desc" },
-  }).catch(() => []);
+  useEffect(() => {
+    nativeFetch("/api/node")
+      .then(async (res) => {
+        if (res.status === 401) {
+          router.replace("/login/");
+          return;
+        }
+        if (!res.ok) throw new Error(`API failed: ${res.status}`);
+        const json = await res.json();
+        setNodes(json.nodes ?? []);
+      })
+      .catch((e) => console.error("[node] fetch failed", e))
+      .finally(() => setLoading(false));
+  }, [router]);
 
-  return <NodeClient nodes={JSON.parse(JSON.stringify(nodes))} />;
+  if (loading || !nodes) {
+    return <div style={{ padding: 20, color: "var(--text-secondary)" }}>読み込み中...</div>;
+  }
+
+  return <NodeClient nodes={nodes} />;
 }

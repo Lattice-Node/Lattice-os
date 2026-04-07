@@ -1,12 +1,13 @@
+import { authAny } from "@/lib/auth-any";
 // app/api/push/register/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
+  const request = req;
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
+    const session = await authAny(req);
+    if (!session?.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
     const deviceToken = await prisma.deviceToken.upsert({
       where: { token },
       update: {
-        userId: session.user.id,
+        userId: session.userId,
         platform,
         active: true,
         updatedAt: new Date(),
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest) {
       create: {
         token,
         platform,
-        userId: session.user.id,
+        userId: session.userId,
         active: true,
       },
     });
@@ -43,10 +44,11 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE(req: NextRequest) {
+  const request = req;
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
+    const session = await authAny(req);
+    if (!session?.userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -56,7 +58,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     await prisma.deviceToken.updateMany({
-      where: { token, userId: session.user.id },
+      where: { token, userId: session.userId },
       data: { active: false, updatedAt: new Date() },
     });
 

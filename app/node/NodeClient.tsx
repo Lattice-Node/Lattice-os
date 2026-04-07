@@ -99,7 +99,7 @@ export default function NodeClient({ nodes }: { nodes: Node[] }) {
               return (
                 <div
                   key={node.id}
-                  onClick={() => { hapticImpact("light"); router.push(`/node/${node.id}`); }}
+                  onClick={() => { hapticImpact("light"); router.push(`/node/detail/?id=${node.id}`); }}
                   style={{
                     background: "var(--surface)",
                     border: "1px solid var(--border)",

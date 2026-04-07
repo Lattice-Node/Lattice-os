@@ -1,45 +1,33 @@
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { nativeFetch } from "@/lib/native-fetch";
 import InboxList from "./InboxList";
 
-export const dynamic = "force-dynamic";
+export default function InboxPage() {
+  const router = useRouter();
+  const [items, setItems] = useState<any[] | null>(null);
+  const [loading, setLoading] = useState(true);
 
-export default async function InboxPage() {
-  const session = await auth();
-  if (!session?.user?.email) redirect("/login");
+  useEffect(() => {
+    nativeFetch("/api/inbox")
+      .then(async (res) => {
+        if (res.status === 401) {
+          router.replace("/login/");
+          return;
+        }
+        if (!res.ok) throw new Error(`API failed: ${res.status}`);
+        const json = await res.json();
+        setItems(json.items ?? []);
+      })
+      .catch((e) => console.error("[inbox] fetch failed", e))
+      .finally(() => setLoading(false));
+  }, [router]);
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    select: { id: true },
-  });
-  if (!user) redirect("/login");
+  if (loading || !items) {
+    return <div style={{ padding: 20, color: "var(--text-secondary)" }}>読み込み中...</div>;
+  }
 
-  const logs = await prisma.agentLog.findMany({
-    where: {
-      userId: user.id,
-      status: "success",
-      output: { not: "" },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 20,
-    select: {
-      id: true,
-      output: true,
-      createdAt: true,
-      agent: {
-        select: { id: true, name: true },
-      },
-    },
-  });
-
-  const serialized = logs.map((l) => ({
-    id: l.id,
-    output: l.output,
-    createdAt: l.createdAt.toISOString(),
-    agentId: l.agent.id,
-    agentName: l.agent.name,
-  }));
-
-  return <InboxList items={serialized} />;
+  return <InboxList items={items} />;
 }

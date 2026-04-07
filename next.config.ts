@@ -1,21 +1,21 @@
 import type { NextConfig } from "next";
 
+const isCapacitor = process.env.CAPACITOR_BUILD === "true";
+
 const nextConfig: NextConfig = {
+  ...(isCapacitor ? { output: "export" as const, distDir: "out", trailingSlash: true } : {}),
   serverExternalPackages: ["firebase-admin", "google-auth-library"],
-  // ビルド時のESLintエラーを無視
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // ビルド時のTypeScriptエラーを無視
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Turbopackバンドラー
   experimental: {
     turbo: {},
   },
-  // 画像ドメイン許可
   images: {
+    ...(isCapacitor ? { unoptimized: true } : {}),
     remotePatterns: [
       { protocol: "https", hostname: "lh3.googleusercontent.com" },
       { protocol: "https", hostname: "avatars.githubusercontent.com" },

@@ -49,7 +49,7 @@ export default function PushNotificationSetup() {
           (notification) => {
             const agentId = notification.notification.data?.agentId;
             if (agentId) {
-              window.location.href = `/agents/${agentId}`;
+              window.location.href = `/agents/detail/?id=${agentId}`;
             }
           }
         );

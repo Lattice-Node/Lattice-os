@@ -1,43 +1,55 @@
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { nativeFetch } from "@/lib/native-fetch";
 import HomeClient from "./HomeClient";
 
-export default async function HomePage() {
-  const session = await auth();
-  const isLoggedIn = !!session?.user?.email;
+export default function HomePage() {
+  const router = useRouter();
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  let name = "";
-  let avatarUrl: string | null = null;
-  let credits = 0;
-  let plan = "free";
-  let agentCount = 0;
+  useEffect(() => {
+    nativeFetch("/api/home")
+      .then(async (res) => {
+        if (!res.ok) {
+          setData({ isLoggedIn: false });
+          return;
+        }
+        const json = await res.json();
+        setData(json);
 
-  if (isLoggedIn) {
-    const user = await prisma.user.findUnique({
-      where: { email: session!.user!.email! },
-      select: {
-        id: true, name: true, displayName: true, handle: true,
-        avatarUrl: true, credits: true, plan: true, role: true,
-      },
-    }).catch(() => null);
+        // Onboarding check (replaces middleware behavior)
+        if (json.isLoggedIn) {
+          const stateRes = await nativeFetch("/api/onboarding/state");
+          if (stateRes.ok) {
+            const state = await stateRes.json();
+            if (!state.onboardingCompleted) {
+              router.replace("/onboarding/");
+            }
+          }
+        }
+      })
+      .catch((e) => {
+        console.error("[home] fetch failed", e);
+        setData({ isLoggedIn: false });
+      })
+      .finally(() => setLoading(false));
+  }, [router]);
 
-    if (user) {
-      name = user.displayName || session!.user!.name || "";
-      avatarUrl = user.avatarUrl || session!.user!.image || null;
-      credits = user.credits ?? 0;
-      plan = user.role === "admin" ? "business" : (user.plan || "free");
-      agentCount = await prisma.userAgent.count({ where: { userId: user.id } });
-    }
+  if (loading || !data) {
+    return <div style={{ padding: 20, color: "var(--text-secondary)" }}>読み込み中...</div>;
   }
 
   return (
     <HomeClient
-      name={name}
-      avatarUrl={avatarUrl}
-      credits={credits}
-      plan={plan}
-      agentCount={agentCount}
-      isLoggedIn={isLoggedIn}
+      name={data.name ?? ""}
+      avatarUrl={data.avatarUrl ?? null}
+      credits={data.credits ?? 0}
+      plan={data.plan ?? "free"}
+      agentCount={data.agentCount ?? 0}
+      isLoggedIn={data.isLoggedIn ?? false}
     />
   );
 }

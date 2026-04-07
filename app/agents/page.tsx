@@ -1,32 +1,33 @@
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { nativeFetch } from "@/lib/native-fetch";
 import AgentsList from "./AgentsList";
 
-export default async function AgentsPage() {
-  const session = await auth();
-  if (!session?.user?.email) redirect("/login");
+export default function AgentsPage() {
+  const router = useRouter();
+  const [data, setData] = useState<{ credits: number; agents: any[]; todayRuns: number } | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    select: { id: true, credits: true },
-  });
-  if (!user) redirect("/login");
+  useEffect(() => {
+    nativeFetch("/api/agents/list")
+      .then(async (res) => {
+        if (res.status === 401) {
+          router.replace("/login/");
+          return;
+        }
+        if (!res.ok) throw new Error(`API failed: ${res.status}`);
+        const json = await res.json();
+        setData(json);
+      })
+      .catch((e) => console.error("[agents] fetch failed", e))
+      .finally(() => setLoading(false));
+  }, [router]);
 
-  const agents = await prisma.userAgent.findMany({
-    where: { userId: user.id },
-    orderBy: { updatedAt: "desc" },
-  });
-
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-
-  const todayRuns = await prisma.agentLog.count({
-    where: {
-      userId: user.id,
-      createdAt: { gte: todayStart },
-    },
-  });
+  if (loading || !data) {
+    return <div style={{ padding: 20, color: "var(--text-secondary)" }}>読み込み中...</div>;
+  }
 
   return (
     <div className="page">
@@ -36,21 +37,21 @@ export default async function AgentsPage() {
       <div className="stat-row">
         <div className="stat-box animate-in">
           <p className="stat-number" style={{ color: "var(--accent)" }}>
-            {agents.filter((a) => a.active).length}
+            {data.agents.filter((a: any) => a.active).length}
           </p>
           <p className="stat-label">稼働中</p>
         </div>
         <div className="stat-box animate-in">
-          <p className="stat-number" style={{ color: "var(--green)" }}>{user.credits ?? 0}</p>
+          <p className="stat-number" style={{ color: "var(--green)" }}>{data.credits}</p>
           <p className="stat-label">残りクレジット</p>
         </div>
         <div className="stat-box animate-in">
-          <p className="stat-number">{todayRuns}</p>
+          <p className="stat-number">{data.todayRuns}</p>
           <p className="stat-label">今日の実行</p>
         </div>
       </div>
 
-      <AgentsList agents={JSON.parse(JSON.stringify(agents))} />
+      <AgentsList agents={data.agents} />
     </div>
   );
 }

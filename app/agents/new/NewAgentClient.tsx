@@ -126,7 +126,7 @@ export default function NewAgentClient({ isPaid = false, connectedProviders = []
       if (res.status === 403) throw new Error("フリープランではエージェントは3体までです。アップグレードしてください。");
       if (!res.ok) throw new Error("保存に失敗しました");
       const data = await res.json();
-      router.push(`/agents/${data.agent.id}`);
+      router.push(`/agents/detail/?id=${data.agent.id}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "エラーが発生しました");
       setSaving(false);

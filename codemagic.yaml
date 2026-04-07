@@ -13,6 +13,9 @@ workflows:
       - name: Install dependencies
         script: |
           npm ci
+      - name: Build Next.js for Capacitor static export
+        script: |
+          npm run build:capacitor
       - name: Capacitor sync
         script: |
           npx cap sync ios
@@ -20,6 +23,53 @@ workflows:
         script: |
           cd ios/App
           pod install --repo-update
+      - name: Force inject GoogleService-Info.plist into Xcode project
+        script: |
+          cd ios/App
+          gem install xcodeproj --no-document
+          ruby <<'RUBY'
+          require "xcodeproj"
+
+          project_path = "App.xcodeproj"
+          project = Xcodeproj::Project.open(project_path)
+
+          target = project.targets.find { |t| t.name == "App" }
+          raise "App target not found" unless target
+
+          app_group = project.main_group["App"]
+          raise "App group not found" unless app_group
+
+          file_ref = app_group.files.find { |f| f.path == "GoogleService-Info.plist" }
+
+          if file_ref.nil?
+            file_ref = app_group.new_reference("GoogleService-Info.plist")
+            puts "Created new file reference for GoogleService-Info.plist"
+          else
+            puts "File reference already exists"
+          end
+
+          resources_phase = target.resources_build_phase
+          already_in_resources = resources_phase.files.any? { |bf|
+            bf.file_ref && bf.file_ref.path == "GoogleService-Info.plist"
+          }
+
+          if already_in_resources
+            puts "Already in Resources build phase, skipping"
+          else
+            resources_phase.add_file_reference(file_ref)
+            puts "Added GoogleService-Info.plist to Resources build phase"
+          end
+
+          project.save
+          puts "project.pbxproj saved"
+
+          plist_path = File.join("App", "GoogleService-Info.plist")
+          if File.exist?(plist_path)
+            puts "Verified: #{plist_path} exists on disk"
+          else
+            raise "ERROR: #{plist_path} does not exist on disk"
+          end
+          RUBY
       - name: Set app icon
         script: |
           ICON_SET="ios/App/App/Assets.xcassets/AppIcon.appiconset"

@@ -18,7 +18,13 @@
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d.get\\('packageClassList'\\)\\)\")",
       "Bash(mkdir:*)",
       "WebSearch",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(node:*)",
+      "Bash(grep -rln \"/agents/\\\\${\\\\|/node/\\\\${\" app/ components/)",
+      "Bash(grep -v \"node_modules\\\\|\\\\\\\\[id\\\\\\\\]\\\\|.bak\")",
+      "Bash(npm run:*)",
+      "Bash(cp \"C:/Users/haya0/Downloads/lattice-os/app/node/[id]/NodeDetailClient.tsx\" \"C:/Users/haya0/Downloads/lattice-os/app/node/detail/NodeDetailClient.tsx\")",
+      "Bash(cp \"C:/Users/haya0/Downloads/lattice-os/app/node/[id]/talk/TalkClient.tsx\" \"C:/Users/haya0/Downloads/lattice-os/app/node/talk/TalkClient.tsx\")"
     ]
   }
 }

@@ -1,31 +1,40 @@
-import { Suspense } from "react";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
+"use client";
+
+import { Suspense, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { nativeFetch } from "@/lib/native-fetch";
 import NewAgentClient from "./NewAgentClient";
 
-export default async function NewAgentPage() {
-  const session = await auth();
-  if (!session?.user?.email) redirect("/login");
+function NewAgentInner() {
+  const router = useRouter();
+  const [data, setData] = useState<{ isPaid: boolean; connectedProviders: string[] } | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    select: { id: true, plan: true, role: true },
-  });
-
-  const isPaid = user?.role === "admin" || ["starter", "personal", "pro", "business"].includes(user?.plan || "");
-
-  const userConnections = user?.id
-    ? await prisma.userConnection.findMany({
-        where: { userId: user.id },
-        select: { provider: true },
+  useEffect(() => {
+    nativeFetch("/api/agents/templates")
+      .then(async (res) => {
+        if (res.status === 401) {
+          router.replace("/login/");
+          return;
+        }
+        if (!res.ok) throw new Error(`API failed: ${res.status}`);
+        setData(await res.json());
       })
-    : [];
-  const connectedProviders = userConnections.map((c) => c.provider);
+      .catch((e) => console.error("[agents/new] fetch failed", e))
+      .finally(() => setLoading(false));
+  }, [router]);
 
+  if (loading || !data) {
+    return <div style={{ minHeight: "100vh", backgroundColor: "var(--bg)" }} />;
+  }
+
+  return <NewAgentClient isPaid={data.isPaid} connectedProviders={data.connectedProviders} />;
+}
+
+export default function NewAgentPage() {
   return (
     <Suspense fallback={<div style={{ minHeight: "100vh", backgroundColor: "var(--bg)" }} />}>
-      <NewAgentClient isPaid={isPaid} connectedProviders={connectedProviders} />
+      <NewAgentInner />
     </Suspense>
   );
 }

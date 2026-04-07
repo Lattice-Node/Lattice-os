@@ -42,9 +42,22 @@ function LoginContent() {
         const result = await FirebaseAuthentication.signInWithGoogle();
         const idToken = result.credential?.idToken;
         if (!idToken) throw new Error("Firebase did not return idToken for Google");
-        const res = await signIn("native", { idToken, redirect: false });
-        if (res?.error) throw new Error(res.error);
-        window.location.href = "/home";
+        const sessionRes = await fetch("https://www.lattice-protocol.com/api/auth/native-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken }),
+          credentials: "include",
+        });
+        if (!sessionRes.ok) {
+          const errBody = await sessionRes.text();
+          throw new Error(`native-session failed: ${sessionRes.status} ${errBody}`);
+        }
+        const data = await sessionRes.json();
+        if (data.sessionToken) {
+          const { saveNativeSession } = await import("@/lib/native-fetch");
+          await saveNativeSession(data.sessionToken);
+        }
+        window.location.href = "/home/";
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
         console.error("[login] google native failed", msg);
@@ -67,9 +80,22 @@ function LoginContent() {
         const result = await FirebaseAuthentication.signInWithApple();
         const idToken = result.credential?.idToken;
         if (!idToken) throw new Error("Firebase did not return idToken for Apple");
-        const res = await signIn("native", { idToken, redirect: false });
-        if (res?.error) throw new Error(res.error);
-        window.location.href = "/home";
+        const sessionRes = await fetch("https://www.lattice-protocol.com/api/auth/native-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken }),
+          credentials: "include",
+        });
+        if (!sessionRes.ok) {
+          const errBody = await sessionRes.text();
+          throw new Error(`native-session failed: ${sessionRes.status} ${errBody}`);
+        }
+        const data = await sessionRes.json();
+        if (data.sessionToken) {
+          const { saveNativeSession } = await import("@/lib/native-fetch");
+          await saveNativeSession(data.sessionToken);
+        }
+        window.location.href = "/home/";
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
         console.error("[login] apple native failed", msg);

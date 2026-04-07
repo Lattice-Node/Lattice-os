@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { authAny } from "@/lib/auth-any";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -12,8 +12,8 @@ function generatePublicId(): string {
 }
 
 export async function PATCH(req: Request) {
-  const session = await auth();
-  if (!session?.user?.email) {
+  const session = await authAny(req);
+  if (!session?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -21,7 +21,7 @@ export async function PATCH(req: Request) {
   const { handle, displayName, avatarUrl } = body;
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { email: session.email },
     select: { id: true, publicId: true },
   });
   if (!user) {
@@ -101,14 +101,14 @@ export async function PATCH(req: Request) {
   return NextResponse.json({ profile: updated });
 }
 
-export async function GET() {
-  const session = await auth();
-  if (!session?.user?.email) {
+export async function GET(req: Request) {
+  const session = await authAny(req);
+  if (!session?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { email: session.email },
     select: {
       handle: true,
       displayName: true,

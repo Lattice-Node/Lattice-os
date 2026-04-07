@@ -1,17 +1,17 @@
-import { auth } from "@/lib/auth";
+import { authAny } from "@/lib/auth-any";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { addCredits } from "@/lib/credits";
 
 export async function POST(req: Request) {
-  const session = await auth();
-  if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const session = await authAny(req);
+  if (!session?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { code } = await req.json();
   if (!code || typeof code !== "string") return NextResponse.json({ error: "Invalid code" }, { status: 400 });
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { email: session.email },
     select: { id: true, referredBy: true, createdAt: true },
   });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });

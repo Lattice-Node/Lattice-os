@@ -1,43 +1,47 @@
-import { auth } from "@/lib/auth";
+import { authAny } from "@/lib/auth-any";
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { jsonWithCors, corsOptions } from "@/lib/cors";
 
-export async function GET() {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function OPTIONS(req: Request) {
+  return corsOptions(req);
+}
+
+export async function GET(req: Request) {
+  const session = await authAny(req);
+  if (!session?.userId) {
+    return jsonWithCors(req, { error: "Unauthorized" }, { status: 401 });
   }
 
   const nodes = await prisma.node.findMany({
-    where: { userId: session.user.id },
+    where: { userId: session.userId },
     orderBy: { createdAt: "desc" },
-  });
+  }).catch(() => []);
 
-  return NextResponse.json({ nodes });
+  return jsonWithCors(req, { nodes: JSON.parse(JSON.stringify(nodes)) });
 }
 
 export async function POST(req: Request) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const session = await authAny(req);
+  if (!session?.userId) {
+    return jsonWithCors(req, { error: "Unauthorized" }, { status: 401 });
   }
 
   const { name, description } = await req.json();
   if (!name || typeof name !== "string" || name.trim().length === 0) {
-    return NextResponse.json({ error: "Name is required" }, { status: 400 });
+    return jsonWithCors(req, { error: "Name is required" }, { status: 400 });
   }
 
   try {
     const node = await prisma.node.create({
       data: {
-        userId: session.user.id,
+        userId: session.userId,
         name: name.trim(),
         description: typeof description === "string" ? description.trim() : "",
       },
     });
-    return NextResponse.json({ node });
+    return jsonWithCors(req, { node });
   } catch (e) {
     console.error("[Node Create] Error:", e);
-    return NextResponse.json({ error: "Nodeテーブルが未作成です。DBマイグレーションを実行してください。" }, { status: 500 });
+    return jsonWithCors(req, { error: "Nodeテーブルが未作成です。DBマイグレーションを実行してください。" }, { status: 500 });
   }
 }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
-import { auth } from "@/lib/auth";
+import { authAny } from "@/lib/auth-any";
 import { prisma } from "@/lib/prisma";
 import { consumeCredits } from "@/lib/credits";
 import { getGmailToken, sendGmailMessage, readGmailMessages } from "@/lib/gmail";
@@ -214,10 +214,11 @@ async function runWithGroq(agent: AgentShape, now: Date, isDailyNews: boolean, e
     : rawText;
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
+  const request = req;
   try {
-    const session = await auth();
-    const email = session?.user?.email;
+    const session = await authAny(req);
+    const email = session?.email;
 
     if (!email) {
       return NextResponse.json(

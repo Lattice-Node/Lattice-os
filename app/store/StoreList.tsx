@@ -165,7 +165,7 @@ export default function StoreList({ templates, isPaid, userPlan = "free", connec
       if (!res.ok) throw new Error("作成に失敗しました");
       const data = await res.json();
       setSuccess(true);
-      setTimeout(() => router.push(`/agents/${data.agent.id}`), 800);
+      setTimeout(() => router.push(`/agents/detail/?id=${data.agent.id}`), 800);
     } catch (e) { setError(e instanceof Error ? e.message : "エラーが発生しました"); setAdding(false); }
   }
 
@@ -184,7 +184,7 @@ export default function StoreList({ templates, isPaid, userPlan = "free", connec
       if (!res.ok) throw new Error("コピーに失敗しました");
       const data = await res.json();
       setCopySuccess(true);
-      setTimeout(() => router.push(`/agents/${data.agent.id}`), 800);
+      setTimeout(() => router.push(`/agents/detail/?id=${data.agent.id}`), 800);
     } catch (e) { setError(e instanceof Error ? e.message : "エラーが発生しました"); setCopying(false); }
   }
 

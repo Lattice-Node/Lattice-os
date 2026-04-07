@@ -35,14 +35,14 @@ function calcNextRunAt(cronExpr: string): Date | null {
   }
 }
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
+import { authAny } from "@/lib/auth-any";
 
-export async function GET() {
-  const session = await auth();
-  if (!session?.user?.email) {
+export async function GET(req: Request) {
+  const session = await authAny(req);
+  if (!session?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const user = await prisma.user.findUnique({ where: { email: session.user.email } });
+  const user = await prisma.user.findUnique({ where: { email: session.email } });
   if (!user) return NextResponse.json({ agents: [] });
 
   const agents = await prisma.userAgent.findMany({
@@ -53,14 +53,14 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const session = await auth();
-  if (!session?.user?.email) {
+  const session = await authAny(req);
+  if (!session?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  let user = await prisma.user.findUnique({ where: { email: session.user.email } });
+  let user = await prisma.user.findUnique({ where: { email: session.email } });
   if (!user) {
     user = await prisma.user.create({
-      data: { email: session.user.email, name: session.user.name ?? "" },
+      data: { email: session.email, name: session.user.name ?? "" },
     });
   }
 

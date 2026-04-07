@@ -4,19 +4,6 @@ const config: CapacitorConfig = {
   appId: "com.lattice.protocol",
   appName: "Lattice",
   webDir: "out",
-  server: {
-    url: "https://www.lattice-protocol.com/home",
-    cleartext: false,
-    allowNavigation: [
-      "accounts.google.com",
-      "*.google.com",
-      "*.googleapis.com",
-      "appleid.apple.com",
-      "*.apple.com",
-      "*.icloud.com",
-      "www.lattice-protocol.com",
-    ],
-  },
   plugins: {
     PushNotifications: {
       presentationOptions: ["badge", "sound", "alert"],

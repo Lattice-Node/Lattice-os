@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { authAny } from "@/lib/auth-any";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { addCredits } from "@/lib/credits";
@@ -41,12 +41,12 @@ function generateReferralCode(): string {
   return code;
 }
 
-export async function GET() {
-  const session = await auth();
-  if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function GET(req: Request) {
+  const session = await authAny(req);
+  if (!session?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { email: session.email },
     select: { id: true, handle: true, displayName: true, credits: true, referralCode: true, referralCount: true },
   });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -128,14 +128,14 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const session = await auth();
-  if (!session?.user?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const session = await authAny(req);
+  if (!session?.email) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
   const { taskId, action } = body;
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: { email: session.email },
     select: { id: true, handle: true, displayName: true, referralCode: true, referralCount: true },
   });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
