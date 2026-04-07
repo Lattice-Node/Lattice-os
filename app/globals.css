@@ -33,7 +33,24 @@ body.native .app-shell {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
+}
+/* Prevent iOS input auto-zoom on focus */
+body.native input,
+body.native textarea,
+body.native select {
+  font-size: 16px !important;
+}
+/* Disable iOS callout / long-press menus */
+body.native {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+body.native input,
+body.native textarea {
+  -webkit-user-select: text;
+  user-select: text;
 }
 /* Force full-width on native, override desktop @media max-width */
 body.native .page,

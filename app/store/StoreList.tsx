@@ -206,7 +206,7 @@ export default function StoreList({ templates, isPaid, userPlan = "free", connec
     const badge = PLAN_BADGE[requiredPlan];
 
     return (
-      <div style={{ maxWidth: 420, margin: "0 auto", padding: "0 0 100px" }}>
+      <div style={{ maxWidth: 420, margin: "0 auto", padding: "0 0 80px" }}>
         <button onClick={() => { setSelectedCommunity(null); setCopySuccess(false); setError(""); }} style={{ background: "none", border: "none", color: "var(--text-disabled)", fontSize: 13, cursor: "pointer", fontFamily: "inherit", padding: "0 0 20px", display: "block" }}>{"← 戻る"}</button>
 
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
@@ -290,7 +290,7 @@ export default function StoreList({ templates, isPaid, userPlan = "free", connec
     const badge = PLAN_BADGE[requiredPlan];
 
     return (
-      <div style={{ maxWidth: 420, margin: "0 auto", padding: "0 0 100px" }}>
+      <div style={{ maxWidth: 420, margin: "0 auto", padding: "0 0 80px" }}>
         <button onClick={() => { setSelected(null); setSuccess(false); }} style={{ background: "none", border: "none", color: "var(--text-disabled)", fontSize: 13, cursor: "pointer", fontFamily: "inherit", padding: "0 0 20px", display: "block" }}>{"← 戻る"}</button>
 
         <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>

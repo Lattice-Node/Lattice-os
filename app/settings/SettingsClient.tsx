@@ -365,7 +365,7 @@ const handleLineGenerate = async () => {
 
   // Main settings view
   return (
-    <main style={{ minHeight: "100vh", backgroundColor: "var(--bg)", color: "var(--text-primary)", paddingBottom: 100 }}>
+    <main style={{ minHeight: "100vh", backgroundColor: "var(--bg)", color: "var(--text-primary)", paddingBottom: 80 }}>
       <div style={{ maxWidth: 420, margin: "0 auto", padding: "48px 20px 24px" }}>
         <p style={sectionLabel}>設定</p>
 
@@ -513,7 +513,7 @@ const handleLineGenerate = async () => {
 
         {/* News Sub View */}
         {subView === "news" && (
-          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "var(--bg)", zIndex: 100, overflowY: "auto", paddingBottom: 100 }}>
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "var(--bg)", zIndex: 100, overflowY: "auto", paddingBottom: 80 }}>
             <div style={{ maxWidth: 420, margin: "0 auto", padding: "20px 16px" }}>
               {newsDetail === null && (<button onClick={() => { setSubView(null); setNewsDetail(null); }} style={{ background: "none", border: "none", color: "var(--btn-bg)", fontSize: 14, cursor: "pointer", fontFamily: "inherit", marginBottom: 16, padding: 0 }}>&#8592; 戻る</button>)}
               {newsDetail === null ? (
@@ -591,7 +591,7 @@ const handleLineGenerate = async () => {
 
         {/* About Sub View */}
         {subView === "about" && (
-          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "var(--bg)", zIndex: 100, overflowY: "auto", paddingBottom: 100 }}>
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "var(--bg)", zIndex: 100, overflowY: "auto", paddingBottom: 80 }}>
             <div style={{ maxWidth: 420, margin: "0 auto", padding: "20px 16px" }}>
               <button onClick={() => setSubView(null)} style={{ background: "none", border: "none", color: "var(--btn-bg)", fontSize: 14, cursor: "pointer", fontFamily: "inherit", marginBottom: 16, padding: 0 }}>&#8592; 戻る</button>
               <h2 style={{ fontSize: 22, fontWeight: 700, color: "var(--text-primary)", margin: "0 0 20px" }}>Lattice の性能について</h2>
