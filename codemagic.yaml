@@ -70,6 +70,21 @@ workflows:
             raise "ERROR: #{plist_path} does not exist on disk"
           end
           RUBY
+      - name: Force set CODE_SIGN_ENTITLEMENTS in Xcode project
+        script: |
+          cd ios/App
+          ruby <<'RUBY'
+          require "xcodeproj"
+          project = Xcodeproj::Project.open("App.xcodeproj")
+          target = project.targets.find { |t| t.name == "App" }
+          raise "App target not found" unless target
+          target.build_configurations.each do |config|
+            config.build_settings["CODE_SIGN_ENTITLEMENTS"] = "App/App.entitlements"
+            puts "Set CODE_SIGN_ENTITLEMENTS for #{config.name}"
+          end
+          project.save
+          puts "Saved project.pbxproj with CODE_SIGN_ENTITLEMENTS"
+          RUBY
       - name: Set app icon
         script: |
           ICON_SET="ios/App/App/Assets.xcassets/AppIcon.appiconset"

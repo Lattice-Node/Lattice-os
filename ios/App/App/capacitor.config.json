@@ -1,57 +1,44 @@
 {
-	"appId": "com.lattice.protocol",
-	"appName": "Lattice",
-	"webDir": "out",
-	"server": {
-		"url": "https://www.lattice-protocol.com/home",
-		"cleartext": false,
-		"allowNavigation": [
-			"accounts.google.com",
-			"*.google.com",
-			"*.googleapis.com",
-			"appleid.apple.com",
-			"*.apple.com",
-			"*.icloud.com",
-			"www.lattice-protocol.com"
-		]
-	},
-	"plugins": {
-		"PushNotifications": {
-			"presentationOptions": [
-				"badge",
-				"sound",
-				"alert"
-			]
-		},
-		"LocalNotifications": {
-			"smallIcon": "ic_stat_icon",
-			"iconColor": "#6c71e8"
-		},
-		"Camera": {
-			"presentationStyle": "fullScreen"
-		},
-		"FirebaseAuthentication": {
-			"skipNativeAuth": false,
-			"providers": [
-				"google.com",
-				"apple.com"
-			]
-		}
-	},
-	"ios": {
-		"contentInset": "automatic",
-		"scheme": "Lattice"
-	},
-	"packageClassList": [
-		"FirebaseAppPlugin",
-		"FirebaseAuthenticationPlugin",
-		"AppPlugin",
-		"CAPCameraPlugin",
-		"HapticsPlugin",
-		"LocalNotificationsPlugin",
-		"CAPNetworkPlugin",
-		"PreferencesPlugin",
-		"PushNotificationsPlugin",
-		"SharePlugin"
-	]
+  "appId": "com.lattice.protocol",
+  "appName": "Lattice",
+  "webDir": "out",
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": [
+        "badge",
+        "sound",
+        "alert"
+      ]
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon",
+      "iconColor": "#6c71e8"
+    },
+    "Camera": {
+      "presentationStyle": "fullScreen"
+    },
+    "FirebaseAuthentication": {
+      "skipNativeAuth": false,
+      "providers": [
+        "google.com",
+        "apple.com"
+      ]
+    }
+  },
+  "ios": {
+    "contentInset": "automatic",
+    "scheme": "Lattice"
+  },
+  "packageClassList": [
+    "FirebaseAppPlugin",
+    "FirebaseAuthenticationPlugin",
+    "AppPlugin",
+    "CAPCameraPlugin",
+    "HapticsPlugin",
+    "LocalNotificationsPlugin",
+    "CAPNetworkPlugin",
+    "PreferencesPlugin",
+    "PushNotificationsPlugin",
+    "SharePlugin"
+  ]
 }
