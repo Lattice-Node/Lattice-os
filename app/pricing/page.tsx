@@ -110,7 +110,7 @@ export default function PricingPage() {
                 <span style={{ fontSize: 12, color: "var(--text-disabled)", marginLeft: 4 }}>{plan.priceNote}</span>
               </div>
 
-              <Link href="/login" style={{ display: "block", padding: "10px", borderRadius: 8, background: plan.popular ? plan.color : "var(--surface)", border: plan.popular ? "none" : `1px solid ${plan.border}`, color: plan.popular ? "#fff" : plan.color, fontSize: 13, fontWeight: 600, textDecoration: "none", textAlign: "center", marginBottom: 20 }}>
+              <Link href="/login/" style={{ display: "block", padding: "10px", borderRadius: 8, background: plan.popular ? plan.color : "var(--surface)", border: plan.popular ? "none" : `1px solid ${plan.border}`, color: plan.popular ? "#fff" : plan.color, fontSize: 13, fontWeight: 600, textDecoration: "none", textAlign: "center", marginBottom: 20 }}>
                 {plan.price === "¥0" ? "無料で始める" : "このプランを選ぶ"}
               </Link>
 
@@ -148,7 +148,7 @@ export default function PricingPage() {
 
         {/* CTA */}
         <div style={{ textAlign: "center", marginTop: 40 }}>
-          <Link href="/login" style={{ display: "inline-block", padding: "14px 32px", borderRadius: 10, background: "var(--btn-bg)", color: "#fff", fontSize: 15, fontWeight: 600, textDecoration: "none" }}>
+          <Link href="/login/" style={{ display: "inline-block", padding: "14px 32px", borderRadius: 10, background: "var(--btn-bg)", color: "#fff", fontSize: 15, fontWeight: 600, textDecoration: "none" }}>
             無料で始める
           </Link>
           <p style={{ fontSize: 12, color: "var(--text-disabled)", marginTop: 10 }}>クレジットカード不要</p>

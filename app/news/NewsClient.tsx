@@ -93,7 +93,7 @@ export default function NewsClient({ agentId, latestOutput, latestDate }: Props)
           <p style={{ color: "#9096a8", fontSize: 13, margin: "0 0 6px" }}>
             AIニュースエージェントが見つかりません
           </p>
-          <a href="/store" style={{ color: "#6c71e8", fontSize: 13, textDecoration: "none" }}>
+          <a href="/store/" style={{ color: "#6c71e8", fontSize: 13, textDecoration: "none" }}>
             ストアから追加
           </a>
         </div>

@@ -206,7 +206,7 @@ export default function InboxList({ items }: { items: InboxItem[] }) {
             <p style={{ color: "#4a5060", fontSize: 13, margin: "0 0 8px" }}>
               {screen.filter === "today" ? "今日の受信はまだありません" : "過去の受信はありません"}
             </p>
-            <Link href="/agents" style={{ color: "#6c71e8", fontSize: 13, textDecoration: "none" }}>
+            <Link href="/agents/" style={{ color: "#6c71e8", fontSize: 13, textDecoration: "none" }}>
               エージェントを実行する
             </Link>
           </div>

@@ -612,11 +612,11 @@ const handleLineGenerate = async () => {
         )}
         {/* Links */}
         <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
-          <a href="/privacy" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid var(--border)", textDecoration: "none" }}>
+          <a href="/privacy/" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid var(--border)", textDecoration: "none" }}>
             <span style={{ fontSize: 14, color: "var(--text-primary)" }}>プライバシーポリシー</span>
             <span style={{ fontSize: 14, color: "var(--text-disabled)" }}>&rarr;</span>
           </a>
-          <a href="/terms" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", textDecoration: "none" }}>
+          <a href="/terms/" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", textDecoration: "none" }}>
             <span style={{ fontSize: 14, color: "var(--text-primary)" }}>利用規約</span>
             <span style={{ fontSize: 14, color: "var(--text-disabled)" }}>&rarr;</span>
           </a>

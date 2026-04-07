@@ -62,7 +62,7 @@ export default function NodeDetailClient({ node, memoryCount, exchangeCount, lat
   return (
     <div className="page">
       <button
-        onClick={() => router.push("/node")}
+        onClick={() => router.push("/node/")}
         style={{ background: "none", border: "none", color: "var(--text-secondary)", fontSize: 14, cursor: "pointer", fontFamily: "inherit", padding: "8px 0", marginBottom: 12 }}
       >
         ← ノード一覧

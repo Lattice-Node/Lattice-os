@@ -37,7 +37,7 @@ function LoginContent() {
     setLoginError(null);
 
     if (!isNative) {
-      signIn("google", { callbackUrl: "/home" });
+      signIn("google", { callbackUrl: "/home/" });
       return;
     }
 
@@ -111,7 +111,7 @@ function LoginContent() {
     setLoginError(null);
 
     if (!isNative) {
-      signIn("apple", { callbackUrl: "/home" });
+      signIn("apple", { callbackUrl: "/home/" });
       return;
     }
 
@@ -327,11 +327,11 @@ function LoginContent() {
         }}
       >
         ログインすることで
-        <a href="/terms" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>
+        <a href="/terms/" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>
           利用規約
         </a>
         ・
-        <a href="/privacy" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>
+        <a href="/privacy/" style={{ color: "var(--text-secondary)", textDecoration: "none" }}>
           プライバシーポリシー
         </a>
         に同意したものとみなします

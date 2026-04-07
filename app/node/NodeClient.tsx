@@ -57,7 +57,7 @@ export default function NodeClient({ nodes }: { nodes: Node[] }) {
             ノードを作成して、あなたのネットワークを広げましょう
           </p>
           <button
-            onClick={() => router.push("/node/new")}
+            onClick={() => router.push("/node/new/")}
             style={{
               padding: "10px 24px",
               borderRadius: 999,
@@ -77,7 +77,7 @@ export default function NodeClient({ nodes }: { nodes: Node[] }) {
         <>
           <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 12 }}>
             <button
-              onClick={() => router.push("/node/new")}
+              onClick={() => router.push("/node/new/")}
               style={{
                 padding: "8px 16px",
                 borderRadius: 999,

@@ -41,13 +41,13 @@ export default function Nav() {
 
         <nav style={{ display: "flex", alignItems: "center", gap: 4 }}>
           {session && (
-            <Link href="/agents" style={{
+            <Link href="/agents/" style={{
               padding: "6px 12px",
               borderRadius: 6,
               fontSize: 14,
               fontWeight: 500,
-              color: pathname?.startsWith("/agents") ? "#ffffff" : "#666666",
-              background: pathname?.startsWith("/agents") ? "#161616" : "transparent",
+              color: pathname?.startsWith("/agents/") ? "#ffffff" : "#666666",
+              background: pathname?.startsWith("/agents/") ? "#161616" : "transparent",
               textDecoration: "none",
             }}>
               Agents
@@ -77,10 +77,10 @@ export default function Nav() {
             </>
           ) : (
             <>
-              <Link href="/login" style={{ padding: "6px 14px", borderRadius: 6, fontSize: 13, color: "#666", textDecoration: "none" }}>
+              <Link href="/login/" style={{ padding: "6px 14px", borderRadius: 6, fontSize: 13, color: "#666", textDecoration: "none" }}>
                 Log in
               </Link>
-              <Link href="/login" style={{ padding: "7px 16px", borderRadius: 6, fontSize: 13, fontWeight: 600, background: "#5b5fc7", color: "#fff", textDecoration: "none" }}>
+              <Link href="/login/" style={{ padding: "7px 16px", borderRadius: 6, fontSize: 13, fontWeight: 600, background: "#5b5fc7", color: "#fff", textDecoration: "none" }}>
                 Get started
               </Link>
             </>

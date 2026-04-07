@@ -41,7 +41,8 @@
       "Bash(git push:*)",
       "Bash(cat capacitor.config.*)",
       "Bash(grep -L \"jsonWithCors\\\\|corsOptions\" app/api/**/route.ts)",
-      "Bash(find app/api -name \"route.ts\" -exec grep -L \"jsonWithCors\\\\|corsOptions\" {} \\\\;)"
+      "Bash(find app/api -name \"route.ts\" -exec grep -L \"jsonWithCors\\\\|corsOptions\" {} \\\\;)",
+      "Bash(grep:*)"
     ]
   }
 }

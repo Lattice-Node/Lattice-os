@@ -138,7 +138,7 @@ export default function NewAgentClient({ isPaid = false, connectedProviders = []
     <main className="create-page">
       <div className="create-container">
         <div className="create-header">
-          <a href="/agents" className="create-back">← Agents</a>
+          <a href="/agents/" className="create-back">← Agents</a>
           <p className="page-label">新規作成</p>
           <h1 className="page-title">エージェントを作る</h1>
           <p>やりたいことを日本語で書いてください。自動で設定します。</p>

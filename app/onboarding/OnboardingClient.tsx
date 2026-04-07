@@ -46,7 +46,7 @@ export default function OnboardingClient() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ interests }),
     });
-    router.push("/home");
+    router.push("/home/");
   };
 
   const isLast = step === 2;

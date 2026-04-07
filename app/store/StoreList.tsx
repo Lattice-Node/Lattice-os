@@ -144,7 +144,7 @@ export default function StoreList({ templates, isPaid, userPlan = "free", connec
   }
 
   async function handleAdd() {
-    if (!isLoggedIn) { router.push("/login"); return; }
+    if (!isLoggedIn) { router.push("/login/"); return; }
     if (!selected || adding) return;
     setAdding(true);
     setError("");
@@ -171,7 +171,7 @@ export default function StoreList({ templates, isPaid, userPlan = "free", connec
   }
 
   async function handleCopyCommunity() {
-    if (!isLoggedIn) { router.push("/login"); return; }
+    if (!isLoggedIn) { router.push("/login/"); return; }
     if (!selectedCommunity || copying) return;
     setCopying(true);
     setError("");
@@ -258,7 +258,7 @@ export default function StoreList({ templates, isPaid, userPlan = "free", connec
             <p style={{ fontSize: 15, fontWeight: 600, color: "var(--success)", margin: 0 }}>{"マイエージェントに追加しました"}</p>
           </div>
         ) : !isLoggedIn ? (
-          <button onClick={() => router.push("/login")} style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: "var(--btn-bg)", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+          <button onClick={() => router.push("/login/")} style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: "var(--btn-bg)", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
             {"ログインして使う"}
           </button>
         ) : !hasAccess ? (
@@ -267,7 +267,7 @@ export default function StoreList({ templates, isPaid, userPlan = "free", connec
               <p style={{ fontSize: 14, fontWeight: 600, color: badge?.color || "#a855f7", margin: "0 0 6px" }}>{PLAN_BADGE[requiredPlan]?.label || "Starter+"}{"以上のプランで利用できます"}</p>
               <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: 0 }}>{"このエージェントには有料プランの機能が含まれています"}</p>
             </div>
-            <a href="/settings" style={{ display: "block", padding: "14px", borderRadius: 10, background: badge?.color || "#a855f7", color: "#fff", fontSize: 15, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>{"プランをアップグレード"}</a>
+            <a href="/settings/" style={{ display: "block", padding: "14px", borderRadius: 10, background: badge?.color || "#a855f7", color: "#fff", fontSize: 15, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>{"プランをアップグレード"}</a>
           </div>
         ) : (
           <button onClick={handleCopyCommunity} disabled={copying} style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: copying ? "var(--surface)" : "var(--success)", color: copying ? "var(--text-disabled)" : "#0a1a0e", fontSize: 15, fontWeight: 600, cursor: copying ? "default" : "pointer", fontFamily: "inherit" }}>
@@ -381,7 +381,7 @@ export default function StoreList({ templates, isPaid, userPlan = "free", connec
             <p style={{ fontSize: 15, fontWeight: 600, color: "var(--success)", margin: 0 }}>{"エージェントを作成しました"}</p>
           </div>
         ) : !isLoggedIn ? (
-          <button onClick={() => router.push("/login")} style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: "var(--btn-bg)", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+          <button onClick={() => router.push("/login/")} style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: "var(--btn-bg)", color: "#fff", fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
             {"ログインして使う"}
           </button>
         ) : !hasAccess ? (
@@ -390,7 +390,7 @@ export default function StoreList({ templates, isPaid, userPlan = "free", connec
               <p style={{ fontSize: 14, fontWeight: 600, color: badge?.color || "#a855f7", margin: "0 0 6px" }}>{PLAN_BADGE[requiredPlan]?.label || "Starter+"}{"以上のプランで利用できます"}</p>
               <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: 0 }}>{"このエージェントには有料プランの機能が含まれています"}</p>
             </div>
-            <a href="/settings" style={{ display: "block", padding: "14px", borderRadius: 10, background: badge?.color || "#a855f7", color: "#fff", fontSize: 15, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>{"プランをアップグレード"}</a>
+            <a href="/settings/" style={{ display: "block", padding: "14px", borderRadius: 10, background: badge?.color || "#a855f7", color: "#fff", fontSize: 15, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>{"プランをアップグレード"}</a>
           </div>
         ) : needsConnection ? (
           <div style={{ textAlign: "center" }}>
@@ -398,7 +398,7 @@ export default function StoreList({ templates, isPaid, userPlan = "free", connec
               <p style={{ fontSize: 14, fontWeight: 600, color: "var(--accent)", margin: "0 0 6px" }}>{features.needsGmail ? "Gmail" : "Discord"}{"連携が必要です"}</p>
               <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: 0 }}>{"設定画面からサービスを連携してください。"}</p>
             </div>
-            <a href="/settings" style={{ display: "block", padding: "14px", borderRadius: 10, background: "var(--accent)", color: "#fff", fontSize: 15, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>{"連携する"}</a>
+            <a href="/settings/" style={{ display: "block", padding: "14px", borderRadius: 10, background: "var(--accent)", color: "#fff", fontSize: 15, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>{"連携する"}</a>
           </div>
         ) : (
           <button onClick={handleAdd} disabled={adding} style={{ width: "100%", padding: "14px", borderRadius: 10, border: "none", background: adding ? "var(--surface)" : badge?.color || "var(--btn-bg)", color: adding ? "var(--text-disabled)" : "#fff", fontSize: 15, fontWeight: 600, cursor: adding ? "default" : "pointer", fontFamily: "inherit" }}>

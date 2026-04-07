@@ -32,7 +32,7 @@ export default function NewNodeClient() {
       return;
     }
 
-    router.push("/node");
+    router.push("/node/");
   };
 
   const inputStyle = {

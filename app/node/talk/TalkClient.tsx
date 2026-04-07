@@ -163,7 +163,7 @@ export default function TalkClient({ nodeId, nodeName, latestExchange, openingVo
         }}
       >
         <button
-          onClick={() => router.push(`/node/${nodeId}`)}
+          onClick={() => router.push(`/node/detail/?id=${nodeId}`)}
           style={{ background: "none", border: "none", color: "var(--text-secondary)", fontSize: 16, cursor: "pointer", fontFamily: "inherit", padding: "4px 8px" }}
         >
           ←

@@ -94,11 +94,11 @@ export default function AgentsList({ agents }: { agents: Agent[] }) {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <Link href="/store" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "16px", borderRadius: 12, background: "#6c71e8", color: "#fff", fontSize: 15, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>
+          <Link href="/store/" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "16px", borderRadius: 12, background: "#6c71e8", color: "#fff", fontSize: 15, fontWeight: 600, textDecoration: "none", textAlign: "center" }}>
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 9H14M14 9L10 5M14 9L10 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
             ストアからエージェントを選ぶ
           </Link>
-          <Link href="/agents/new" style={{ display: "block", padding: "14px", borderRadius: 12, border: "1px solid #2e3440", background: "#1c2028", color: "#9096a8", fontSize: 14, textDecoration: "none", textAlign: "center" }}>
+          <Link href="/agents/new/" style={{ display: "block", padding: "14px", borderRadius: 12, border: "1px solid #2e3440", background: "#1c2028", color: "#9096a8", fontSize: 14, textDecoration: "none", textAlign: "center" }}>
             自分でエージェントを作成する
           </Link>
         </div>
@@ -135,7 +135,7 @@ export default function AgentsList({ agents }: { agents: Agent[] }) {
           )}
         </div>
       ))}
-      <Link href="/store" className="empty-state animate-in" style={{ display: "block", textDecoration: "none", animationDelay: items.length * 50 + "ms" }}>
+      <Link href="/store/" className="empty-state animate-in" style={{ display: "block", textDecoration: "none", animationDelay: items.length * 50 + "ms" }}>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6c71e8" strokeWidth="1.5" style={{ margin: "0 auto 2px", display: "block" }}>
           <path d="M12 5v14M5 12h14" />
         </svg>

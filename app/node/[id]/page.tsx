@@ -5,11 +5,11 @@ import NodeDetailClient from "./NodeDetailClient";
 
 export default async function NodeDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/login");
+  if (!session?.user?.id) redirect("/login/");
 
   const { id } = await params;
   const node = await prisma.node.findUnique({ where: { id } }).catch(() => null);
-  if (!node || node.userId !== session.user.id) redirect("/node");
+  if (!node || node.userId !== session.user.id) redirect("/node/");
 
   const [memoryCount, exchangeCount, latestDiary, recentExchanges] = await Promise.all([
     prisma.nodeMemory.count({ where: { nodeId: id } }).catch(() => 0),

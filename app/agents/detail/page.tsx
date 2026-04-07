@@ -129,7 +129,7 @@ function AgentDetailInner() {
   async function handleDelete() {
     if (!confirm("このエージェントを削除しますか？")) return;
     await nativeFetch(`/api/agents/${id}`, { method: "DELETE" });
-    router.push("/agents");
+    router.push("/agents/");
   }
 
   if (loading) {
@@ -147,7 +147,7 @@ function AgentDetailInner() {
           エージェントが見つかりません
         </p>
         <Link
-          href="/agents"
+          href="/agents/"
           style={{ color: "var(--btn-bg)", fontSize: 13, textDecoration: "none" }}
         >
           戻る
@@ -173,7 +173,7 @@ function AgentDetailInner() {
   return (
     <div className="page" style={{ paddingTop: 16 }}>
       <Link
-        href="/agents"
+        href="/agents/"
         style={{
           fontSize: 13,
           color: "var(--text-disabled)",
