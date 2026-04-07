@@ -70,6 +70,46 @@ workflows:
             raise "ERROR: #{plist_path} does not exist on disk"
           end
           RUBY
+      - name: Set app icon
+        script: |
+          ICON_SET="ios/App/App/Assets.xcassets/AppIcon.appiconset"
+          cp public/app-icon-1024.png "$ICON_SET/AppIcon-512@2x.png"
+          cat > "$ICON_SET/Contents.json" << 'ICONEOF'
+          {
+            "images" : [
+              {
+                "filename" : "AppIcon-512@2x.png",
+                "idiom" : "universal",
+                "platform" : "ios",
+                "size" : "1024x1024"
+              }
+            ],
+            "info" : {
+              "author" : "xcode",
+              "version" : 1
+            }
+          }
+          ICONEOF
+      - name: Set up keychain
+        script: keychain initialize
+      - name: Fetch signing files
+        script: |
+          echo "$APP_STORE_CONNECT_PRIVATE_KEY" > /tmp/api_key.p8
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --private-key @file:/tmp/api_key.p8 \
+            --key-id "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
+            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
+            --create
+      - name: Add certificates to keychain
+        script: keychain add-certificates
+      - name: Set up code signing
+        script: xcode-project use-profiles
+      - name: Increment build number
+        script: |
+          PLIST="ios/App/App/Info.plist"
+          BUILD_NUM=$BUILD_NUMBER
+          plutil -replace CFBundleVersion -string "$BUILD_NUM" "$PLIST"
       - name: Force inject Google REVERSED_CLIENT_ID into Info.plist URL schemes
         script: |
           python3 <<'PYEOF'
@@ -133,46 +173,11 @@ workflows:
 
           print("OK: Info.plist updated successfully")
           PYEOF
-      - name: Set app icon
+      - name: Debug Info.plist state before Build iOS
         script: |
-          ICON_SET="ios/App/App/Assets.xcassets/AppIcon.appiconset"
-          cp public/app-icon-1024.png "$ICON_SET/AppIcon-512@2x.png"
-          cat > "$ICON_SET/Contents.json" << 'ICONEOF'
-          {
-            "images" : [
-              {
-                "filename" : "AppIcon-512@2x.png",
-                "idiom" : "universal",
-                "platform" : "ios",
-                "size" : "1024x1024"
-              }
-            ],
-            "info" : {
-              "author" : "xcode",
-              "version" : 1
-            }
-          }
-          ICONEOF
-      - name: Set up keychain
-        script: keychain initialize
-      - name: Fetch signing files
-        script: |
-          echo "$APP_STORE_CONNECT_PRIVATE_KEY" > /tmp/api_key.p8
-          app-store-connect fetch-signing-files "$BUNDLE_ID" \
-            --type IOS_APP_STORE \
-            --private-key @file:/tmp/api_key.p8 \
-            --key-id "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
-            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
-            --create
-      - name: Add certificates to keychain
-        script: keychain add-certificates
-      - name: Set up code signing
-        script: xcode-project use-profiles
-      - name: Increment build number
-        script: |
-          PLIST="ios/App/App/Info.plist"
-          BUILD_NUM=$BUILD_NUMBER
-          plutil -replace CFBundleVersion -string "$BUILD_NUM" "$PLIST"
+          echo "=== Info.plist contents (XML form) ==="
+          plutil -convert xml1 -o - ios/App/App/Info.plist
+          echo "=== End ==="
       - name: Build iOS
         script: |
           xcode-project build-ipa \
