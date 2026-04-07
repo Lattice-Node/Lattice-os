@@ -62,6 +62,37 @@ workflows:
           if [ -f "$NODE_FILE" ] && [ -f "$PODS_FILE" ]; then
             diff "$NODE_FILE" "$PODS_FILE" && echo "FILES ARE IDENTICAL" || echo "FILES DIFFER (see above)"
           fi
+
+          echo ""
+          echo "=== Pods directory structure (depth 2) ==="
+          find ios/App/Pods -type d -maxdepth 2 2>/dev/null | head -50 || echo "Pods directory does not exist"
+
+          echo ""
+          echo "=== Search for GoogleAuthProviderHandler.swift anywhere under ios/ ==="
+          find ios -name "GoogleAuthProviderHandler.swift" 2>/dev/null || echo "Not found"
+
+          echo ""
+          echo "=== Podfile contents ==="
+          cat ios/App/Podfile
+
+          echo ""
+          echo "=== Podfile.lock (first 100 lines) ==="
+          if [ -f ios/App/Podfile.lock ]; then
+            head -100 ios/App/Podfile.lock
+          else
+            echo "Podfile.lock not present"
+          fi
+
+          echo ""
+          echo "=== Capacitor Firebase Authentication xcconfig ==="
+          find ios/App/Pods -path "*CapacitorFirebaseAuth*" -name "*.xcconfig" 2>/dev/null | head -5 | while read f; do
+            echo "--- $f ---"
+            cat "$f"
+          done
+
+          echo ""
+          echo "=== Search for any GoogleAuthProviderHandler reference in Pods ==="
+          grep -rn "GoogleAuthProviderHandler" ios/App/Pods/ 2>/dev/null | head -20 || echo "No references found"
       - name: Force inject GoogleService-Info.plist into Xcode project
         script: |
           cd ios/App
