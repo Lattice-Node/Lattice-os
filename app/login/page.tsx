@@ -36,36 +36,71 @@ function LoginContent() {
     setLoading("google");
     setLoginError(null);
 
-    if (isNative) {
-      try {
-        const { FirebaseAuthentication } = await import("@capacitor-firebase/authentication");
-        const result = await FirebaseAuthentication.signInWithGoogle();
-        const idToken = result.credential?.idToken;
-        if (!idToken) throw new Error("Firebase did not return idToken for Google");
-        const sessionRes = await fetch("https://www.lattice-protocol.com/api/auth/native-session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ idToken }),
-          credentials: "include",
-        });
-        if (!sessionRes.ok) {
-          const errBody = await sessionRes.text();
-          throw new Error(`native-session failed: ${sessionRes.status} ${errBody}`);
-        }
-        const data = await sessionRes.json();
-        if (data.sessionToken) {
-          const { saveNativeSession } = await import("@/lib/native-fetch");
-          await saveNativeSession(data.sessionToken);
-        }
-        window.location.href = "/home/";
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : String(e);
-        console.error("[login] google native failed", msg);
-        setLoginError(`Googleログインに失敗: ${msg}`);
-        setLoading(null);
-      }
-    } else {
+    if (!isNative) {
       signIn("google", { callbackUrl: "/home" });
+      return;
+    }
+
+    try {
+      setLoginError("[1] Loading plugin...");
+      const { FirebaseAuthentication } = await import("@capacitor-firebase/authentication");
+
+      setLoginError("[2] Plugin loaded. Checking current user...");
+      try {
+        const current = await FirebaseAuthentication.getCurrentUser();
+        setLoginError(`[3] Current user: ${current.user ? current.user.email : "none"}. Calling signInWithGoogle...`);
+      } catch (e) {
+        setLoginError(`[3a] getCurrentUser failed: ${e instanceof Error ? e.message : String(e)}. Continuing...`);
+      }
+
+      const startTime = Date.now();
+
+      const signInPromise = FirebaseAuthentication.signInWithGoogle();
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("TIMEOUT after 30s")), 30000)
+      );
+
+      const result = await Promise.race([signInPromise, timeoutPromise]);
+
+      const elapsed = Date.now() - startTime;
+      setLoginError(`[4] signInWithGoogle returned in ${elapsed}ms`);
+
+      const idToken = (result as any).credential?.idToken;
+      if (!idToken) {
+        throw new Error(`No idToken in result: ${JSON.stringify(result).slice(0, 200)}`);
+      }
+
+      setLoginError(`[5] Got idToken (${idToken.length} chars). Calling native-session...`);
+
+      const sessionRes = await fetch("https://www.lattice-protocol.com/api/auth/native-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+        credentials: "include",
+      });
+
+      setLoginError(`[6] native-session status: ${sessionRes.status}`);
+
+      if (!sessionRes.ok) {
+        const errBody = await sessionRes.text();
+        throw new Error(`native-session failed: ${sessionRes.status} ${errBody.slice(0, 200)}`);
+      }
+
+      const data = await sessionRes.json();
+      setLoginError(`[7] Session OK. Saving token...`);
+
+      if (data.sessionToken) {
+        const { saveNativeSession } = await import("@/lib/native-fetch");
+        await saveNativeSession(data.sessionToken);
+      }
+
+      setLoginError(`[8] Redirecting to /home...`);
+      window.location.href = "/home/";
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error("[login] google native failed", msg);
+      setLoginError(`FAILED: ${msg}`);
+      setLoading(null);
     }
   };
 
@@ -74,36 +109,71 @@ function LoginContent() {
     setLoading("apple");
     setLoginError(null);
 
-    if (isNative) {
-      try {
-        const { FirebaseAuthentication } = await import("@capacitor-firebase/authentication");
-        const result = await FirebaseAuthentication.signInWithApple();
-        const idToken = result.credential?.idToken;
-        if (!idToken) throw new Error("Firebase did not return idToken for Apple");
-        const sessionRes = await fetch("https://www.lattice-protocol.com/api/auth/native-session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ idToken }),
-          credentials: "include",
-        });
-        if (!sessionRes.ok) {
-          const errBody = await sessionRes.text();
-          throw new Error(`native-session failed: ${sessionRes.status} ${errBody}`);
-        }
-        const data = await sessionRes.json();
-        if (data.sessionToken) {
-          const { saveNativeSession } = await import("@/lib/native-fetch");
-          await saveNativeSession(data.sessionToken);
-        }
-        window.location.href = "/home/";
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : String(e);
-        console.error("[login] apple native failed", msg);
-        setLoginError(`Appleログインに失敗: ${msg}`);
-        setLoading(null);
-      }
-    } else {
+    if (!isNative) {
       signIn("apple", { callbackUrl: "/home" });
+      return;
+    }
+
+    try {
+      setLoginError("[1] Loading plugin...");
+      const { FirebaseAuthentication } = await import("@capacitor-firebase/authentication");
+
+      setLoginError("[2] Plugin loaded. Checking current user...");
+      try {
+        const current = await FirebaseAuthentication.getCurrentUser();
+        setLoginError(`[3] Current user: ${current.user ? current.user.email : "none"}. Calling signInWithApple...`);
+      } catch (e) {
+        setLoginError(`[3a] getCurrentUser failed: ${e instanceof Error ? e.message : String(e)}. Continuing...`);
+      }
+
+      const startTime = Date.now();
+
+      const signInPromise = FirebaseAuthentication.signInWithApple();
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("TIMEOUT after 30s")), 30000)
+      );
+
+      const result = await Promise.race([signInPromise, timeoutPromise]);
+
+      const elapsed = Date.now() - startTime;
+      setLoginError(`[4] signInWithApple returned in ${elapsed}ms`);
+
+      const idToken = (result as any).credential?.idToken;
+      if (!idToken) {
+        throw new Error(`No idToken in result: ${JSON.stringify(result).slice(0, 200)}`);
+      }
+
+      setLoginError(`[5] Got idToken (${idToken.length} chars). Calling native-session...`);
+
+      const sessionRes = await fetch("https://www.lattice-protocol.com/api/auth/native-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+        credentials: "include",
+      });
+
+      setLoginError(`[6] native-session status: ${sessionRes.status}`);
+
+      if (!sessionRes.ok) {
+        const errBody = await sessionRes.text();
+        throw new Error(`native-session failed: ${sessionRes.status} ${errBody.slice(0, 200)}`);
+      }
+
+      const data = await sessionRes.json();
+      setLoginError(`[7] Session OK. Saving token...`);
+
+      if (data.sessionToken) {
+        const { saveNativeSession } = await import("@/lib/native-fetch");
+        await saveNativeSession(data.sessionToken);
+      }
+
+      setLoginError(`[8] Redirecting to /home...`);
+      window.location.href = "/home/";
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error("[login] apple native failed", msg);
+      setLoginError(`FAILED: ${msg}`);
+      setLoading(null);
     }
   };
 
