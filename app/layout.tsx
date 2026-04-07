@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { Providers } from "./providers";
 import PushNotificationSetup from "@/components/PushNotificationSetup";
 import BottomNav from "@/components/BottomNav";
+import NativeBodyClass from "@/components/NativeBodyClass";
 import NetworkStatus from "@/components/NetworkStatus";
 import MorningBriefingSetup from "@/components/MorningBriefingSetup";
 
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body style={{ margin: 0, padding: 0 }}>
         <Providers>
+          <NativeBodyClass />
           <div className="app-shell">{children}</div>
           <BottomNav />
           <PushNotificationSetup />

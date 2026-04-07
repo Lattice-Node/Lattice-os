@@ -11,6 +11,12 @@ const isNativePlatform = (): boolean =>
 async function universalSignOut() {
   try {
     if (isNativePlatform()) {
+      try {
+        const { FirebaseAuthentication } = await import("@capacitor-firebase/authentication");
+        await FirebaseAuthentication.signOut();
+      } catch (e) {
+        console.warn("[signout] firebase signOut failed", e);
+      }
       await clearNativeSession();
       window.location.href = "/login/";
       return;
