@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { nativeFetch } from "@/lib/native-fetch";
 
 interface Variable {
   key: string;
@@ -156,7 +157,7 @@ export default function StoreList({ templates, isPaid, userPlan = "free", connec
     }
     const prompt = buildPrompt(selected, varValues);
     try {
-      const res = await fetch("/api/agents", {
+      const res = await nativeFetch("/api/agents", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: selected.name, description: selected.description || "", prompt, trigger: selected.trigger || "manual", triggerCron: selected.triggerCron || "", connections: "[]", outputType: "app", outputConfig: "{}" }),
@@ -175,7 +176,7 @@ export default function StoreList({ templates, isPaid, userPlan = "free", connec
     setCopying(true);
     setError("");
     try {
-      const res = await fetch("/api/store/community/copy", {
+      const res = await nativeFetch("/api/store/community/copy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ agentId: selectedCommunity.id }),

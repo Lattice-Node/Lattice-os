@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { hapticImpact } from "@/lib/native";
+import { nativeFetch } from "@/lib/native-fetch";
 
 const tabs = [
   { href: "/home", label: "ホーム", icon: (a: boolean) => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke={a ? "var(--nav-active)" : "var(--nav-inactive)"} strokeWidth="1.4"><path d="M3 9l7-6 7 6"/><path d="M5 8v8a1 1 0 001 1h8a1 1 0 001-1V8"/></svg> },
@@ -22,7 +23,7 @@ export default function BottomNav() {
 
   useEffect(() => {
     if ((pathname === "/store" || pathname === "/node") && status === "authenticated") {
-      fetch("/api/tasks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "store_visit" }) }).catch(() => {});
+      nativeFetch("/api/tasks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "store_visit" }) }).catch(() => {});
     }
   }, [pathname, status]);
 

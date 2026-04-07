@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { hapticImpact } from "@/lib/native";
+import { nativeFetch } from "@/lib/native-fetch";
 
 interface Task { id: string; label: string; credits: number; type: string; category: string; completed: boolean; claimable: boolean; count?: number; unclaimed?: number; }
 interface Props { name: string; avatarUrl: string | null; credits: number; plan: string; agentCount: number; isLoggedIn: boolean; }
@@ -43,7 +44,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
 
   const fetchTasks = useCallback(async () => {
     try {
-      const res = await fetch("/api/tasks");
+      const res = await nativeFetch("/api/tasks");
       const d = await res.json();
       setDaily(d.daily || []); setStart(d.start || []); setFeature(d.feature || []); setSocial(d.social || []);
       setDailyDone(d.dailyCompleted || 0); setDailyTotal(d.dailyTotal || 0);
@@ -59,7 +60,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
     const ref = sessionStorage.getItem("lattice_ref");
     if (!ref) return;
     sessionStorage.removeItem("lattice_ref");
-    fetch("/api/referral", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: ref }) })
+    nativeFetch("/api/referral", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: ref }) })
       .then(r => r.json()).then(d => {
         if (d.success) { setRefApplied(true); setCredits(c => c + 10); setTimeout(() => setRefApplied(false), 5000); }
       }).catch(() => {});
@@ -69,14 +70,14 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
     if (claiming) return;
     setClaiming(taskId);
     try {
-      const res = await fetch("/api/tasks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ taskId }) });
+      const res = await nativeFetch("/api/tasks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ taskId }) });
       const d = await res.json();
       if (d.success) { setFeedback({ id: taskId, cr: d.credits }); setTimeout(() => setFeedback(null), 2000); fetchTasks(); }
     } catch {} finally { setClaiming(null); }
   };
 
   const genReferral = async () => {
-    const res = await fetch("/api/tasks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "generate_referral" }) });
+    const res = await nativeFetch("/api/tasks", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "generate_referral" }) });
     const d = await res.json();
     if (d.referralCode) setReferralCode(d.referralCode);
   };

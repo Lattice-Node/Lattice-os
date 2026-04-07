@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Loading from "@/components/Loading";
+import { nativeFetch } from "@/lib/native-fetch";
 
 interface Diary {
   id: string;
@@ -18,7 +19,7 @@ export default function DiariesPage() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`/api/node/${id}/diaries`)
+    nativeFetch(`/api/node/${id}/diaries`)
       .then((r) => r.json())
       .then((data) => { setDiaries(data.diaries || []); setLoading(false); })
       .catch(() => setLoading(false));

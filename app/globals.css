@@ -8,6 +8,15 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
+/* Disable iOS WebView bounce / overscroll on native */
+html, body {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: auto;
+  overflow-x: hidden;
+}
+html { height: 100%; }
+body { min-height: 100%; position: relative; }
+
 /* ── Dark (default) ── */
 :root, [data-theme="dark"] {
   --bg:#000; --surface:#111; --surface-raised:#1A1A1A;

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { nativeFetch } from "@/lib/native-fetch";
 
 type Agent = {
   id: string;
@@ -45,7 +46,7 @@ export default function AgentDetailPage() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`/api/agents/${id}`)
+    nativeFetch(`/api/agents/${id}`)
       .then((r) => r.json())
       .then((data) => {
         setAgent(data.agent);
@@ -56,7 +57,7 @@ export default function AgentDetailPage() {
 
   async function fetchLogs() {
     try {
-      const res = await fetch(`/api/agents/${id}/logs`);
+      const res = await nativeFetch(`/api/agents/${id}/logs`);
       if (res.ok) {
         const data = await res.json();
         setLogs(data.logs ?? []);
@@ -66,7 +67,7 @@ export default function AgentDetailPage() {
 
   async function handleToggleActive() {
     if (!agent) return;
-    const res = await fetch(`/api/agents/${id}`, {
+    const res = await nativeFetch(`/api/agents/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ active: !agent.active }),
@@ -77,7 +78,7 @@ export default function AgentDetailPage() {
 
   async function handleTogglePublic() {
     if (!agent) return;
-    const res = await fetch("/api/agents/" + id, {
+    const res = await nativeFetch("/api/agents/" + id, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ isPublic: !agent.isPublic }),
@@ -91,7 +92,7 @@ export default function AgentDetailPage() {
     setOutput("");
     setOutputStatus("");
     try {
-      const res = await fetch("/api/execute", {
+      const res = await nativeFetch("/api/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ agentId: id }),
@@ -115,7 +116,7 @@ export default function AgentDetailPage() {
     setEditing(true);
   }
   async function handleSave() {
-    const res = await fetch(`/api/agents/${id}`, {
+    const res = await nativeFetch(`/api/agents/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: editName, description: editDesc }),
@@ -126,7 +127,7 @@ export default function AgentDetailPage() {
   }
   async function handleDelete() {
     if (!confirm("このエージェントを削除しますか？")) return;
-    await fetch(`/api/agents/${id}`, { method: "DELETE" });
+    await nativeFetch(`/api/agents/${id}`, { method: "DELETE" });
     router.push("/agents");
   }
 

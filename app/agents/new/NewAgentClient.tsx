@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { nativeFetch } from "@/lib/native-fetch";
 
 type ParsedAgent = {
   name: string;
@@ -57,7 +58,7 @@ export default function NewAgentClient({ isPaid = false, connectedProviders = []
   const [userConnections, setUserConnections] = useState<{id:string,provider:string,metadata:string}[]>([]);
 
   useEffect(() => {
-    fetch("/api/connections").then(r => r.json()).then(d => setUserConnections(d.connections || [])).catch(() => {});
+    nativeFetch("/api/connections").then(r => r.json()).then(d => setUserConnections(d.connections || [])).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -73,7 +74,7 @@ export default function NewAgentClient({ isPaid = false, connectedProviders = []
     setError("");
     setParsed(null);
     try {
-      const res = await fetch("/api/agents/parse", {
+      const res = await nativeFetch("/api/agents/parse", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ input }),
@@ -109,7 +110,7 @@ export default function NewAgentClient({ isPaid = false, connectedProviders = []
     setSaving(true);
     setError("");
     try {
-      const res = await fetch("/api/agents", {
+      const res = await nativeFetch("/api/agents", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -3,6 +3,23 @@ import { signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useApp } from "@/lib/theme";
+import { nativeFetch, clearNativeSession } from "@/lib/native-fetch";
+
+const isNativePlatform = (): boolean =>
+  typeof window !== "undefined" && !!(window as any).Capacitor?.isNativePlatform?.();
+
+async function universalSignOut() {
+  try {
+    if (isNativePlatform()) {
+      await clearNativeSession();
+      window.location.href = "/login/";
+      return;
+    }
+    await signOut({ callbackUrl: "/" });
+  } catch {
+    window.location.href = "/login/";
+  }
+}
 
 interface Props {
   name: string;
@@ -104,13 +121,13 @@ export default function SettingsClient({ name, email, image, credits, distribute
   const { theme, toggleTheme } = useApp();
 
   useEffect(() => {
-    fetch("/api/connections").then(r => r.json()).then(d => setConnections(d.connections || [])).catch(() => {});
+    nativeFetch("/api/connections").then(r => r.json()).then(d => setConnections(d.connections || [])).catch(() => {});
   }, []);
 
   const handleDisconnect = async (id: string) => {
     setDisconnecting(id);
     try {
-      await fetch("/api/connections", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ connectionId: id }) });
+      await nativeFetch("/api/connections", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ connectionId: id }) });
       setConnections(c => c.filter(x => x.id !== id));
     } catch {} finally { setDisconnecting(null); }
   };
@@ -118,7 +135,7 @@ export default function SettingsClient({ name, email, image, credits, distribute
 const handleLineGenerate = async () => {
     setLineConnecting(true);
     try {
-      const res = await fetch("/api/connections/line/code", { method: "POST" });
+      const res = await nativeFetch("/api/connections/line/code", { method: "POST" });
       const data = await res.json();
       if (data.code) setLineCode(data.code);
     } catch {} finally { setLineConnecting(false); }
@@ -131,7 +148,7 @@ const handleLineGenerate = async () => {
   const handlePurchase = async (planId: string) => {
     setPurchasing(planId);
     try {
-      const res = await fetch("/api/stripe/checkout", {
+      const res = await nativeFetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ planId }),
@@ -145,8 +162,8 @@ const handleLineGenerate = async () => {
     if (!confirm) { setConfirm(true); return; }
     setDeleting(true);
     try {
-      const res = await fetch("/api/users/delete", { method: "DELETE" });
-      if (res.ok) await signOut({ callbackUrl: "/" });
+      const res = await nativeFetch("/api/users/delete", { method: "DELETE" });
+      if (res.ok) await universalSignOut();
     } catch { setDeleting(false); setConfirm(false); }
   };
 
@@ -154,7 +171,7 @@ const handleLineGenerate = async () => {
     if (!cancelConfirm) { setCancelConfirm(true); return; }
     setCanceling(true);
     try {
-      const res = await fetch("/api/stripe/cancel", { method: "POST" });
+      const res = await nativeFetch("/api/stripe/cancel", { method: "POST" });
       if (res.ok) window.location.reload();
     } catch { setCanceling(false); setCancelConfirm(false); }
   };
@@ -618,7 +635,7 @@ const handleLineGenerate = async () => {
           </button>
         </div>
 
-        <button onClick={() => signOut({ callbackUrl: "/" })} style={{ width: "100%", padding: "13px", borderRadius: 999, border: "1px solid var(--border-visible)", background: "transparent", color: "var(--accent)", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", marginBottom: 10 }}>
+        <button onClick={() => universalSignOut()} style={{ width: "100%", padding: "13px", borderRadius: 999, border: "1px solid var(--border-visible)", background: "transparent", color: "var(--accent)", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", marginBottom: 10 }}>
           ログアウト
         </button>
 

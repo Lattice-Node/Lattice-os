@@ -7,6 +7,7 @@ import StepIndicator from "@/components/onboarding/StepIndicator";
 import ConceptStep from "@/components/onboarding/steps/ConceptStep";
 import ExamplesStep from "@/components/onboarding/steps/ExamplesStep";
 import InterestsStep from "@/components/onboarding/steps/InterestsStep";
+import { nativeFetch } from "@/lib/native-fetch";
 
 const STEPS = [ConceptStep, ExamplesStep, InterestsStep] as const;
 
@@ -40,7 +41,7 @@ export default function OnboardingClient() {
 
   const handleComplete = async () => {
     setSubmitting(true);
-    await fetch("/api/onboarding/complete", {
+    await nativeFetch("/api/onboarding/complete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ interests }),

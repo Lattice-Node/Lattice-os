@@ -24,7 +24,24 @@
       "Bash(grep -v \"node_modules\\\\|\\\\\\\\[id\\\\\\\\]\\\\|.bak\")",
       "Bash(npm run:*)",
       "Bash(cp \"C:/Users/haya0/Downloads/lattice-os/app/node/[id]/NodeDetailClient.tsx\" \"C:/Users/haya0/Downloads/lattice-os/app/node/detail/NodeDetailClient.tsx\")",
-      "Bash(cp \"C:/Users/haya0/Downloads/lattice-os/app/node/[id]/talk/TalkClient.tsx\" \"C:/Users/haya0/Downloads/lattice-os/app/node/talk/TalkClient.tsx\")"
+      "Bash(cp \"C:/Users/haya0/Downloads/lattice-os/app/node/[id]/talk/TalkClient.tsx\" \"C:/Users/haya0/Downloads/lattice-os/app/node/talk/TalkClient.tsx\")",
+      "Bash(grep -n \"name: Build iOS$\" codemagic.yaml)",
+      "Bash(grep -rn \"open url\\\\|openURL\\\\|handleApplication\" C:/Users/haya0/Downloads/lattice-os/node_modules/@capacitor/ios/Capacitor/Capacitor/ApplicationDelegateProxy*)",
+      "Bash(grep -n \"Force inject GoogleService-Info.plist into Xcode project\\\\|RUBY$\" C:/Users/haya0/Downloads/lattice-os/codemagic.yaml)",
+      "Bash(npx patch-package:*)",
+      "Bash(npm --version)",
+      "Bash(git --version)",
+      "Bash(yarn --version)",
+      "Bash(pnpm --version)",
+      "Bash(ruby --version)",
+      "Bash(grep -E \"node-gyp|gyp$|node-pre-gyp\" package.json package-lock.json)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(list\\(d.get\\('devDependencies',{}\\).keys\\(\\)\\)\\)\")",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(git push:*)",
+      "Bash(cat capacitor.config.*)",
+      "Bash(grep -L \"jsonWithCors\\\\|corsOptions\" app/api/**/route.ts)",
+      "Bash(find app/api -name \"route.ts\" -exec grep -L \"jsonWithCors\\\\|corsOptions\" {} \\\\;)"
     ]
   }
 }

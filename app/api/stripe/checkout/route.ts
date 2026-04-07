@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { authAny } from "@/lib/auth-any";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
@@ -53,8 +53,8 @@ const SUB_PLANS: Record<string, { priceId: string; plan: string; credits: number
 };
 
 export async function POST(req: Request) {
-  const session = await auth();
-  if (!session?.user?.email) {
+  const session = await authAny(req);
+  if (!session?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -79,7 +79,7 @@ export async function POST(req: Request) {
       success_url: `${process.env.NEXTAUTH_URL}/settings?success=credits`,
       cancel_url: `${process.env.NEXTAUTH_URL}/settings`,
       metadata: {
-        email: session.user.email,
+        email: session.email!,
         type: "credits",
         credits: creditPlan.credits.toString(),
       },
@@ -91,18 +91,18 @@ export async function POST(req: Request) {
   const subPlan = SUB_PLANS[planId];
   if (subPlan) {
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.email! },
     });
 
     let customerId = user?.stripeCustomerId;
     if (!customerId) {
       const customer = await stripe.customers.create({
-        email: session.user.email,
+        email: session.email!,
         name: user?.name || undefined,
       });
       customerId = customer.id;
       await prisma.user.update({
-        where: { email: session.user.email },
+        where: { email: session.email! },
         data: { stripeCustomerId: customerId },
       });
     }
@@ -115,7 +115,7 @@ export async function POST(req: Request) {
       success_url: `${process.env.NEXTAUTH_URL}/settings?success=subscription`,
       cancel_url: `${process.env.NEXTAUTH_URL}/settings`,
       metadata: {
-        email: session.user.email,
+        email: session.email!,
         type: "subscription",
         plan: subPlan.plan,
         credits: subPlan.credits.toString(),

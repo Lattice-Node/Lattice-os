@@ -1,5 +1,6 @@
 "use client";
 import { useEffect } from "react";
+import { nativeFetch } from "@/lib/native-fetch";
 
 export default function PushNotificationSetup() {
   useEffect(() => {
@@ -23,7 +24,7 @@ export default function PushNotificationSetup() {
 
         await PushNotifications.addListener("registration", async (token) => {
           console.log("[Push] Native token:", token.value);
-          await fetch("/api/push/register", {
+          await nativeFetch("/api/push/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -93,7 +94,7 @@ export default function PushNotificationSetup() {
           serviceWorkerRegistration: reg,
         });
         if (token) {
-          await fetch("/api/push/register", {
+          await nativeFetch("/api/push/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ token, platform: "web" }),

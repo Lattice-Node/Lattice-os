@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { nativeFetch } from "@/lib/native-fetch";
 
 type Props = {
   agentId: string | null;
@@ -47,7 +48,7 @@ export default function NewsClient({ agentId, latestOutput, latestDate }: Props)
     setRunning(true);
     setError("");
     try {
-      const res = await fetch("/api/execute", {
+      const res = await nativeFetch("/api/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ agentId }),

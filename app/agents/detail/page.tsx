@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { nativeFetch } from "@/lib/native-fetch";
 
 type Agent = {
   id: string;
@@ -46,7 +47,7 @@ function AgentDetailInner() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`/api/agents/${id}`)
+    nativeFetch(`/api/agents/${id}`)
       .then((r) => r.json())
       .then((data) => {
         setAgent(data.agent);
@@ -57,7 +58,7 @@ function AgentDetailInner() {
 
   async function fetchLogs() {
     try {
-      const res = await fetch(`/api/agents/${id}/logs`);
+      const res = await nativeFetch(`/api/agents/${id}/logs`);
       if (res.ok) {
         const data = await res.json();
         setLogs(data.logs ?? []);
@@ -67,7 +68,7 @@ function AgentDetailInner() {
 
   async function handleToggleActive() {
     if (!agent) return;
-    const res = await fetch(`/api/agents/${id}`, {
+    const res = await nativeFetch(`/api/agents/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ active: !agent.active }),
@@ -78,7 +79,7 @@ function AgentDetailInner() {
 
   async function handleTogglePublic() {
     if (!agent) return;
-    const res = await fetch("/api/agents/" + id, {
+    const res = await nativeFetch("/api/agents/" + id, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ isPublic: !agent.isPublic }),
@@ -92,7 +93,7 @@ function AgentDetailInner() {
     setOutput("");
     setOutputStatus("");
     try {
-      const res = await fetch("/api/execute", {
+      const res = await nativeFetch("/api/execute", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ agentId: id }),
@@ -116,7 +117,7 @@ function AgentDetailInner() {
     setEditing(true);
   }
   async function handleSave() {
-    const res = await fetch(`/api/agents/${id}`, {
+    const res = await nativeFetch(`/api/agents/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: editName, description: editDesc }),
@@ -127,7 +128,7 @@ function AgentDetailInner() {
   }
   async function handleDelete() {
     if (!confirm("このエージェントを削除しますか？")) return;
-    await fetch(`/api/agents/${id}`, { method: "DELETE" });
+    await nativeFetch(`/api/agents/${id}`, { method: "DELETE" });
     router.push("/agents");
   }
 

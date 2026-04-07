@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { nativeFetch } from "@/lib/native-fetch";
 
 export default function NewNodeClient() {
   const router = useRouter();
@@ -18,7 +19,7 @@ export default function NewNodeClient() {
     setSubmitting(true);
     setError("");
 
-    const res = await fetch("/api/node", {
+    const res = await nativeFetch("/api/node", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: name.trim(), description: description.trim() }),

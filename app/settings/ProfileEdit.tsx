@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
+import { nativeFetch } from "@/lib/native-fetch";
 
 interface ProfileEditProps {
   oauthName: string;
@@ -88,7 +89,7 @@ export default function ProfileEdit({ oauthName, oauthImage, initialHandle, init
   const handleSave = async () => {
     setSaving(true); setError(""); setSuccess(false);
     try {
-      const res = await fetch("/api/profile", {
+      const res = await nativeFetch("/api/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ handle: handle.trim() || null, displayName: displayName.trim(), avatarUrl }),

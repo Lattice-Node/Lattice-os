@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { nativeFetch } from "@/lib/native-fetch";
 
 interface Agent {
   id: string;
@@ -32,7 +33,7 @@ export default function AgentsList({ agents }: { agents: Agent[] }) {
   async function handleToggle(id: string, current: boolean) {
     setItems((prev) => prev.map((a) => (a.id === id ? { ...a, active: !current } : a)));
     try {
-      await fetch("/api/agents/" + id, {
+      await nativeFetch("/api/agents/" + id, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ active: !current }),

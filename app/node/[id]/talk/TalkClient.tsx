@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { hapticImpact, hapticNotification, nativeShare } from "@/lib/native";
+import { nativeFetch } from "@/lib/native-fetch";
 
 interface Exchange {
   id: string;
@@ -115,7 +116,7 @@ export default function TalkClient({ nodeId, nodeName, latestExchange, openingVo
     hapticImpact("medium");
 
     try {
-      const res = await fetch(`/api/node/${nodeId}/exchange`, {
+      const res = await nativeFetch(`/api/node/${nodeId}/exchange`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: text }),

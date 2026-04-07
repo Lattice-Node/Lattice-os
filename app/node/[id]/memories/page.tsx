@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Loading from "@/components/Loading";
+import { nativeFetch } from "@/lib/native-fetch";
 
 interface Memory {
   id: string;
@@ -19,7 +20,7 @@ export default function MemoriesPage() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`/api/node/${id}/memories`)
+    nativeFetch(`/api/node/${id}/memories`)
       .then((r) => r.json())
       .then((data) => { setMemories(data.memories || []); setLoading(false); })
       .catch(() => setLoading(false));
