@@ -7,7 +7,8 @@
     "build:capacitor": "node scripts/build-capacitor.js",
     "dev": "next dev --turbopack",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
@@ -53,6 +54,9 @@
     "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.7",
+    "patch-package": "^8.0.1",
+    "plist": "^3.1.0",
+    "postinstall-postinstall": "^2.1.0",
     "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "typescript": "^5"
