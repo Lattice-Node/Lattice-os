@@ -19,6 +19,18 @@ workflows:
       - name: Capacitor sync
         script: |
           npx cap sync ios
+      - name: Re-inject Google subspec into Podfile (cap sync overwrites it)
+        script: |
+          set -e
+          PODFILE="ios/App/Podfile"
+          sed -i.bak "s|pod 'CapacitorFirebaseAuthentication', :path|pod 'CapacitorFirebaseAuthentication/Google', :path|" "$PODFILE"
+          rm -f "$PODFILE.bak"
+          echo "--- Podfile after re-injection ---"
+          grep -n "CapacitorFirebaseAuthentication" "$PODFILE"
+          if ! grep -q "CapacitorFirebaseAuthentication/Google" "$PODFILE"; then
+            echo "ERROR: /Google subspec injection failed"
+            exit 1
+          fi
       - name: Install CocoaPods
         script: |
           cd ios/App
