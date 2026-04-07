@@ -23,6 +23,45 @@ workflows:
         script: |
           cd ios/App
           pod install --repo-update
+      - name: Verify GoogleAuthProviderHandler patch is applied
+        script: |
+          set -e
+
+          NODE_FILE="node_modules/@capacitor-firebase/authentication/ios/Plugin/Handlers/GoogleAuthProviderHandler.swift"
+          PODS_FILE="ios/App/Pods/CapacitorFirebaseAuthentication/ios/Plugin/Handlers/GoogleAuthProviderHandler.swift"
+
+          echo "=== Checking node_modules version ==="
+          if [ -f "$NODE_FILE" ]; then
+            echo "File exists at: $NODE_FILE"
+            echo "--- Searching for DIAG markers ---"
+            grep -n "DIAG-" "$NODE_FILE" || echo "NO DIAG MARKERS FOUND IN NODE_MODULES"
+            echo ""
+            echo "--- Line count ---"
+            wc -l "$NODE_FILE"
+          else
+            echo "ERROR: File does not exist at $NODE_FILE"
+          fi
+
+          echo ""
+          echo "=== Checking Pods version ==="
+          if [ -f "$PODS_FILE" ]; then
+            echo "File exists at: $PODS_FILE"
+            echo "--- Searching for DIAG markers ---"
+            grep -n "DIAG-" "$PODS_FILE" || echo "NO DIAG MARKERS FOUND IN PODS"
+            echo ""
+            echo "--- Line count ---"
+            wc -l "$PODS_FILE"
+          else
+            echo "WARNING: Pods file does not exist at $PODS_FILE"
+            echo "Searching for the file in alternative locations..."
+            find ios/App/Pods -name "GoogleAuthProviderHandler.swift" 2>/dev/null || echo "Not found anywhere in Pods"
+          fi
+
+          echo ""
+          echo "=== Diff between node_modules and Pods versions ==="
+          if [ -f "$NODE_FILE" ] && [ -f "$PODS_FILE" ]; then
+            diff "$NODE_FILE" "$PODS_FILE" && echo "FILES ARE IDENTICAL" || echo "FILES DIFFER (see above)"
+          fi
       - name: Force inject GoogleService-Info.plist into Xcode project
         script: |
           cd ios/App

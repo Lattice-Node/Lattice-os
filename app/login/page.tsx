@@ -63,11 +63,12 @@ function LoginContent() {
       const result = await Promise.race([signInPromise, timeoutPromise]);
 
       const elapsed = Date.now() - startTime;
-      setLoginError(`[4] signInWithGoogle returned in ${elapsed}ms`);
+      setLoginError(`[4] signInWithGoogle returned in ${elapsed}ms. Fetching Firebase ID token...`);
 
-      const idToken = (result as any).credential?.idToken;
+      const tokenResult = await FirebaseAuthentication.getIdToken({ forceRefresh: true });
+      const idToken = tokenResult.token;
       if (!idToken) {
-        throw new Error(`No idToken in result: ${JSON.stringify(result).slice(0, 200)}`);
+        throw new Error("Failed to get Firebase ID token after sign-in");
       }
 
       setLoginError(`[5] Got idToken (${idToken.length} chars). Calling native-session...`);
@@ -136,11 +137,12 @@ function LoginContent() {
       const result = await Promise.race([signInPromise, timeoutPromise]);
 
       const elapsed = Date.now() - startTime;
-      setLoginError(`[4] signInWithApple returned in ${elapsed}ms`);
+      setLoginError(`[4] signInWithApple returned in ${elapsed}ms. Fetching Firebase ID token...`);
 
-      const idToken = (result as any).credential?.idToken;
+      const tokenResult = await FirebaseAuthentication.getIdToken({ forceRefresh: true });
+      const idToken = tokenResult.token;
       if (!idToken) {
-        throw new Error(`No idToken in result: ${JSON.stringify(result).slice(0, 200)}`);
+        throw new Error("Failed to get Firebase ID token after sign-in");
       }
 
       setLoginError(`[5] Got idToken (${idToken.length} chars). Calling native-session...`);
