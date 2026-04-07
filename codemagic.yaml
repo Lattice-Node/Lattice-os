@@ -70,6 +70,69 @@ workflows:
             raise "ERROR: #{plist_path} does not exist on disk"
           end
           RUBY
+      - name: Force inject Google REVERSED_CLIENT_ID into Info.plist URL schemes
+        script: |
+          python3 <<'PYEOF'
+          import plistlib
+          import sys
+
+          gs_path = "ios/App/App/GoogleService-Info.plist"
+          info_path = "ios/App/App/Info.plist"
+
+          with open(gs_path, "rb") as f:
+              gs = plistlib.load(f)
+          reversed_client_id = gs.get("REVERSED_CLIENT_ID")
+          if not reversed_client_id:
+              print("ERROR: REVERSED_CLIENT_ID not found in GoogleService-Info.plist", file=sys.stderr)
+              sys.exit(1)
+          print(f"REVERSED_CLIENT_ID: {reversed_client_id}")
+
+          with open(info_path, "rb") as f:
+              info = plistlib.load(f)
+
+          if "CFBundleURLTypes" not in info:
+              info["CFBundleURLTypes"] = []
+
+          url_types = info["CFBundleURLTypes"]
+
+          target_dict = None
+          for d in url_types:
+              if isinstance(d, dict) and "CFBundleURLSchemes" in d:
+                  target_dict = d
+                  break
+
+          if target_dict is None:
+              target_dict = {"CFBundleURLSchemes": []}
+              url_types.append(target_dict)
+
+          schemes = target_dict.get("CFBundleURLSchemes", [])
+          if not isinstance(schemes, list):
+              schemes = []
+
+          if reversed_client_id in schemes:
+              print(f"Already present, skipping: {reversed_client_id}")
+          else:
+              schemes.append(reversed_client_id)
+              target_dict["CFBundleURLSchemes"] = schemes
+              print(f"Added: {reversed_client_id}")
+
+          with open(info_path, "wb") as f:
+              plistlib.dump(info, f)
+
+          with open(info_path, "rb") as f:
+              verified = plistlib.load(f)
+          all_schemes = []
+          for d in verified.get("CFBundleURLTypes", []):
+              if isinstance(d, dict):
+                  all_schemes.extend(d.get("CFBundleURLSchemes", []))
+          print(f"Final URL schemes in Info.plist: {all_schemes}")
+
+          if reversed_client_id not in all_schemes:
+              print("ERROR: Verification failed", file=sys.stderr)
+              sys.exit(1)
+
+          print("OK: Info.plist updated successfully")
+          PYEOF
       - name: Set app icon
         script: |
           ICON_SET="ios/App/App/Assets.xcassets/AppIcon.appiconset"
