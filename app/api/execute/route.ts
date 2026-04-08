@@ -114,7 +114,13 @@ async function runWithAnthropic(
     const message = await client.messages.create({
       model: process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001",
       max_tokens: 1400,
-      system: systemPrompt,
+      system: [
+        {
+          type: "text",
+          text: systemPrompt,
+          cache_control: { type: "ephemeral" },
+        },
+      ],
       messages,
       tools,
     });

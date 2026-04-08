@@ -50,7 +50,13 @@ export async function generateOpeningVoice(nodeId: string): Promise<void> {
   const result = await client.messages.create({
     model: "claude-haiku-4-5-20251001",
     max_tokens: 100,
-    system: OPENING_VOICE_SYSTEM_PROMPT,
+    system: [
+      {
+        type: "text",
+        text: OPENING_VOICE_SYSTEM_PROMPT,
+        cache_control: { type: "ephemeral" },
+      },
+    ],
     messages: [
       {
         role: "user",

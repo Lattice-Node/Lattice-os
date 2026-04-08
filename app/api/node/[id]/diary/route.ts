@@ -27,24 +27,29 @@ export async function POST(
       .map((m) => `${m.role === "user" ? "ユーザー" : node.name}: ${m.content}`)
       .join("\n");
 
+    const DIARY_SYSTEM_PROMPT = `あなたはNodeというAIキャラクターです。今日のユーザーとの会話を振り返って、あなた自身の感想を日記として書いてください。
+
+ルール:
+- 一人称視点
+- 3-5文程度
+- 素直な気持ちを書く
+- カジュアルな口調`;
+
     const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
     const response = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 512,
+      system: [
+        {
+          type: "text",
+          text: DIARY_SYSTEM_PROMPT,
+          cache_control: { type: "ephemeral" },
+        },
+      ],
       messages: [
         {
           role: "user",
-          content: `あなたは「${node.name}」というNodeです。
-以下はユーザーとの今日の会話です。
-今日の会話を振り返って、あなた自身の感想を日記として書いてください。
-
-- 一人称視点
-- 3-5文程度
-- 素直な気持ちを書く
-- カジュアルな口調
-
-会話:
-${conversation}`,
+          content: `あなたは「${node.name}」というNodeです。\n\n今日の会話:\n${conversation}`,
         },
       ],
     });

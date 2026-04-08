@@ -25,15 +25,7 @@ export async function POST(
       .map((m) => `${m.role === "user" ? "ユーザー" : node.name}: ${m.content}`)
       .join("\n");
 
-    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
-    const response = await client.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 1024,
-      messages: [
-        {
-          role: "user",
-          content: `以下は、あなたとユーザーの会話です。
-この会話から、ユーザーについて覚えておくべき重要な情報を抽出してください。
+    const EXTRACT_SYSTEM_PROMPT = `あなたはユーザーとAIの会話ログから「覚えておくべき情報」を抽出するAIです。
 
 抽出基準:
 - ユーザーの職業、興味、好み
@@ -44,10 +36,23 @@ export async function POST(
 新しい情報がなければ空配列を返してください。
 
 JSONのみで返してください（マークダウンコードブロック不要）:
-{"memories":[{"content":"...","importance":1-10}]}
+{"memories":[{"content":"...","importance":1-10}]}`;
 
-会話:
-${conversation}`,
+    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+    const response = await client.messages.create({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 1024,
+      system: [
+        {
+          type: "text",
+          text: EXTRACT_SYSTEM_PROMPT,
+          cache_control: { type: "ephemeral" },
+        },
+      ],
+      messages: [
+        {
+          role: "user",
+          content: `会話:\n${conversation}`,
         },
       ],
     });
