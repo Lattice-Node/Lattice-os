@@ -76,7 +76,8 @@
       "Bash(git commit -m 'fix\\(native\\): finally blocks for loading states + router.refresh instead of reload:*)",
       "Bash(git commit -m 'perf\\(native\\): cache plugin imports + fire-and-forget haptics:*)",
       "Bash(git commit -m 'fix\\(ui\\): bottom nav tap targets + missing agent card CSS classes:*)",
-      "Bash(git commit -m 'fix\\(stripe\\): use @capacitor/browser plugin to open Stripe checkout:*)"
+      "Bash(git commit -m 'fix\\(stripe\\): use @capacitor/browser plugin to open Stripe checkout:*)",
+      "Bash(git commit -m 'feat: hide Business plan from UI \\(kept in code for future B2B revival\\):*)"
     ]
   }
 }

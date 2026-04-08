@@ -99,7 +99,7 @@ export default function PricingPage() {
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: 12, marginBottom: 40 }}>
-          {plans.map((plan) => (
+          {plans.filter((p) => p.name !== "Business").map((plan) => (
             <div key={plan.name} style={{ background: plan.bg, border: `1px solid ${plan.border}`, borderRadius: 16, padding: "24px 18px", position: "relative" }}>
               {plan.popular && (
                 <div style={{ position: "absolute", top: -10, left: "50%", transform: "translateX(-50%)", background: "#a855f7", color: "#fff", fontSize: 10, fontWeight: 700, padding: "3px 12px", borderRadius: 10 }}>おすすめ</div>

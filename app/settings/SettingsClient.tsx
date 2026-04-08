@@ -271,7 +271,7 @@ const handleLineGenerate = async () => {
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {SUB_PLANS.map((p) => {
+            {SUB_PLANS.filter((p) => p.id !== "business").map((p) => {
               const isCurrent = plan === p.id || (plan === "personal" && p.id === "starter");
               const isPro = p.id === "pro";
               const monthlyEquiv = isYearly && p.yearlyPrice > 0 ? Math.round(p.yearlyPrice / 12) : p.price;
