@@ -586,16 +586,29 @@ const handleLineGenerate = async () => {
               <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>Apple の設定でサブスクリプションを管理します</span>
             </button>
           )}
-          {/* Tier 2.3: Restore Purchases button (iOS only, always visible — required by Apple Guideline 3.1.1) */}
+          {/* Phase 4: Restore Purchases button (iOS only, always visible — required by Apple Guideline 3.1.1) */}
           {isNativePlatform() && (
             <button
               onClick={async () => {
                 try {
-                  const result = await restorePurchases();
-                  if (result === null) {
+                  const customerInfo = await restorePurchases();
+                  if (customerInfo === null) {
                     alert("購入を復元する機能は近日対応予定です");
+                    return;
+                  }
+                  const activeEntitlements = Object.keys(customerInfo.entitlements?.active || {});
+                  if (activeEntitlements.length > 0) {
+                    // RevenueCat webhook will sync to DB on its own; refresh local UI
+                    try {
+                      const usageRes = await nativeFetch("/api/usage");
+                      if (usageRes.ok) {
+                        const u = await usageRes.json();
+                        if (u && typeof u.monthlyRunsCap === "number") setUsage(u);
+                      }
+                    } catch {}
+                    alert("購入が復元されました");
                   } else {
-                    alert("購入を復元しました");
+                    alert("復元する購入が見つかりませんでした");
                   }
                 } catch (e) {
                   console.error("[restore] failed", e);
