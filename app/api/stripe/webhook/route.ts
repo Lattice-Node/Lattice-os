@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { addCredits, resetCredits } from "@/lib/credits";
 import { recordRevenue } from "@/lib/revenue";
+import { resetRunsOnUpgrade, isUpgrade } from "@/lib/monthly-runs";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -59,13 +60,21 @@ export async function POST(req: Request) {
       const subscription = await stripe.subscriptions.retrieve(subscriptionId) as any;
       const periodEnd = new Date(subscription.current_period_end * 1000);
 
-      const subUser = await prisma.user.findUnique({ where: { email }, select: { id: true } });
+      const subUser = await prisma.user.findUnique({
+        where: { email },
+        select: { id: true, plan: true },
+      });
       if (subUser) {
+        const upgrading = isUpgrade(subUser.plan, plan);
         await prisma.user.update({
           where: { email },
           data: { plan, stripeSubscriptionId: subscriptionId, currentPeriodEnd: periodEnd },
         });
         await resetCredits(subUser.id, credits, 0, "plan_start", subscriptionId);
+        // Tier 1.1: reset monthly runs on upgrade so newly-paid users immediately get the new cap
+        if (upgrading) {
+          await resetRunsOnUpgrade(subUser.id);
+        }
       }
       // Record revenue
       await recordRevenue({
