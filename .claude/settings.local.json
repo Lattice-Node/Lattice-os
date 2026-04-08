@@ -61,7 +61,8 @@
       "Bash(git commit -m 'debug: visible state tracker on home loading screen + restore build marker:*)",
       "Bash(git commit -m 'debug: visible nav history overlay \\(top right\\) to trace route bouncing:*)",
       "Bash(git commit -m 'fix\\(native\\): use hard navigation for unauth->/login/ \\(router.push silent fail in static export\\):*)",
-      "Bash(git commit -m 'debug: bump build marker to hardnav-2026-04-08-T17 for verification:*)"
+      "Bash(git commit -m 'debug: bump build marker to hardnav-2026-04-08-T17 for verification:*)",
+      "Bash(git commit -m 'fix\\(native\\): revert hard nav, use router.push for /login/, redirect logout to /home/:*)"
     ]
   }
 }

@@ -93,7 +93,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
     hapticImpact("light");
     if (href === "#tasks") { document.getElementById("tasks-section")?.scrollIntoView({ behavior: "smooth" }); return; }
     if (href === "#invite") { document.getElementById("invite-section")?.scrollIntoView({ behavior: "smooth" }); return; }
-    if (!isLoggedIn && !guestAllowed.includes(href)) { window.location.href = "/login/"; return; }
+    if (!isLoggedIn && !guestAllowed.includes(href)) { router.push("/login/"); return; }
     router.push(href);
   };
 
@@ -133,7 +133,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
           ) : (
             <>
               <p style={{ fontSize: 20, fontWeight: 500, color: "var(--text-display)", margin: 0 }}>Lattice</p>
-              <button onClick={() => { window.location.href = "/login/"; }} style={{ padding: "7px 18px", borderRadius: 999, border: "none", background: "var(--btn-bg)", color: "var(--btn-text)", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>
+              <button onClick={() => router.push("/login/")} style={{ padding: "7px 18px", borderRadius: 999, border: "none", background: "var(--btn-bg)", color: "var(--btn-text)", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>
                 ログイン
               </button>
             </>
@@ -163,7 +163,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
           <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "18px 16px", marginBottom: 18, textAlign: "center" }}>
             <p style={{ fontSize: 15, fontWeight: 500, color: "var(--text-display)", margin: "0 0 4px" }}>AIエージェントで業務を自動化</p>
             <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: "0 0 12px" }}>ログインすると30クレジットで無料スタート</p>
-            <button onClick={() => { window.location.href = "/login/"; }} style={{ padding: "10px 24px", borderRadius: 999, border: "none", background: "var(--btn-bg)", color: "var(--btn-text)", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>
+            <button onClick={() => router.push("/login/")} style={{ padding: "10px 24px", borderRadius: 999, border: "none", background: "var(--btn-bg)", color: "var(--btn-text)", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>
               無料で始める
             </button>
           </div>

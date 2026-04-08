@@ -16,12 +16,12 @@ async function universalSignOut() {
       // Clearing the bearer is enough to log the user out from our app's perspective;
       // Firebase's cached user just lets the next signInWithGoogle return instantly.
       await clearNativeSession();
-      window.location.replace("/login/");
+      window.location.replace("/home/");
       return;
     }
     await signOut({ callbackUrl: "/" });
   } catch {
-    window.location.replace("/login/");
+    window.location.replace("/home/");
   }
 }
 
