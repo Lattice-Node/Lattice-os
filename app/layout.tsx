@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { Providers } from "./providers";
 import PushNotificationSetup from "@/components/PushNotificationSetup";
 import BottomNav from "@/components/BottomNav";
+import NavDebug from "@/components/NavDebug";
 import NetworkStatus from "@/components/NetworkStatus";
 import MorningBriefingSetup from "@/components/MorningBriefingSetup";
 
@@ -64,6 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           BUILD: dbg-3315c9c
         </div>
         <Providers>
+          <NavDebug />
           <div className="app-shell">{children}</div>
           <BottomNav />
           <PushNotificationSetup />

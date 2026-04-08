@@ -15,6 +15,7 @@ function LoginContent() {
   const [loginError, setLoginError] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log("[LOGIN PAGE] mounted at", new Date().toISOString());
     if (ref) {
       sessionStorage.setItem("lattice_ref", ref);
       setRefSaved(true);
@@ -26,6 +27,9 @@ function LoginContent() {
       url.searchParams.delete("error");
       window.history.replaceState(null, "", url.toString());
     }
+    return () => {
+      console.log("[LOGIN PAGE] unmounted at", new Date().toISOString());
+    };
   }, [ref, errParam]);
 
   const handleGoogleLogin = async () => {
