@@ -122,7 +122,7 @@ function LoginContent() {
       }
 
       await new Promise((r) => setTimeout(r, 150));
-      window.location.replace("/home/");
+      router.replace("/home/");
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       console.error("[login] apple native failed", msg);

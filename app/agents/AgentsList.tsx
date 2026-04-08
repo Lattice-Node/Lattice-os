@@ -111,7 +111,7 @@ export default function AgentsList({ agents }: { agents: Agent[] }) {
       {items.map((agent, i) => (
         <div key={agent.id} className="card animate-in" style={{ animationDelay: i * 50 + "ms" }}>
           <div className="agent-header">
-            <Link href={"/agents/" + agent.id} className="agent-info" style={{ textDecoration: "none", flex: 1, minWidth: 0 }}>
+            <Link href={`/agents/detail/?id=${agent.id}`} className="agent-info" style={{ textDecoration: "none", flex: 1, minWidth: 0 }}>
               <div className="agent-icon" style={{ background: "rgba(108, 113, 232, 0.12)" }}>
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#6c71e8" strokeWidth="1.6">
                   <rect x="2" y="3" width="14" height="12" rx="2" />

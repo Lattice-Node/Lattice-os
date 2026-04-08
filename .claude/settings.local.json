@@ -70,7 +70,8 @@
       "Bash(git commit -m 'fix\\(ui\\): native UX polish — disable long-press menus, prevent input zoom:*)",
       "Bash(git commit -m 'fix\\(ui\\): respect status bar safe-area-top + tighten bottom nav padding:*)",
       "Bash(git commit -m 'fix\\(ui\\): pull bottom nav icons closer to home indicator \\(YouTube-style\\):*)",
-      "Bash(git commit -m 'fix\\(ui\\): remove BottomNav loading overlay that blocked taps + use button+router.push:*)"
+      "Bash(git commit -m 'fix\\(ui\\): remove BottomNav loading overlay that blocked taps + use button+router.push:*)",
+      "Bash(git commit -m 'fix\\(native\\): more bug sweep — Apple login router.replace, agents list dynamic href, error fallback to /home/:*)"
     ]
   }
 }

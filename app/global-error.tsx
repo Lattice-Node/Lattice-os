@@ -66,7 +66,7 @@ export default function GlobalError({
             Retry
           </button>
           <button
-            onClick={() => (window.location.href = "/login/")}
+            onClick={() => (window.location.href = "/home/")}
             style={{
               padding: "10px 20px",
               background: "#222",
