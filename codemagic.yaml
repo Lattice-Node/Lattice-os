@@ -31,6 +31,11 @@ workflows:
             echo "ERROR: /Google subspec injection failed"
             exit 1
           fi
+      - name: Clean Pods directory (force fresh install)
+        script: |
+          cd ios/App
+          rm -rf Pods
+          echo "Pods directory removed (Podfile.lock kept)"
       - name: Install CocoaPods
         script: |
           cd ios/App
@@ -105,6 +110,15 @@ workflows:
           echo ""
           echo "=== Search for any GoogleAuthProviderHandler reference in Pods ==="
           grep -rn "GoogleAuthProviderHandler" ios/App/Pods/ 2>/dev/null | head -20 || echo "No references found"
+          echo ""
+          echo "=== FirebaseAuthenticationPlugin.swift in pbxproj ==="
+          grep -c "FirebaseAuthenticationPlugin.swift" ios/App/Pods/Pods.xcodeproj/project.pbxproj || echo "0 matches"
+          echo ""
+          echo "=== All capacitor-firebase/authentication file refs in pbxproj ==="
+          grep -n "capacitor-firebase/authentication\|FirebaseAuthenticationPlugin\|GoogleAuthProviderHandler" ios/App/Pods/Pods.xcodeproj/project.pbxproj 2>/dev/null | head -20 || echo "No matches"
+          echo ""
+          echo "=== List all .swift files compiled in Pods (top 30) ==="
+          grep -o '[A-Za-z]*\.swift' ios/App/Pods/Pods.xcodeproj/project.pbxproj 2>/dev/null | sort -u | head -30 || echo "No swift files"
       - name: Force inject GoogleService-Info.plist into Xcode project
         script: |
           cd ios/App

@@ -44,7 +44,10 @@
       "Bash(find app/api -name \"route.ts\" -exec grep -L \"jsonWithCors\\\\|corsOptions\" {} \\\\;)",
       "Bash(grep:*)",
       "Bash(git commit -m 'fix\\(ui\\): reduce bottom nav padding to YouTube-style \\(icons close to home indicator\\):*)",
-      "Bash(git commit -m 'fix\\(ui\\): tighter bottom nav, pull icons closer to home indicator:*)"
+      "Bash(git commit -m 'fix\\(ui\\): tighter bottom nav, pull icons closer to home indicator:*)",
+      "Bash(ls node_modules/@capacitor-firebase/authentication/*.podspec)",
+      "Bash(cat node_modules/@capacitor-firebase/authentication/*.podspec)",
+      "Bash(git commit -m 'debug\\(ci\\): clean Pods before install + extra pbxproj diagnostics:*)"
     ]
   }
 }
