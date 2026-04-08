@@ -14,32 +14,39 @@ export function isNativePlatform(): boolean {
 
 // ── Haptic Feedback ──
 
-export async function hapticImpact(style: "light" | "medium" | "heavy" = "medium") {
-  if (!isNativePlatform()) return;
-  try {
-    const { Haptics, ImpactStyle } = await import("@capacitor/haptics");
-    const map = { light: ImpactStyle.Light, medium: ImpactStyle.Medium, heavy: ImpactStyle.Heavy };
-    await Haptics.impact({ style: map[style] });
-  } catch {}
+// Cache the dynamic import so taps don't pay the import overhead repeatedly
+let _hapticsPromise: Promise<any> | null = null;
+function getHaptics() {
+  if (!_hapticsPromise) {
+    _hapticsPromise = import("@capacitor/haptics");
+  }
+  return _hapticsPromise;
 }
 
-export async function hapticNotification(type: "success" | "warning" | "error" = "success") {
+export function hapticImpact(style: "light" | "medium" | "heavy" = "medium") {
   if (!isNativePlatform()) return;
-  try {
-    const { Haptics, NotificationType } = await import("@capacitor/haptics");
-    const map = { success: NotificationType.Success, warning: NotificationType.Warning, error: NotificationType.Error };
-    await Haptics.notification({ type: map[type] });
-  } catch {}
+  // Fire and forget — don't await, don't block the click handler
+  getHaptics().then((m) => {
+    const map = { light: m.ImpactStyle.Light, medium: m.ImpactStyle.Medium, heavy: m.ImpactStyle.Heavy };
+    m.Haptics.impact({ style: map[style] }).catch(() => {});
+  }).catch(() => {});
 }
 
-export async function hapticSelection() {
+export function hapticNotification(type: "success" | "warning" | "error" = "success") {
   if (!isNativePlatform()) return;
-  try {
-    const { Haptics } = await import("@capacitor/haptics");
-    await Haptics.selectionStart();
-    await Haptics.selectionChanged();
-    await Haptics.selectionEnd();
-  } catch {}
+  getHaptics().then((m) => {
+    const map = { success: m.NotificationType.Success, warning: m.NotificationType.Warning, error: m.NotificationType.Error };
+    m.Haptics.notification({ type: map[type] }).catch(() => {});
+  }).catch(() => {});
+}
+
+export function hapticSelection() {
+  if (!isNativePlatform()) return;
+  getHaptics().then((m) => {
+    m.Haptics.selectionStart().catch(() => {});
+    m.Haptics.selectionChanged().catch(() => {});
+    m.Haptics.selectionEnd().catch(() => {});
+  }).catch(() => {});
 }
 
 // ── Native Share ──
