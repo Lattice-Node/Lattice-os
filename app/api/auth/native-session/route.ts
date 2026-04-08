@@ -39,41 +39,11 @@ export async function POST(req: Request) {
       return jsonWithCors(req, { error: "No email in token" }, { status: 401 });
     }
 
-    // Resilient user resolution: existing user → SELECT only, new user → minimal INSERT.
-    // This avoids the case where Prisma's auto-generated INSERT references columns that
-    // don't yet exist in the production DB (e.g. monthlyRunsUsed before migration runs).
-    let dbUser = await prisma.user.findUnique({
+    const dbUser = await prisma.user.upsert({
       where: { email },
-      select: { id: true, email: true, name: true },
+      update: {},
+      create: { email, name: decoded.name ?? "" },
     });
-    if (!dbUser) {
-      try {
-        dbUser = await prisma.user.create({
-          data: { email, name: decoded.name ?? "" },
-          select: { id: true, email: true, name: true },
-        });
-      } catch (createErr) {
-        // Fallback: raw SQL insert with minimal columns. Survives a schema/db drift.
-        const fallbackName = (decoded.name ?? "").replace(/'/g, "''");
-        const fallbackEmail = email.replace(/'/g, "''");
-        try {
-          await prisma.$executeRawUnsafe(
-            `INSERT INTO "User" (id, email, name) VALUES (gen_random_uuid()::text, '${fallbackEmail}', '${fallbackName}') ON CONFLICT (email) DO NOTHING`
-          );
-          dbUser = await prisma.user.findUnique({
-            where: { email },
-            select: { id: true, email: true, name: true },
-          });
-        } catch (rawErr) {
-          console.error("[native-session] both Prisma create and raw insert failed", { createErr, rawErr });
-          throw createErr;
-        }
-        if (!dbUser) {
-          console.error("[native-session] raw insert succeeded but user lookup failed");
-          throw createErr;
-        }
-      }
-    }
 
     const token = await encode({
       token: {
