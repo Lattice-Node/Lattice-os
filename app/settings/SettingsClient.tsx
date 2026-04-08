@@ -154,15 +154,29 @@ const handleLineGenerate = async () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ planId }),
       });
+      if (!res.ok) throw new Error("checkout failed");
       const data = await res.json();
-      if (data.url) {
-        if (isNativePlatform()) {
-          window.open(data.url, "_system");
-        } else {
-          window.location.href = data.url;
-        }
+      if (!data.url) throw new Error("no url returned");
+
+      if (isNativePlatform()) {
+        // Capacitor doesn't honor window.open(url, '_system'). Use an anchor tag
+        // with target="_blank" — WKWebView routes external https URLs to Safari.
+        const a = document.createElement("a");
+        a.href = data.url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } else {
+        window.location.href = data.url;
       }
-    } catch { setPurchasing(null); }
+    } catch (e) {
+      console.error("[stripe] checkout failed", e);
+      alert("決済ページを開けませんでした。もう一度お試しください。");
+    } finally {
+      setPurchasing(null);
+    }
   };
 
   const handleDelete = async () => {
