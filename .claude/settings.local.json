@@ -86,7 +86,8 @@
       "Bash(git commit -m 'perf\\(phase1\\): enable Anthropic prompt caching on all Claude API calls:*)",
       "Bash(git commit -m 'perf\\(phase1\\): throttle Talk cascade — extract-memory every 5th, opening-voice 1h cooldown:*)",
       "Bash(git commit -m 'feat\\(phase1\\): web search now opt-in per agent + plan-gated:*)",
-      "Bash(git commit -m 'feat\\(phase1\\): add ClaudeUsageLog table + logging on all 6 Claude call sites + admin cost-analysis page:*)"
+      "Bash(git commit -m 'feat\\(phase1\\): add ClaudeUsageLog table + logging on all 6 Claude call sites + admin cost-analysis page:*)",
+      "Bash(git commit -m 'feat\\(phase1\\): revenue tracking — RevenueRecord table, /admin/revenue dashboard, CSV export, YTD auto-stop:*)"
     ]
   }
 }

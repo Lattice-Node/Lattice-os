@@ -2,6 +2,7 @@ import { authAny } from "@/lib/auth-any";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
+import { getYtdRevenue } from "@/lib/revenue";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -56,6 +57,19 @@ export async function POST(req: Request) {
   const session = await authAny(req);
   if (!session?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Phase 1: revenue auto-stop guard. Block new purchases when YTD >= ¥750,000.
+  // Existing subscribers continue normally (Stripe renewals bypass this endpoint).
+  const ytd = await getYtdRevenue();
+  if (ytd >= 750_000) {
+    return NextResponse.json(
+      {
+        error: "現在、新規の購入を一時停止しています。少し時間をおいて再度お試しください。",
+        autoStop: true,
+      },
+      { status: 503 }
+    );
   }
 
   const { planId } = await req.json();

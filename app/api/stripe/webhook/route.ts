@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { addCredits, resetCredits } from "@/lib/credits";
+import { recordRevenue } from "@/lib/revenue";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -36,6 +37,18 @@ export async function POST(req: Request) {
         const user = await prisma.user.findUnique({ where: { email }, select: { id: true } });
         if (user) await addCredits(user.id, credits, "purchased", "credit_purchase", session.id);
       }
+      // Record revenue
+      const amountJpy = session.amount_total ?? 0;
+      const userForRev = await prisma.user.findUnique({ where: { email }, select: { id: true } });
+      await recordRevenue({
+        date: new Date(),
+        amountJpy,
+        userId: userForRev?.id || null,
+        platform: "web",
+        productId: `credits_${credits}`,
+        transactionType: "one_time",
+        externalId: session.id,
+      });
     }
 
     if (type === "subscription") {
@@ -54,6 +67,16 @@ export async function POST(req: Request) {
         });
         await resetCredits(subUser.id, credits, 0, "plan_start", subscriptionId);
       }
+      // Record revenue
+      await recordRevenue({
+        date: new Date(),
+        amountJpy: session.amount_total ?? 0,
+        userId: subUser?.id || null,
+        platform: "web",
+        productId: `plan_${plan}`,
+        transactionType: "subscription_new",
+        externalId: session.id,
+      });
     }
   }
 
@@ -84,6 +107,16 @@ export async function POST(req: Request) {
       data: { currentPeriodEnd: periodEnd },
     });
     await resetCredits(user.id, credits, 0, "plan_renewal", subscriptionId);
+    // Record renewal revenue
+    await recordRevenue({
+      date: new Date(),
+      amountJpy: invoice.amount_paid ?? 0,
+      userId: user.id,
+      platform: "web",
+      productId: `plan_${plan}`,
+      transactionType: "subscription_renewal",
+      externalId: invoice.id,
+    });
   }
 
   if (event.type === "customer.subscription.deleted") {
@@ -97,6 +130,16 @@ export async function POST(req: Request) {
         data: { plan: "free", stripeSubscriptionId: null, currentPeriodEnd: null },
       });
       await resetCredits(user.id, 30, 0, "plan_cancel", subscription.id);
+      // Record cancellation as zero-amount marker for analytics
+      await recordRevenue({
+        date: new Date(),
+        amountJpy: 0,
+        userId: user.id,
+        platform: "web",
+        productId: `plan_cancel`,
+        transactionType: "subscription_cancel",
+        externalId: subscription.id,
+      });
     }
   }
 

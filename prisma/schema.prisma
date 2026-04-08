@@ -92,6 +92,22 @@ model AgentLog {
   user      User      @relation(fields: [userId], references: [id])
 }
 
+model RevenueRecord {
+  id              String   @id @default(cuid())
+  date            DateTime
+  amount          Int      // JPY
+  userId          String?
+  platform        String   // 'ios' | 'web'
+  productId       String
+  transactionType String   // 'subscription_new' | 'subscription_renewal' | 'subscription_cancel' | 'one_time'
+  externalId      String?  // Stripe sub/invoice ID or RevenueCat transaction ID
+  createdAt       DateTime @default(now())
+
+  @@index([date])
+  @@index([userId, date])
+  @@index([platform, date])
+}
+
 model ClaudeUsageLog {
   id                String   @id @default(cuid())
   userId            String?
