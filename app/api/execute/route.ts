@@ -77,6 +77,7 @@ async function runWithAnthropic(
     clientTools: import("@/lib/agent-tools").ToolDefinition[];
     userId: string;
     gmailToken?: string | null;
+    webSearchAllowed?: boolean;
   }
 ) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -94,10 +95,11 @@ async function runWithAnthropic(
     ? buildDailyAiNewsUserPrompt({ now })
     : buildGenericUserPrompt(agent, extraContext);
 
-  // Build tools array: web_search (server) + client tools
-  const tools: any[] = [
-    { type: "web_search_20250305", name: "web_search" },
-  ];
+  // Phase 1: web_search only when toolContext.webSearchAllowed === true
+  const tools: any[] = [];
+  if (toolContext?.webSearchAllowed) {
+    tools.push({ type: "web_search_20250305", name: "web_search" });
+  }
   if (toolContext?.clientTools) {
     for (const t of toolContext.clientTools) {
       tools.push(t);
@@ -291,6 +293,7 @@ export async function POST(req: NextRequest) {
         triggerCron: true,
         outputType: true,
         outputConfig: true,
+        useWebSearch: true,
       },
     });
 
@@ -381,11 +384,14 @@ export async function POST(req: NextRequest) {
       try { gmailToken = await getGmailToken(user.id); } catch {}
     }
 
+    // Phase 1: web search only when agent.useWebSearch && plan permits, OR Daily AI News legacy
+    const webSearchAllowed = memLimits.webSearch && (((agent as any).useWebSearch === true) || isDailyNews);
     try {
       finalOutput = await runWithAnthropic(agent, now, isDailyNews, extraContext + (memoryContext ? "\n\n" + memoryContext : ""), {
         clientTools,
         userId: user.id,
         gmailToken,
+        webSearchAllowed,
       });
     } catch (anthropicError) {
       const anthropicMessage = getErrorMessage(anthropicError);

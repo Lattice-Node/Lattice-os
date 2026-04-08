@@ -77,10 +77,13 @@ export async function POST(req: Request) {
     }
   }
 
-  const { name, description, prompt, trigger, triggerCron, connections, outputType, outputConfig } = await req.json();
+  const { name, description, prompt, trigger, triggerCron, connections, outputType, outputConfig, useWebSearch } = await req.json();
   const nextRunAt = trigger === "schedule" && triggerCron
     ? calcNextRunAt(triggerCron)
     : null;
+
+  // Phase 1: only Starter+ users can opt-in to web search
+  const wantsWebSearch = useWebSearch === true && limits.webSearch;
 
   const agent = await prisma.userAgent.create({
     data: {
@@ -93,6 +96,7 @@ export async function POST(req: Request) {
       connections: connections ?? "[]",
       outputType: outputType ?? "app",
       outputConfig: outputConfig ?? "{}",
+      useWebSearch: wantsWebSearch,
       nextRunAt,
     },
   });

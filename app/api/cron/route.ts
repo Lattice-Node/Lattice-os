@@ -188,8 +188,13 @@ export async function GET(req: NextRequest) {
         try { gmailToken = await getGmailToken(user.id); } catch {}
       }
 
+      // Phase 1: Web search is only enabled when:
+      //  1. agent.useWebSearch === true (explicit opt-in)
+      //  2. user plan permits it (Starter+)
+      //  3. it's the Daily AI News template (legacy auto-enable)
+      const webSearchAllowed = memLimits.webSearch && (((agent as any).useWebSearch === true) || isDailyNews);
       const tools: any[] = [
-        { type: "web_search_20250305", name: "web_search" },
+        ...(webSearchAllowed ? [{ type: "web_search_20250305", name: "web_search" }] : []),
         ...clientTools,
       ];
 
