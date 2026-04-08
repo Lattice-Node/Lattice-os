@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { hapticImpact } from "@/lib/native";
 import { nativeFetch } from "@/lib/native-fetch";
+import { isPaymentUiVisible } from "@/lib/monetization";
 
 interface Task { id: string; label: string; credits: number; type: string; category: string; completed: boolean; claimable: boolean; count?: number; unclaimed?: number; }
 interface Props { name: string; avatarUrl: string | null; credits: number; plan: string; agentCount: number; isLoggedIn: boolean; }
@@ -39,6 +40,10 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
   const [copied, setCopied] = useState(false);
   const [refApplied, setRefApplied] = useState(false);
   const [tab, setTab] = useState<"daily" | "start" | "feature">("daily");
+  // Tier 0: filter pricing menu entry when payment UI is disabled
+  const [paymentVisible, setPaymentVisible] = useState(false);
+  useEffect(() => { setPaymentVisible(isPaymentUiVisible()); }, []);
+  const visibleMenu = paymentVisible ? MENU : MENU.filter((m) => m.href !== "/pricing/");
   const router = useRouter();
 
   const fetchTasks = useCallback(async () => {
@@ -170,7 +175,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
         {/* メニューグリッド */}
         <p style={{ ...S.label, margin: "0 0 8px" }}>メニュー</p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 20 }}>
-          {MENU.map(m => (
+          {visibleMenu.map(m => (
             <div key={m.href} onClick={() => nav(m.href)} style={{ textAlign: "center", cursor: "pointer" }}>
               <div style={{ width: 44, height: 44, borderRadius: 10, background: "var(--surface)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 4px", transition: "background .2s, border-color .2s" }}>{m.icon()}</div>
               <span style={{ fontSize: 9, color: "var(--text-secondary)" }}>{m.label}</span>

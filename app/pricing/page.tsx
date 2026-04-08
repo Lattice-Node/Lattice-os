@@ -1,10 +1,12 @@
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { isWebPaymentEnabled } from "@/lib/monetization";
 
 export const metadata: Metadata = {
   title: "料金プラン | Lattice",
-  description: "Latticeの料金プランを比較。Free / Starter / Pro / Businessの4プラン。",
+  description: "Latticeの料金プランを比較。",
 };
 
 const plans = [
@@ -88,6 +90,11 @@ const plans = [
 ];
 
 export default function PricingPage() {
+  // Tier 0: hide pricing page entirely when web payment is disabled.
+  // This page is server-rendered, so the env check happens at request time on Vercel.
+  if (!isWebPaymentEnabled()) {
+    notFound();
+  }
   return (
     <main style={{ minHeight: "100vh", background: "var(--bg)", color: "var(--text-primary)" }}>
       <Nav />
