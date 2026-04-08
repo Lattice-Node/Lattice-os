@@ -451,6 +451,33 @@ const handleLineGenerate = async () => {
           ) : (
             periodEnd && <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: "4px 0 14px" }}>次回請求日: {periodEnd}</p>
           )}
+          {/* Tier 1.4: Apple subscription management link (iOS + paid plans only) */}
+          {isNativePlatform() && isPaid && (
+            <button
+              onClick={() => {
+                window.location.href = "itms-apps://apps.apple.com/account/subscriptions";
+              }}
+              style={{
+                width: "100%",
+                padding: "11px 16px",
+                marginTop: 8,
+                borderRadius: 8,
+                border: "1px solid var(--border)",
+                background: "transparent",
+                color: "var(--text-primary)",
+                fontSize: 13,
+                cursor: "pointer",
+                fontFamily: "inherit",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                gap: 2,
+              }}
+            >
+              <span style={{ fontWeight: 500 }}>サブスクリプション管理</span>
+              <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>Apple の設定でサブスクリプションを管理します</span>
+            </button>
+          )}
           {paymentVisible ? (
             <button onClick={() => setShowPlans(true)} style={{ width: "100%", padding: "11px 16px", borderRadius: 8, border: "1px solid var(--border)", background: "transparent", color: "var(--btn-bg)", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span>{isPaid ? "プラン変更" : "アップグレード"}</span>
