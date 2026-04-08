@@ -89,7 +89,8 @@
       "Bash(git commit -m 'feat\\(phase1\\): add ClaudeUsageLog table + logging on all 6 Claude call sites + admin cost-analysis page:*)",
       "Bash(git commit -m 'feat\\(phase1\\): revenue tracking — RevenueRecord table, /admin/revenue dashboard, CSV export, YTD auto-stop:*)",
       "Bash(ls .env*:*)",
-      "Bash(git commit -m 'feat\\(tier0-1\\): add lib/monetization.ts + .env.example with payment UI flags:*)"
+      "Bash(git commit -m 'feat\\(tier0-1\\): add lib/monetization.ts + .env.example with payment UI flags:*)",
+      "Bash(git commit -m 'feat\\(tier0-2\\): server-side platform gate on /api/stripe/checkout and /cancel:*)"
     ]
   }
 }

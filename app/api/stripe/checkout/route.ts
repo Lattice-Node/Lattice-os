@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { getYtdRevenue } from "@/lib/revenue";
+import { checkPaymentEndpointAllowed, getServerPlatform } from "@/lib/monetization";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -54,6 +55,14 @@ const SUB_PLANS: Record<string, { priceId: string; plan: string; credits: number
 };
 
 export async function POST(req: Request) {
+  // Tier 0: monetization gate. Reject iOS-originated requests and reject Web when flag is off.
+  const gate = checkPaymentEndpointAllowed(req);
+  if (!gate.allowed) {
+    const platform = getServerPlatform(req);
+    console.warn(`[stripe/checkout] BLOCKED platform=${platform} reason=${gate.reason}`);
+    return NextResponse.json({ error: gate.reason, blocked: true }, { status: 403 });
+  }
+
   const session = await authAny(req);
   if (!session?.email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
