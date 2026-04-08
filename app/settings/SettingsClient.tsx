@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useApp } from "@/lib/theme";
 import { nativeFetch, clearNativeSession } from "@/lib/native-fetch";
+import { isPaymentUiVisible } from "@/lib/monetization";
 
 const isNativePlatform = (): boolean =>
   typeof window !== "undefined" && !!(window as any).Capacitor?.isNativePlatform?.();
@@ -106,9 +107,12 @@ export default function SettingsClient({ name, email, image, credits, distribute
   const [cancelConfirm, setCancelConfirm] = useState(false);
   const [isYearly, setIsYearly] = useState(false);
   const [usage, setUsage] = useState<{ monthlyRunsUsed: number; monthlyRunsCap: number; nextResetAt: string } | null>(null);
+  // Tier 0: payment UI visibility resolved client-side after mount
+  const [paymentVisible, setPaymentVisible] = useState(false);
   const { theme, toggleTheme } = useApp();
 
   useEffect(() => {
+    setPaymentVisible(isPaymentUiVisible());
     nativeFetch("/api/usage")
       .then((r) => r.ok ? r.json() : null)
       .then((d) => { if (d && typeof d.monthlyRunsCap === "number") setUsage(d); })
@@ -155,6 +159,11 @@ const handleLineGenerate = async () => {
   };
 
   const handlePurchase = async (planId: string) => {
+    // Tier 0: payment is gated by env flags. Bail before any network call.
+    if (!isPaymentUiVisible()) {
+      console.warn("[handlePurchase] payment UI is disabled, ignoring click");
+      return;
+    }
     setPurchasing(planId);
     try {
       const res = await nativeFetch("/api/stripe/checkout", {
@@ -217,7 +226,7 @@ const handleLineGenerate = async () => {
   const isPaid = isAdmin || plan === "starter" || plan === "personal" || plan === "pro" || plan === "business";
 
   // Credit purchase view
-  if (showCredit) {
+  if (showCredit && paymentVisible) {
     return (
       <main style={{ minHeight: "100vh", backgroundColor: "var(--bg)", color: "var(--text-primary)", paddingBottom: 100 }}>
         <div style={{ maxWidth: 420, margin: "0 auto", padding: "48px 20px 24px" }}>
@@ -252,7 +261,7 @@ const handleLineGenerate = async () => {
   }
 
 
-  if (showPlans) {
+  if (showPlans && paymentVisible) {
     return (
       <main style={{ minHeight: "100vh", backgroundColor: "var(--bg)", color: "var(--text-primary)", paddingBottom: 100 }}>
         <div style={{ maxWidth: 420, margin: "0 auto", padding: "48px 20px 24px" }}>
@@ -436,10 +445,16 @@ const handleLineGenerate = async () => {
             {isPaid && <span style={{ fontSize: 11, color: "var(--success)", background: "var(--surface)", padding: "3px 10px", borderRadius: 20 }}>有効</span>}
           </div>
           {periodEnd && <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: "4px 0 14px" }}>次回請求日: {periodEnd}</p>}
-          <button onClick={() => setShowPlans(true)} style={{ width: "100%", padding: "11px 16px", borderRadius: 8, border: "1px solid var(--border)", background: "transparent", color: "var(--btn-bg)", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span>{isPaid ? "プラン変更" : "アップグレード"}</span>
-            <span style={{ fontSize: 16 }}>...</span>
-          </button>
+          {paymentVisible ? (
+            <button onClick={() => setShowPlans(true)} style={{ width: "100%", padding: "11px 16px", borderRadius: 8, border: "1px solid var(--border)", background: "transparent", color: "var(--btn-bg)", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span>{isPaid ? "プラン変更" : "アップグレード"}</span>
+              <span style={{ fontSize: 16 }}>...</span>
+            </button>
+          ) : (
+            <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: "8px 0 0", padding: "11px 16px", borderRadius: 8, border: "1px dashed var(--border)", textAlign: "center" }}>
+              プラン変更は近日対応予定です
+            </p>
+          )}
         </div>
 
         {/* Monthly run counter (Phase 1) */}
@@ -469,7 +484,7 @@ const handleLineGenerate = async () => {
                 return `${d.getMonth() + 1}月${d.getDate()}日にリセット`;
               })()}
             </p>
-            {usage.monthlyRunsUsed >= usage.monthlyRunsCap && (
+            {usage.monthlyRunsUsed >= usage.monthlyRunsCap && paymentVisible && (
               <button
                 onClick={() => setShowPlans(true)}
                 style={{ width: "100%", marginTop: 12, padding: "11px 16px", borderRadius: 8, border: "none", background: "var(--btn-bg)", color: "var(--btn-text)", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}
