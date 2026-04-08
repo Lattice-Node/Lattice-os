@@ -117,6 +117,23 @@ export default function SettingsClient({ name, email, image, credits, distribute
       .then((r) => r.ok ? r.json() : null)
       .then((d) => { if (d && typeof d.monthlyRunsCap === "number") setUsage(d); })
       .catch(() => {});
+
+    // Tier 1.5: clear purchasing state if Stripe Browser is dismissed manually.
+    // Without this, closing the SafariViewController without completing leaves
+    // the button stuck in '...' state forever.
+    let cleanup: (() => void) | undefined;
+    if (isNativePlatform()) {
+      (async () => {
+        try {
+          const { Browser } = await import("@capacitor/browser");
+          const handle = await Browser.addListener("browserFinished", () => {
+            setPurchasing(null);
+          });
+          cleanup = () => handle.remove();
+        } catch {}
+      })();
+    }
+    return () => { cleanup?.(); };
   }, []);
 
   useEffect(() => {
