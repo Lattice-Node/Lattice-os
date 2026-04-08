@@ -106,7 +106,7 @@ export default function SettingsClient({ name, email, image, credits, distribute
   const [canceling, setCanceling] = useState(false);
   const [cancelConfirm, setCancelConfirm] = useState(false);
   const [isYearly, setIsYearly] = useState(false);
-  const [usage, setUsage] = useState<{ monthlyRunsUsed: number; monthlyRunsCap: number; nextResetAt: string } | null>(null);
+  const [usage, setUsage] = useState<{ monthlyRunsUsed: number; monthlyRunsCap: number; nextResetAt: string; cancelled?: boolean; planExpiresAt?: string | null; plan?: string } | null>(null);
   // Tier 0: payment UI visibility resolved client-side after mount
   const [paymentVisible, setPaymentVisible] = useState(false);
   const { theme, toggleTheme } = useApp();
@@ -444,7 +444,13 @@ const handleLineGenerate = async () => {
             <span style={{ fontSize: 20, fontWeight: 700, color: "var(--text-display)" }}>{planLabel}</span>
             {isPaid && <span style={{ fontSize: 11, color: "var(--success)", background: "var(--surface)", padding: "3px 10px", borderRadius: 20 }}>有効</span>}
           </div>
-          {periodEnd && <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: "4px 0 14px" }}>次回請求日: {periodEnd}</p>}
+          {usage?.cancelled && usage.planExpiresAt ? (
+            <p style={{ fontSize: 12, color: "var(--warning)", margin: "4px 0 14px" }}>
+              解約済み・{(() => { const d = new Date(usage.planExpiresAt!); return `${d.getMonth() + 1}月${d.getDate()}日`; })()}まで利用可能
+            </p>
+          ) : (
+            periodEnd && <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: "4px 0 14px" }}>次回請求日: {periodEnd}</p>
+          )}
           {paymentVisible ? (
             <button onClick={() => setShowPlans(true)} style={{ width: "100%", padding: "11px 16px", borderRadius: 8, border: "1px solid var(--border)", background: "transparent", color: "var(--btn-bg)", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span>{isPaid ? "プラン変更" : "アップグレード"}</span>

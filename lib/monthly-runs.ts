@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { getPlanLimits, isResetDue, startOfCurrentMonth } from "@/lib/plan-limits";
+import { getPlanLimits, getEffectivePlan, isResetDue, startOfCurrentMonth } from "@/lib/plan-limits";
 
 export interface RunCapCheckResult {
   allowed: boolean;
@@ -22,6 +22,7 @@ export async function checkRunCap(userId: string): Promise<RunCapCheckResult> {
       role: true,
       monthlyRunsUsed: true,
       monthlyRunsResetAt: true,
+      planExpiresAt: true,
     },
   });
 
@@ -29,7 +30,9 @@ export async function checkRunCap(userId: string): Promise<RunCapCheckResult> {
     return { allowed: false, used: 0, cap: 0, reason: "user_not_found" };
   }
 
-  const limits = getPlanLimits(user.plan, user.role);
+  // Apply lazy demotion: if planExpiresAt is in the past, treat as free.
+  const effectivePlan = getEffectivePlan(user.plan, user.planExpiresAt);
+  const limits = getPlanLimits(effectivePlan, user.role);
   const now = new Date();
 
   // Lazy monthly reset

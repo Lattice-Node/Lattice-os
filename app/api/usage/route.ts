@@ -1,7 +1,7 @@
 import { authAny } from "@/lib/auth-any";
 import { prisma } from "@/lib/prisma";
 import { jsonWithCors, corsOptions } from "@/lib/cors";
-import { getPlanLimits, isResetDue, startOfCurrentMonth, nextResetDate } from "@/lib/plan-limits";
+import { getPlanLimits, getEffectivePlan, isResetDue, startOfCurrentMonth, nextResetDate } from "@/lib/plan-limits";
 
 export async function OPTIONS(req: Request) {
   return corsOptions(req);
@@ -22,6 +22,7 @@ export async function GET(req: Request) {
         role: true,
         monthlyRunsUsed: true,
         monthlyRunsResetAt: true,
+        planExpiresAt: true,
       },
     });
 
@@ -43,12 +44,19 @@ export async function GET(req: Request) {
       used = 0;
     }
 
-    const limits = getPlanLimits(user.plan, user.role);
+    const effectivePlan = getEffectivePlan(user.plan, user.planExpiresAt, now);
+    const limits = getPlanLimits(effectivePlan, user.role);
     const cap = limits.monthlyRunsCap;
     const nextReset = nextResetDate(now);
 
+    // Cancellation status: planExpiresAt set and still in the future
+    const cancelled = !!user.planExpiresAt && new Date(user.planExpiresAt).getTime() > now.getTime();
+
     return jsonWithCors(req, {
-      plan: user.plan || "free",
+      plan: effectivePlan,
+      storedPlan: user.plan || "free",
+      cancelled,
+      planExpiresAt: user.planExpiresAt ? user.planExpiresAt.toISOString() : null,
       monthlyRunsUsed: used,
       monthlyRunsCap: cap,
       remaining: Math.max(0, cap - used),

@@ -82,6 +82,36 @@ export function getPlanLimits(plan: string | null | undefined, role?: string): P
 }
 
 /**
+ * Returns the user's effective plan, taking lazy demotion into account.
+ * If planExpiresAt is set and in the past, the user is treated as Free
+ * regardless of the stored plan column. This implements cancel-at-period-end
+ * without requiring a cron job.
+ */
+export function getEffectivePlan(
+  plan: string | null | undefined,
+  planExpiresAt: Date | null | undefined,
+  now: Date = new Date()
+): string {
+  if (planExpiresAt && new Date(planExpiresAt).getTime() < now.getTime()) {
+    return "free";
+  }
+  return plan || "free";
+}
+
+/**
+ * Convenience: combine getEffectivePlan + getPlanLimits in one call.
+ */
+export function getEffectivePlanLimits(
+  plan: string | null | undefined,
+  planExpiresAt: Date | null | undefined,
+  role?: string,
+  now: Date = new Date()
+): PlanLimits {
+  if (role === "admin") return getPlanLimits(null, role);
+  return getPlanLimits(getEffectivePlan(plan, planExpiresAt, now));
+}
+
+/**
  * Returns true if `resetAt` is in a previous calendar month from `now`.
  * Used to decide whether monthlyRunsUsed should be reset to 0.
  */

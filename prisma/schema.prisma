@@ -27,6 +27,8 @@ model User {
   stripeCustomerId    String?
   stripeSubscriptionId String?
   currentPeriodEnd    DateTime?
+  planExpiresAt       DateTime?
+  subscriptionPlatform String?
   onboardingCompleted Boolean          @default(false)
   interests          String[]         @default([])
   monthlyRunsUsed    Int              @default(0)

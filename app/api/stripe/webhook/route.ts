@@ -68,7 +68,14 @@ export async function POST(req: Request) {
         const upgrading = isUpgrade(subUser.plan, plan);
         await prisma.user.update({
           where: { email },
-          data: { plan, stripeSubscriptionId: subscriptionId, currentPeriodEnd: periodEnd },
+          data: {
+            plan,
+            stripeSubscriptionId: subscriptionId,
+            currentPeriodEnd: periodEnd,
+            // Clear cancellation marker on (re-)subscribe
+            planExpiresAt: null,
+            subscriptionPlatform: "web",
+          },
         });
         await resetCredits(subUser.id, credits, 0, "plan_start", subscriptionId);
         // Tier 1.1: reset monthly runs on upgrade so newly-paid users immediately get the new cap
@@ -134,11 +141,19 @@ export async function POST(req: Request) {
       where: { stripeSubscriptionId: subscription.id },
     });
     if (user) {
+      // Tier 1.2: lazy demotion. Keep the paid plan until current_period_end,
+      // then getEffectivePlan() will treat them as free automatically.
+      const periodEnd = subscription.current_period_end
+        ? new Date(subscription.current_period_end * 1000)
+        : new Date();
       await prisma.user.update({
         where: { id: user.id },
-        data: { plan: "free", stripeSubscriptionId: null, currentPeriodEnd: null },
+        data: {
+          // Do NOT change plan immediately
+          stripeSubscriptionId: null,
+          planExpiresAt: periodEnd,
+        },
       });
-      await resetCredits(user.id, 30, 0, "plan_cancel", subscription.id);
       // Record cancellation as zero-amount marker for analytics
       await recordRevenue({
         date: new Date(),
