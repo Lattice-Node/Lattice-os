@@ -64,7 +64,8 @@
       "Bash(git commit -m 'debug: bump build marker to hardnav-2026-04-08-T17 for verification:*)",
       "Bash(git commit -m 'fix\\(native\\): revert hard nav, use router.push for /login/, redirect logout to /home/:*)",
       "Bash(git commit -m 'fix\\(native\\): use router.replace for logout \\(eliminate hard reload crash\\):*)",
-      "Bash(git commit -m 'chore: remove all debug overlays \\(build marker, NavDebug, DBG state, error handlers\\):*)"
+      "Bash(git commit -m 'chore: remove all debug overlays \\(build marker, NavDebug, DBG state, error handlers\\):*)",
+      "Bash(git commit -m 'fix\\(ui\\): lock body scroll, scroll inside .app-shell so bottom nav stays fixed:*)"
     ]
   }
 }
