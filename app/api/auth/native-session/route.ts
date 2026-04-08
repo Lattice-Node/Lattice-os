@@ -73,8 +73,6 @@ export async function POST(req: Request) {
   } catch (e) {
     console.error("[native-session] failed:", e);
     const msg = e instanceof Error ? e.message : "Unknown error";
-    // Use 500 for server-side issues (e.g. DB schema drift) so the client knows it's not auth
-    const isAuthError = /token|verify|aud|signature/i.test(msg);
-    return jsonWithCors(req, { error: msg }, { status: isAuthError ? 401 : 500 });
+    return jsonWithCors(req, { error: msg }, { status: 401 });
   }
 }
