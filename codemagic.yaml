@@ -19,23 +19,48 @@ workflows:
       - name: Capacitor sync
         script: |
           npx cap sync ios
-      - name: Re-inject Google subspec into Podfile (cap sync overwrites it)
+      - name: Rewrite CapacitorFirebaseAuthentication podspec (remove broken subspec, force Google)
+        script: |
+          set -e
+          PODSPEC="node_modules/@capacitor-firebase/authentication/CapacitorFirebaseAuthentication.podspec"
+          cat > "$PODSPEC" <<'PODSPEC_EOF'
+          require 'json'
+
+          package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
+
+          Pod::Spec.new do |s|
+            s.name = 'CapacitorFirebaseAuthentication'
+            s.version = package['version']
+            s.summary = package['description']
+            s.license = package['license']
+            s.homepage = package['repository']['url']
+            s.author = package['author']
+            s.source = { :git => package['repository']['url'], :tag => s.version.to_s }
+            s.source_files = 'ios/Plugin/**/*.{swift,h,m,c,cc,mm,cpp}'
+            s.ios.deployment_target = '15.0'
+            s.dependency 'Capacitor'
+            s.dependency 'FirebaseAuth', '~> 12.7.0'
+            s.dependency 'GoogleSignIn', '9.0.0'
+            s.xcconfig = { 'OTHER_SWIFT_FLAGS' => '$(inherited) -DRGCFA_INCLUDE_GOOGLE' }
+            s.swift_version = '5.1'
+            s.static_framework = true
+          end
+          PODSPEC_EOF
+          echo "--- Rewrote podspec ---"
+          cat "$PODSPEC"
+      - name: Force Podfile to use plain CapacitorFirebaseAuthentication (no subspec)
         script: |
           set -e
           PODFILE="ios/App/Podfile"
-          sed -i.bak "s|pod 'CapacitorFirebaseAuthentication', :path|pod 'CapacitorFirebaseAuthentication/Google', :path|" "$PODFILE"
+          sed -i.bak "s|pod 'CapacitorFirebaseAuthentication/Google', :path|pod 'CapacitorFirebaseAuthentication', :path|" "$PODFILE"
           rm -f "$PODFILE.bak"
-          echo "--- Podfile after re-injection ---"
+          echo "--- Podfile after normalization ---"
           grep -n "CapacitorFirebaseAuthentication" "$PODFILE"
-          if ! grep -q "CapacitorFirebaseAuthentication/Google" "$PODFILE"; then
-            echo "ERROR: /Google subspec injection failed"
-            exit 1
-          fi
-      - name: Clean Pods directory (force fresh install)
+      - name: Clean Pods + Podfile.lock (podspec structure changed)
         script: |
           cd ios/App
-          rm -rf Pods
-          echo "Pods directory removed (Podfile.lock kept)"
+          rm -rf Pods Podfile.lock
+          echo "Pods directory and Podfile.lock removed for fresh resolution"
       - name: Install CocoaPods
         script: |
           cd ios/App
