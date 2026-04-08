@@ -110,6 +110,8 @@ export default function SettingsClient({ name, email, image, credits, distribute
   const [usage, setUsage] = useState<{ monthlyRunsUsed: number; monthlyRunsCap: number; nextResetAt: string; cancelled?: boolean; planExpiresAt?: string | null; plan?: string } | null>(null);
   // Tier 0: payment UI visibility resolved client-side after mount
   const [paymentVisible, setPaymentVisible] = useState(false);
+  // Phase 4: per-plan localized prices fetched from RevenueCat (only on iOS when IAP enabled)
+  const [iapPrices, setIapPrices] = useState<{ starter?: string; pro?: string }>({});
   const { theme, toggleTheme } = useApp();
 
   useEffect(() => {
@@ -118,6 +120,26 @@ export default function SettingsClient({ name, email, image, credits, distribute
       .then((r) => r.ok ? r.json() : null)
       .then((d) => { if (d && typeof d.monthlyRunsCap === "number") setUsage(d); })
       .catch(() => {});
+
+    // Phase 4: fetch iOS-localized prices from RevenueCat offerings
+    if (isNativePlatform() && isPaymentUiVisible()) {
+      (async () => {
+        try {
+          const offering = await getOfferings();
+          if (!offering) return;
+          const starterPkg = offering.availablePackages.find((p) => p.identifier === "$rc_monthly")
+            || offering.monthly
+            || offering.availablePackages.find((p) => p.identifier === "starter_monthly");
+          const proPkg = offering.availablePackages.find((p) => p.identifier === "pro_monthly");
+          setIapPrices({
+            starter: starterPkg?.product.priceString,
+            pro: proPkg?.product.priceString,
+          });
+        } catch (e) {
+          console.warn("[settings] failed to fetch iap prices", e);
+        }
+      })();
+    }
 
     // Tier 1.5: clear purchasing state if Stripe Browser is dismissed manually.
     // Without this, closing the SafariViewController without completing leaves
@@ -356,16 +378,18 @@ const handleLineGenerate = async () => {
             AIエージェントが、あなたの代わりに働きます
           </p>
 
-          {/* Yearly/Monthly toggle */}
-          <div style={{ display: "flex", background: "var(--surface)", borderRadius: 12, padding: 4, marginBottom: 20 }}>
-            <button onClick={() => setIsYearly(false)} style={{ flex: 1, padding: "10px 0", background: !isYearly ? "var(--border)" : "transparent", color: !isYearly ? "#fff" : "var(--text-secondary)", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s" }}>
-              月額
-            </button>
-            <button onClick={() => setIsYearly(true)} style={{ flex: 1, padding: "10px 0", background: isYearly ? "var(--border)" : "transparent", color: isYearly ? "#fff" : "var(--text-secondary)", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s", position: "relative" }}>
-              年額
-              <span style={{ position: "absolute", top: -8, right: 12, background: "#22c55e", color: "#fff", fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 6 }}>2ヶ月無料</span>
-            </button>
-          </div>
+          {/* Yearly/Monthly toggle — Web only (iOS IAP currently has only monthly products) */}
+          {!isNativePlatform() && (
+            <div style={{ display: "flex", background: "var(--surface)", borderRadius: 12, padding: 4, marginBottom: 20 }}>
+              <button onClick={() => setIsYearly(false)} style={{ flex: 1, padding: "10px 0", background: !isYearly ? "var(--border)" : "transparent", color: !isYearly ? "#fff" : "var(--text-secondary)", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s" }}>
+                月額
+              </button>
+              <button onClick={() => setIsYearly(true)} style={{ flex: 1, padding: "10px 0", background: isYearly ? "var(--border)" : "transparent", color: isYearly ? "#fff" : "var(--text-secondary)", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s", position: "relative" }}>
+                年額
+                <span style={{ position: "absolute", top: -8, right: 12, background: "#22c55e", color: "#fff", fontSize: 10, fontWeight: 700, padding: "2px 6px", borderRadius: 6 }}>2ヶ月無料</span>
+              </button>
+            </div>
+          )}
 
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {SUB_PLANS.filter((p) => p.id !== "business").map((p) => {
@@ -391,7 +415,11 @@ const handleLineGenerate = async () => {
                       <p style={{ fontSize: 18, fontWeight: 700, color: "var(--text-display)", margin: "0 0 4px" }}>{p.label}</p>
                       <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
                         <span style={{ fontSize: 28, fontWeight: 700, color: "var(--text-display)" }}>
-                          {p.price === 0 ? "¥0" : `¥${monthlyEquiv.toLocaleString()}`}
+                          {p.price === 0
+                            ? "¥0"
+                            : (isNativePlatform() && (p.id === "starter" || p.id === "pro") && iapPrices[p.id as "starter" | "pro"])
+                              ? iapPrices[p.id as "starter" | "pro"]
+                              : `¥${monthlyEquiv.toLocaleString()}`}
                         </span>
                         {p.price > 0 && <span style={{ fontSize: 13, color: "var(--text-secondary)" }}>/月</span>}
                       </div>
