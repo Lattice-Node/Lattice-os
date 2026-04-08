@@ -46,14 +46,15 @@ export function getAvailableTools(
   role: string,
   connections: string[]
 ): ToolDefinition[] {
-  const isAdmin = role === "admin";
-  const isPaid = isAdmin || ["starter", "personal", "pro", "business"].includes(plan);
+  // Lazy import to avoid circular deps in some build paths
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { getPlanLimits } = require("@/lib/plan-limits");
+  const limits = getPlanLimits(plan, role);
 
-  if (!isPaid) return []; // Free plan: no client tools
+  if (!limits.toolUse) return []; // Free plan: no client tools
 
   const tools: ToolDefinition[] = [fetchUrlTool];
 
-  // Gmail tool only if connected
   if (connections.includes("gmail")) {
     tools.push(sendGmailTool);
   }

@@ -36,6 +36,7 @@ function calcNextRunAt(cronExpr: string): Date | null {
 }
 import { prisma } from "@/lib/prisma";
 import { authAny } from "@/lib/auth-any";
+import { getPlanLimits } from "@/lib/plan-limits";
 
 export async function GET(req: Request) {
   const session = await authAny(req);
@@ -64,14 +65,15 @@ export async function POST(req: Request) {
     });
   }
 
-  // Free plan: max 3 agents, Starter: max 10 (admin bypasses)
-  if (user.role !== "admin") {
+  // Phase 1: enforce agent cap from plan-limits (admin bypasses)
+  const limits = getPlanLimits(user.plan, user.role);
+  if (limits.agentCap !== -1) {
     const agentCount = await prisma.userAgent.count({ where: { userId: user.id } });
-    if (user.plan === "free" && agentCount >= 3) {
-      return NextResponse.json({ error: "Free plan limit: max 3 agents" }, { status: 403 });
-    }
-    if ((user.plan === "starter" || user.plan === "personal") && agentCount >= 10) {
-      return NextResponse.json({ error: "Starter plan limit: max 10 agents" }, { status: 403 });
+    if (agentCount >= limits.agentCap) {
+      return NextResponse.json(
+        { error: `エージェント上限 (${limits.agentCap}体) に達しました。プランをアップグレードしてください。` },
+        { status: 403 }
+      );
     }
   }
 

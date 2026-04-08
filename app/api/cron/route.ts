@@ -144,10 +144,11 @@ export async function GET(req: NextRequest) {
           }
         } catch {}
       }
-      // Agent Memory: Pro/Business/adminのみ直近5件のログをコンテキスト注入
+      // Phase 1: Memory injection — Pro+ (advanced) only. Starter gets basic (no log injection).
       let memoryContext = "";
-      const isPaidPlan = user.role === "admin" || user.plan === "pro" || user.plan === "business";
-      if (isPaidPlan) {
+      const { getPlanLimits } = await import("@/lib/plan-limits");
+      const memLimits = getPlanLimits(user.plan, user.role);
+      if (memLimits.memoryInjection === "advanced") {
         const recentLogs = await prisma.agentLog.findMany({
           where: { agentId: agent.id, status: "success" },
           orderBy: { createdAt: "desc" },
