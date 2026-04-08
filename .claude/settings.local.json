@@ -67,7 +67,8 @@
       "Bash(git commit -m 'chore: remove all debug overlays \\(build marker, NavDebug, DBG state, error handlers\\):*)",
       "Bash(git commit -m 'fix\\(ui\\): lock body scroll, scroll inside .app-shell so bottom nav stays fixed:*)",
       "Bash(git commit -m 'fix\\(ui\\): hide WebKit scrollbars \\(native apps don'\\\\''t show scrollbars\\):*)",
-      "Bash(git commit -m 'fix\\(ui\\): native UX polish — disable long-press menus, prevent input zoom:*)"
+      "Bash(git commit -m 'fix\\(ui\\): native UX polish — disable long-press menus, prevent input zoom:*)",
+      "Bash(git commit -m 'fix\\(ui\\): respect status bar safe-area-top + tighten bottom nav padding:*)"
     ]
   }
 }
