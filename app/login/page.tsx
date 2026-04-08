@@ -67,9 +67,9 @@ function LoginContent() {
         await saveNativeSession(data.sessionToken);
       }
 
-      // Hard reload to /home/ to ensure clean state for second-login flow
       await new Promise((r) => setTimeout(r, 150));
-      window.location.replace("/home/");
+      router.replace("/home/");
+      return;
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       console.error("[login] google native failed", msg);

@@ -11,14 +11,11 @@ const isNativePlatform = (): boolean =>
 async function universalSignOut() {
   try {
     if (isNativePlatform()) {
-      try {
-        const { FirebaseAuthentication } = await import("@capacitor-firebase/authentication");
-        await FirebaseAuthentication.signOut();
-      } catch (e) {
-        console.warn("[signout] firebase signOut failed", e);
-      }
+      // NOTE: intentionally NOT calling FirebaseAuthentication.signOut() —
+      // it appears to corrupt the plugin state on subsequent sign-ins.
+      // Clearing the bearer is enough to log the user out from our app's perspective;
+      // Firebase's cached user just lets the next signInWithGoogle return instantly.
       await clearNativeSession();
-      // Hard reload to fully reset React state, in-memory caches, all listeners
       window.location.replace("/login/");
       return;
     }

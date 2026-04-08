@@ -12,6 +12,14 @@ export default function HomePage() {
 
   useEffect(() => {
     let cancelled = false;
+    // Hard timeout: if fetch hangs longer than 8s, force fallback to unauth state
+    const hardTimeout = setTimeout(() => {
+      if (!cancelled) {
+        console.warn("[home] hard timeout reached, falling back to unauth");
+        setData({ isLoggedIn: false });
+        setLoading(false);
+      }
+    }, 8000);
     (async () => {
       try {
         const res = await nativeFetch("/api/home");
@@ -48,11 +56,13 @@ export default function HomePage() {
         console.error("[home] fetch failed", e);
         if (!cancelled) setData({ isLoggedIn: false });
       } finally {
+        clearTimeout(hardTimeout);
         if (!cancelled) setLoading(false);
       }
     })();
     return () => {
       cancelled = true;
+      clearTimeout(hardTimeout);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
