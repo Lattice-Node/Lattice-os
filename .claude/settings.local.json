@@ -79,7 +79,8 @@
       "Bash(git commit -m 'fix\\(stripe\\): use @capacitor/browser plugin to open Stripe checkout:*)",
       "Bash(git commit -m 'feat: hide Business plan from UI \\(kept in code for future B2B revival\\):*)",
       "Bash(git commit -m 'feat\\(phase1\\): hide credit purchase UI + invitation/referral UI:*)",
-      "Bash(git commit -m 'feat\\(phase1\\): add monthlyRunsUsed schema field + plan-limits + monthly-runs helpers:*)"
+      "Bash(git commit -m 'feat\\(phase1\\): add monthlyRunsUsed schema field + plan-limits + monthly-runs helpers:*)",
+      "Bash(git commit -m 'feat\\(phase1\\): enforce monthlyRunsUsed in cron + execute routes:*)"
     ]
   }
 }

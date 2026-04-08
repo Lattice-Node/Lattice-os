@@ -4,6 +4,7 @@ import OpenAI from "openai";
 import { authAny } from "@/lib/auth-any";
 import { prisma } from "@/lib/prisma";
 import { consumeCredits } from "@/lib/credits";
+import { checkRunCap, consumeRun } from "@/lib/monthly-runs";
 import { getGmailToken, sendGmailMessage, readGmailMessages } from "@/lib/gmail";
 import {
   buildDailyAiNewsFallback,
@@ -254,10 +255,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (user.role !== "admin" && (user.credits ?? 0) < 2) {
+    // Phase 1: monthly run cap enforcement (replaces credit check)
+    const cap = await checkRunCap(user.id);
+    if (!cap.allowed) {
       return NextResponse.json(
-        { ok: false, error: "クレジットが不足しています。設定画面から追加してください。" },
-        { status: 402 }
+        {
+          ok: false,
+          error: `今月の実行回数の上限に達しました (${cap.used}/${cap.cap})。来月リセットされます。`,
+          limitReached: true,
+          monthlyRunsUsed: cap.used,
+          monthlyRunsCap: cap.cap,
+        },
+        { status: 429 }
       );
     }
 
@@ -415,8 +424,9 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Phase 1: increment monthlyRunsUsed (admin bypassed by getPlanLimits)
     if (user.role !== "admin") {
-      await consumeCredits(user.id, 2, "agent_exec", agentId);
+      await consumeRun(user.id);
     }
 
     // 外部出力先への送信

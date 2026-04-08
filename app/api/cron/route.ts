@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { consumeCredits } from "@/lib/credits";
+import { checkRunCap, consumeRun } from "@/lib/monthly-runs";
 import Anthropic from "@anthropic-ai/sdk";
 import { extractTextFromClaudeResponse, isDailyAiNewsAgent, normalizeDailyAiNewsOutput, buildDailyAiNewsSystemPrompt, buildDailyAiNewsUserPrompt } from "@/lib/agents/daily-ai-news";
 import { getGmailToken, sendGmailMessage, readGmailMessages } from "@/lib/gmail";
@@ -102,9 +103,15 @@ export async function GET(req: NextRequest) {
     const user = agent.user;
     if (!user) continue;
 
-    // Check credits (skip for admin)
-    if (user.role !== "admin" && (user.credits ?? 0) < 2) {
-      results.push({ id: agent.id, name: agent.name, status: "skipped", reason: "no credits" });
+    // Phase 1: monthly run cap enforcement (replaces credit check)
+    const cap = await checkRunCap(user.id);
+    if (!cap.allowed) {
+      results.push({
+        id: agent.id,
+        name: agent.name,
+        status: "skipped",
+        reason: cap.reason === "limit_reached" ? `monthly limit reached (${cap.used}/${cap.cap})` : "user not found",
+      });
       continue;
     }
 
@@ -260,9 +267,9 @@ export async function GET(req: NextRequest) {
         },
       });
 
-      // Deduct credits
+      // Phase 1: increment monthlyRunsUsed (admin bypassed by getPlanLimits)
       if (user.role !== "admin") {
-        await consumeCredits(user.id, 2, "agent_exec", agent.id);
+        await consumeRun(user.id);
       }
 
       // External output
