@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useApp } from "@/lib/theme";
 import { nativeFetch, clearNativeSession } from "@/lib/native-fetch";
 import { isPaymentUiVisible } from "@/lib/monetization";
-import { restorePurchases } from "@/lib/revenuecat";
+import { restorePurchases, getOfferings, purchasePackage } from "@/lib/revenuecat";
 
 const isNativePlatform = (): boolean =>
   typeof window !== "undefined" && !!(window as any).Capacitor?.isNativePlatform?.();
@@ -176,10 +176,72 @@ const handleLineGenerate = async () => {
     }
   };
 
+  /**
+   * iOS IAP purchase via RevenueCat. Only invoked on iOS when payment UI is enabled.
+   * planId is the canonical plan name ('starter' | 'pro').
+   */
+  const handleIapPurchase = async (planId: "starter" | "pro") => {
+    setPurchasing(planId);
+    try {
+      const offering = await getOfferings();
+      if (!offering) {
+        throw new Error("商品情報を取得できませんでした");
+      }
+      // RevenueCat package mapping:
+      //   starter → '$rc_monthly' (the offering's monthly package)
+      //   pro     → 'pro_monthly'
+      let pkg = null;
+      if (planId === "starter") {
+        pkg = offering.availablePackages.find((p) => p.identifier === "$rc_monthly")
+          || offering.monthly
+          || offering.availablePackages.find((p) => p.identifier === "starter_monthly");
+      } else if (planId === "pro") {
+        pkg = offering.availablePackages.find((p) => p.identifier === "pro_monthly");
+      }
+      if (!pkg) {
+        throw new Error(`プラン (${planId}) の商品が見つかりません`);
+      }
+
+      const customerInfo = await purchasePackage(pkg);
+      if (customerInfo === null) {
+        // User cancelled — silent
+        return;
+      }
+      // Server-side state will be updated via RevenueCat webhook → Vercel.
+      // Refresh local UI by re-fetching usage.
+      try {
+        const usageRes = await nativeFetch("/api/usage");
+        if (usageRes.ok) {
+          const u = await usageRes.json();
+          if (u && typeof u.monthlyRunsCap === "number") setUsage(u);
+        }
+      } catch {}
+      alert("ご購入ありがとうございます");
+      setShowPlans(false);
+    } catch (e: any) {
+      console.error("[handleIapPurchase] failed", e);
+      const msg = e?.message || String(e);
+      alert(`購入に失敗しました: ${msg.slice(0, 200)}`);
+    } finally {
+      setPurchasing(null);
+    }
+  };
+
   const handlePurchase = async (planId: string) => {
     // Tier 0: payment is gated by env flags. Bail before any network call.
     if (!isPaymentUiVisible()) {
       console.warn("[handlePurchase] payment UI is disabled, ignoring click");
+      return;
+    }
+    // Phase 4: route iOS purchases through RevenueCat IAP, Web stays on Stripe
+    if (isNativePlatform()) {
+      // Strip _yearly suffix — IAP currently only has monthly products
+      const base = planId.replace(/_yearly$/, "");
+      if (base === "starter" || base === "pro") {
+        await handleIapPurchase(base);
+        return;
+      }
+      console.warn(`[handlePurchase] unknown iOS plan ${planId}`);
       return;
     }
     setPurchasing(planId);
