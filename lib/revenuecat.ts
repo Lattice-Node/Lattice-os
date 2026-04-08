@@ -1,19 +1,29 @@
 /**
  * RevenueCat client wrapper.
  *
- * Phase 2 stub: returns empty/null when iOS payment is disabled. Once the
- * @revenuecat/purchases-capacitor SDK is installed and NEXT_PUBLIC_IOS_PAYMENT_ENABLED
- * is set to "true", this file is the ONLY one that needs to change. Every other
- * caller in the codebase imports these stable function signatures.
+ * Real implementation. The SDK is statically imported so TypeScript types are
+ * available everywhere. Runtime calls are gated by isEnabled() which checks
+ * platform === 'ios' and NEXT_PUBLIC_IOS_PAYMENT_ENABLED.
+ *
+ * On Web or non-iOS platforms, all functions return null/[] without invoking
+ * the native bridge.
  */
+
+import { Capacitor } from "@capacitor/core";
+import {
+  Purchases,
+  type PurchasesOffering,
+  type PurchasesPackage,
+  type CustomerInfo,
+} from "@revenuecat/purchases-capacitor";
 
 const isEnabled = (): boolean => {
   if (typeof window === "undefined") return false;
-  const cap = (window as any).Capacitor;
-  if (!cap?.getPlatform) return false;
-  if (cap.getPlatform() !== "ios") return false;
+  if (Capacitor.getPlatform() !== "ios") return false;
   return process.env.NEXT_PUBLIC_IOS_PAYMENT_ENABLED === "true";
 };
+
+let initialized = false;
 
 /**
  * Initialize RevenueCat with the user's app user ID.
@@ -21,70 +31,90 @@ const isEnabled = (): boolean => {
  */
 export async function initRevenueCat(userId: string): Promise<void> {
   if (!isEnabled()) return;
-  // TODO: enable after SDK install
-  // const { Purchases } = await import("@revenuecat/purchases-capacitor");
-  // await Purchases.configure({
-  //   apiKey: process.env.NEXT_PUBLIC_REVENUECAT_API_KEY_IOS!,
-  //   appUserID: userId,
-  // });
-  void userId;
+  if (initialized) return;
+
+  const apiKey = process.env.NEXT_PUBLIC_REVENUECAT_API_KEY_IOS;
+  if (!apiKey) {
+    console.warn("[revenuecat] API key not set");
+    return;
+  }
+
+  try {
+    await Purchases.configure({
+      apiKey,
+      appUserID: userId,
+    });
+    initialized = true;
+    console.log("[revenuecat] initialized for user", userId);
+  } catch (e) {
+    console.error("[revenuecat] configure failed", e);
+  }
 }
 
 /**
- * Fetch the active offering (collection of purchasable packages).
- * Returns null when IAP is disabled or before SDK install.
+ * Fetch the current offering (collection of purchasable packages).
+ * Returns null when IAP is disabled or fetch fails.
  */
-export async function getOfferings(): Promise<unknown> {
+export async function getOfferings(): Promise<PurchasesOffering | null> {
   if (!isEnabled()) return null;
-  // TODO: enable after SDK install
-  // const { Purchases } = await import("@revenuecat/purchases-capacitor");
-  // const offerings = await Purchases.getOfferings();
-  // return offerings.current;
-  return null;
+  try {
+    const offerings = await Purchases.getOfferings();
+    return offerings.current ?? null;
+  } catch (e) {
+    console.error("[revenuecat] getOfferings failed", e);
+    return null;
+  }
 }
 
 /**
- * Initiate an IAP purchase. Throws if IAP is not enabled or before SDK install.
+ * Initiate an IAP purchase. Returns the new CustomerInfo on success,
+ * null when the user cancelled, or throws on a real error.
  */
-export async function purchasePackage(packageIdentifier: string): Promise<unknown> {
+export async function purchasePackage(pkg: PurchasesPackage): Promise<CustomerInfo | null> {
   if (!isEnabled()) {
     throw new Error("IAP not enabled");
   }
-  // TODO: enable after SDK install
-  // const { Purchases } = await import("@revenuecat/purchases-capacitor");
-  // const offerings = await Purchases.getOfferings();
-  // const pkg = offerings.current?.availablePackages.find((p: any) => p.identifier === packageIdentifier);
-  // if (!pkg) throw new Error(`Package ${packageIdentifier} not found`);
-  // const result = await Purchases.purchasePackage({ aPackage: pkg });
-  // return result;
-  void packageIdentifier;
-  throw new Error("Not implemented yet");
+  try {
+    const result = await Purchases.purchasePackage({ aPackage: pkg });
+    return result.customerInfo;
+  } catch (e: any) {
+    if (e?.userCancelled || e?.code === "PURCHASE_CANCELLED") {
+      console.log("[revenuecat] purchase cancelled by user");
+      return null;
+    }
+    console.error("[revenuecat] purchase failed", e);
+    throw e;
+  }
 }
 
 /**
  * Restore previous purchases. Required by Apple Guideline 3.1.1.
- * Returns null when IAP is disabled.
+ * Returns the CustomerInfo or null on failure / when disabled.
  */
-export async function restorePurchases(): Promise<unknown> {
+export async function restorePurchases(): Promise<CustomerInfo | null> {
   if (!isEnabled()) return null;
-  // TODO: enable after SDK install
-  // const { Purchases } = await import("@revenuecat/purchases-capacitor");
-  // const customerInfo = await Purchases.restorePurchases();
-  // return customerInfo;
-  return null;
+  try {
+    const result = await Purchases.restorePurchases();
+    return result.customerInfo;
+  } catch (e) {
+    console.error("[revenuecat] restore failed", e);
+    return null;
+  }
 }
 
 /**
  * Get the user's currently-active entitlement IDs (e.g. ["pro"]).
- * Returns empty array when IAP is disabled.
+ * Returns empty array when IAP is disabled or fetch fails.
  */
 export async function getActiveEntitlements(): Promise<string[]> {
   if (!isEnabled()) return [];
-  // TODO: enable after SDK install
-  // const { Purchases } = await import("@revenuecat/purchases-capacitor");
-  // const info = await Purchases.getCustomerInfo();
-  // return Object.keys(info.customerInfo.entitlements.active);
-  return [];
+  try {
+    const result = await Purchases.getCustomerInfo();
+    return Object.keys(result.customerInfo.entitlements.active);
+  } catch (e) {
+    console.error("[revenuecat] getActiveEntitlements failed", e);
+    return [];
+  }
 }
 
 /**
