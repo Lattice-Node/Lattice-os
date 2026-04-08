@@ -29,6 +29,7 @@ export async function GET(req: Request) {
 
     return jsonWithCors(req, {
       isLoggedIn: true,
+      userId: user.id,
       name: user.displayName || user.name || "",
       avatarUrl: user.avatarUrl || null,
       credits: user.credits ?? 0,
