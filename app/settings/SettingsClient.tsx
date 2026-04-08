@@ -575,7 +575,7 @@ const handleLineGenerate = async () => {
 
         {/* News Sub View */}
         {subView === "news" && (
-          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "var(--bg)", zIndex: 100, overflowY: "auto", paddingBottom: 80 }}>
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "var(--bg)", zIndex: 100, overflowY: "auto", paddingBottom: 80, paddingTop: "env(safe-area-inset-top, 0px)" }}>
             <div style={{ maxWidth: 420, margin: "0 auto", padding: "20px 16px" }}>
               {newsDetail === null && (<button onClick={() => { setSubView(null); setNewsDetail(null); }} style={{ background: "none", border: "none", color: "var(--btn-bg)", fontSize: 14, cursor: "pointer", fontFamily: "inherit", marginBottom: 16, padding: 0 }}>&#8592; 戻る</button>)}
               {newsDetail === null ? (
@@ -653,7 +653,7 @@ const handleLineGenerate = async () => {
 
         {/* About Sub View */}
         {subView === "about" && (
-          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "var(--bg)", zIndex: 100, overflowY: "auto", paddingBottom: 80 }}>
+          <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "var(--bg)", zIndex: 100, overflowY: "auto", paddingBottom: 80, paddingTop: "env(safe-area-inset-top, 0px)" }}>
             <div style={{ maxWidth: 420, margin: "0 auto", padding: "20px 16px" }}>
               <button onClick={() => setSubView(null)} style={{ background: "none", border: "none", color: "var(--btn-bg)", fontSize: 14, cursor: "pointer", fontFamily: "inherit", marginBottom: 16, padding: 0 }}>&#8592; 戻る</button>
               <h2 style={{ fontSize: 22, fontWeight: 700, color: "var(--text-primary)", margin: "0 0 20px" }}>Lattice の性能について</h2>
@@ -686,14 +686,14 @@ const handleLineGenerate = async () => {
         )}
         {/* Links */}
         <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
-          <a href="/privacy/" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid var(--border)", textDecoration: "none" }}>
+          <button onClick={() => router.push("/privacy/")} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid var(--border)", background: "transparent", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
             <span style={{ fontSize: 14, color: "var(--text-primary)" }}>プライバシーポリシー</span>
             <span style={{ fontSize: 14, color: "var(--text-disabled)" }}>&rarr;</span>
-          </a>
-          <a href="/terms/" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", textDecoration: "none" }}>
+          </button>
+          <button onClick={() => router.push("/terms/")} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", background: "transparent", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
             <span style={{ fontSize: 14, color: "var(--text-primary)" }}>利用規約</span>
             <span style={{ fontSize: 14, color: "var(--text-disabled)" }}>&rarr;</span>
-          </a>
+          </button>
         </div>
 
         <p style={{ fontSize: 12, color: "var(--text-disabled)", textAlign: "center", margin: "16px 0" }}>Lattice v0.1.0 beta</p>

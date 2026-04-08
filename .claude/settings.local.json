@@ -96,7 +96,10 @@
       "Bash(git commit -m 'fix\\(deps\\): sync package-lock.json with @capacitor/browser:*)",
       "Bash(git commit -m 'feat: rewrite /terms and /privacy pages with current plan structure + Lattice design system:*)",
       "Bash(git commit -m 'fix\\(auth\\): resilient native-session user creation + verbose login errors:*)",
-      "Bash(git commit -m 'revert\\(auth\\): restore upsert in native-session — keep verbose error messages:*)"
+      "Bash(git commit -m 'revert\\(auth\\): restore upsert in native-session — keep verbose error messages:*)",
+      "Bash(git checkout:*)",
+      "Bash(git commit -m 'revert\\(login\\): restore login flow + native-fetch + native-session to known-good state \\(40b671d\\):*)",
+      "Bash(git commit -m 'fix\\(ui\\): privacy/terms link → router.push + safe-area-top on news/about/terms/privacy:*)"
     ]
   }
 }

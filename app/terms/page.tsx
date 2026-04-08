@@ -14,7 +14,7 @@ export default function TermsPage() {
         paddingBottom: 80,
       }}
     >
-      <div style={{ maxWidth: 680, margin: "0 auto", padding: "48px 20px 24px" }}>
+      <div style={{ maxWidth: 680, margin: "0 auto", padding: "calc(24px + env(safe-area-inset-top, 0px)) 20px 24px" }}>
         {/* Back nav */}
         <button
           onClick={() => router.back()}
