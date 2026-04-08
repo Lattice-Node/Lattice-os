@@ -94,6 +94,15 @@ model AgentLog {
   user      User      @relation(fields: [userId], references: [id])
 }
 
+model RevenueCatEventProcessed {
+  id          String   @id @default(cuid())
+  eventId     String   @unique
+  eventType   String
+  processedAt DateTime @default(now())
+
+  @@index([eventType, processedAt])
+}
+
 model RevenueRecord {
   id              String   @id @default(cuid())
   date            DateTime
