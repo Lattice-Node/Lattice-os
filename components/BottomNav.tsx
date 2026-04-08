@@ -33,18 +33,35 @@ export default function BottomNav() {
     router.push(href);
   };
 
+  const itemBtnStyle: React.CSSProperties = {
+    flex: 1,
+    minHeight: 48,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 2,
+    background: "none",
+    border: "none",
+    padding: "6px 0",
+    cursor: "pointer",
+    fontFamily: "inherit",
+    touchAction: "manipulation",
+    WebkitTapHighlightColor: "transparent",
+  };
+
   return (
     <nav className="btm-nav">
       {tabs.map(tab => {
         const active = tab.href === "/home/" ? pathname === "/home/" : tab.href === "/agents/new/" ? pathname === "/agents/new/" : pathname.startsWith(tab.href);
         if (tab.isCenter) return (
-          <button key={tab.href} type="button" onClick={() => go(tab.href)} className="btm-nav-center" style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "inherit" }}>
+          <button key={tab.href} type="button" onClick={() => go(tab.href)} style={{ ...itemBtnStyle, marginTop: -14 }}>
             <div className="btm-nav-center-btn">{tab.icon(true)}</div>
             <span className="btm-nav-label" style={{ color: "var(--nav-inactive)" }}>{tab.label}</span>
           </button>
         );
         return (
-          <button key={tab.href} type="button" onClick={() => go(tab.href)} className="btm-nav-item" style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "inherit" }}>
+          <button key={tab.href} type="button" onClick={() => go(tab.href)} style={itemBtnStyle}>
             {active && <div style={{ width: 4, height: 4, background: "var(--accent)", borderRadius: "50%" }} />}
             {tab.icon(active)}
             <span className="btm-nav-label" style={{ color: active ? "var(--nav-active)" : "var(--nav-inactive)" }}>{tab.label}</span>

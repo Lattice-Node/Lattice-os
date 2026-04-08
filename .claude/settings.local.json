@@ -74,7 +74,8 @@
       "Bash(git commit -m 'fix\\(native\\): more bug sweep — Apple login router.replace, agents list dynamic href, error fallback to /home/:*)",
       "Bash(git commit -m 'fix\\(stripe\\): always reset purchasing state + use anchor click for native external nav:*)",
       "Bash(git commit -m 'fix\\(native\\): finally blocks for loading states + router.refresh instead of reload:*)",
-      "Bash(git commit -m 'perf\\(native\\): cache plugin imports + fire-and-forget haptics:*)"
+      "Bash(git commit -m 'perf\\(native\\): cache plugin imports + fire-and-forget haptics:*)",
+      "Bash(git commit -m 'fix\\(ui\\): bottom nav tap targets + missing agent card CSS classes:*)"
     ]
   }
 }
