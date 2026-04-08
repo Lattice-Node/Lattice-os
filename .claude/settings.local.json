@@ -83,7 +83,8 @@
       "Bash(git commit -m 'feat\\(phase1\\): enforce monthlyRunsUsed in cron + execute routes:*)",
       "Bash(git commit -m 'feat\\(phase1\\): consolidate plan limits via lib/plan-limits:*)",
       "Bash(git commit -m 'feat\\(phase1\\): add /api/usage endpoint + monthly run counter card in Settings:*)",
-      "Bash(git commit -m 'perf\\(phase1\\): enable Anthropic prompt caching on all Claude API calls:*)"
+      "Bash(git commit -m 'perf\\(phase1\\): enable Anthropic prompt caching on all Claude API calls:*)",
+      "Bash(git commit -m 'perf\\(phase1\\): throttle Talk cascade — extract-memory every 5th, opening-voice 1h cooldown:*)"
     ]
   }
 }

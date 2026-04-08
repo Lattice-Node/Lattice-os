@@ -113,23 +113,36 @@ export async function POST(
       console.warn("[Node Exchange] DB save failed:", dbErr);
     }
 
-    // バックグラウンド: 記憶抽出
-    try {
-      const origin = req.headers.get("origin") || req.headers.get("host") || "";
-      const baseUrl = origin.startsWith("http") ? origin : `https://${origin}`;
-      fetch(`${baseUrl}/api/node/${id}/extract-memory`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ _internal: true }),
-      }).catch(() => {});
-    } catch {}
+    // Phase 1: Talk cascade optimization
+    // - extract-memory: only every 5th exchange (cuts cost ~80%)
+    // - opening-voice: only if last one is older than 1 hour
+    const totalExchanges = await prisma.nodeExchange.count({ where: { nodeId: id } }).catch(() => 0);
+    const shouldExtractMemory = totalExchanges > 0 && totalExchanges % 5 === 0;
+
+    if (shouldExtractMemory) {
+      try {
+        const origin = req.headers.get("origin") || req.headers.get("host") || "";
+        const baseUrl = origin.startsWith("http") ? origin : `https://${origin}`;
+        fetch(`${baseUrl}/api/node/${id}/extract-memory`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ _internal: true }),
+        }).catch(() => {});
+      } catch {}
+    }
 
     const resp = NextResponse.json({ response: nodeResponse, exchangeId });
 
-    // fire-and-forget: 次回Opening Voice生成
-    void generateOpeningVoice(id).catch((e) =>
-      console.error("[opening-voice] generation failed", e)
-    );
+    // Throttled opening-voice: only if last one is >1h old (or never generated)
+    const ONE_HOUR = 60 * 60 * 1000;
+    const lastVoiceAge = node.openingVoiceCreatedAt
+      ? Date.now() - new Date(node.openingVoiceCreatedAt).getTime()
+      : Infinity;
+    if (lastVoiceAge > ONE_HOUR) {
+      void generateOpeningVoice(id).catch((e) =>
+        console.error("[opening-voice] generation failed", e)
+      );
+    }
 
     return resp;
   } catch (e) {
