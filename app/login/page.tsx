@@ -1,11 +1,12 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 
 function LoginContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const ref = searchParams.get("ref");
   const errParam = searchParams.get("error");
   const [refSaved, setRefSaved] = useState(false);
@@ -96,7 +97,9 @@ function LoginContent() {
       }
 
       setLoginError(`[8] Redirecting to /home...`);
-      window.location.href = "/home/";
+      // Small delay to ensure Preferences.set has flushed before navigation
+      await new Promise((r) => setTimeout(r, 200));
+      router.replace("/home/");
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       console.error("[login] google native failed", msg);
@@ -170,7 +173,9 @@ function LoginContent() {
       }
 
       setLoginError(`[8] Redirecting to /home...`);
-      window.location.href = "/home/";
+      // Small delay to ensure Preferences.set has flushed before navigation
+      await new Promise((r) => setTimeout(r, 200));
+      router.replace("/home/");
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       console.error("[login] apple native failed", msg);
