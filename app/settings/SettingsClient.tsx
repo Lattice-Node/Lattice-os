@@ -1,29 +1,12 @@
 "use client";
 import { signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useApp } from "@/lib/theme";
 import { nativeFetch, clearNativeSession } from "@/lib/native-fetch";
 
 const isNativePlatform = (): boolean =>
   typeof window !== "undefined" && !!(window as any).Capacitor?.isNativePlatform?.();
-
-async function universalSignOut() {
-  try {
-    if (isNativePlatform()) {
-      // NOTE: intentionally NOT calling FirebaseAuthentication.signOut() —
-      // it appears to corrupt the plugin state on subsequent sign-ins.
-      // Clearing the bearer is enough to log the user out from our app's perspective;
-      // Firebase's cached user just lets the next signInWithGoogle return instantly.
-      await clearNativeSession();
-      window.location.replace("/home/");
-      return;
-    }
-    await signOut({ callbackUrl: "/" });
-  } catch {
-    window.location.replace("/home/");
-  }
-}
 
 interface Props {
   name: string;
@@ -146,8 +129,22 @@ const handleLineGenerate = async () => {
   };
 
   const searchParams = useSearchParams();
+  const router = useRouter();
   const success = searchParams.get("success");
   const errorParam = searchParams.get("error");
+
+  const handleSignOut = async () => {
+    try {
+      if (isNativePlatform()) {
+        await clearNativeSession();
+        router.replace("/home/");
+        return;
+      }
+      await signOut({ callbackUrl: "/" });
+    } catch {
+      router.replace("/home/");
+    }
+  };
 
   const handlePurchase = async (planId: string) => {
     setPurchasing(planId);
@@ -173,7 +170,7 @@ const handleLineGenerate = async () => {
     setDeleting(true);
     try {
       const res = await nativeFetch("/api/users/delete", { method: "DELETE" });
-      if (res.ok) await universalSignOut();
+      if (res.ok) await handleSignOut();
     } catch { setDeleting(false); setConfirm(false); }
   };
 
@@ -645,7 +642,7 @@ const handleLineGenerate = async () => {
           </button>
         </div>
 
-        <button onClick={() => universalSignOut()} style={{ width: "100%", padding: "13px", borderRadius: 999, border: "1px solid var(--border-visible)", background: "transparent", color: "var(--accent)", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", marginBottom: 10 }}>
+        <button onClick={() => handleSignOut()} style={{ width: "100%", padding: "13px", borderRadius: 999, border: "1px solid var(--border-visible)", background: "transparent", color: "var(--accent)", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", marginBottom: 10 }}>
           ログアウト
         </button>
 
