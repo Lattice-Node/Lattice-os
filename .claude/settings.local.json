@@ -49,7 +49,8 @@
       "Bash(cat node_modules/@capacitor-firebase/authentication/*.podspec)",
       "Bash(git commit -m 'debug\\(ci\\): clean Pods before install + extra pbxproj diagnostics:*)",
       "Bash(git commit -m 'fix\\(ci\\): rewrite CapacitorFirebaseAuthentication podspec to remove broken subspec:*)",
-      "Bash(git commit -m 'debug: add error.tsx boundary to surface client exceptions on native:*)"
+      "Bash(git commit -m 'debug: add error.tsx boundary to surface client exceptions on native:*)",
+      "Bash(git commit -m 'chore\\(ios\\): bump MARKETING_VERSION 1.0 -> 1.0.1 to bypass Apple upload rate limit:*)"
     ]
   }
 }
