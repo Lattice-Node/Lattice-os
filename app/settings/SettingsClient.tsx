@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useApp } from "@/lib/theme";
 import { nativeFetch, clearNativeSession } from "@/lib/native-fetch";
 import { isPaymentUiVisible } from "@/lib/monetization";
+import { restorePurchases } from "@/lib/revenuecat";
 
 const isNativePlatform = (): boolean =>
   typeof window !== "undefined" && !!(window as any).Capacitor?.isNativePlatform?.();
@@ -493,6 +494,43 @@ const handleLineGenerate = async () => {
             >
               <span style={{ fontWeight: 500 }}>サブスクリプション管理</span>
               <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>Apple の設定でサブスクリプションを管理します</span>
+            </button>
+          )}
+          {/* Tier 2.3: Restore Purchases button (iOS only, always visible — required by Apple Guideline 3.1.1) */}
+          {isNativePlatform() && (
+            <button
+              onClick={async () => {
+                try {
+                  const result = await restorePurchases();
+                  if (result === null) {
+                    alert("購入を復元する機能は近日対応予定です");
+                  } else {
+                    alert("購入を復元しました");
+                  }
+                } catch (e) {
+                  console.error("[restore] failed", e);
+                  alert("購入の復元に失敗しました");
+                }
+              }}
+              style={{
+                width: "100%",
+                padding: "11px 16px",
+                marginTop: 8,
+                borderRadius: 8,
+                border: "1px solid var(--border)",
+                background: "transparent",
+                color: "var(--text-primary)",
+                fontSize: 13,
+                cursor: "pointer",
+                fontFamily: "inherit",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                gap: 2,
+              }}
+            >
+              <span style={{ fontWeight: 500 }}>購入を復元</span>
+              <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>以前購入したサブスクリプションを復元します</span>
             </button>
           )}
           {paymentVisible ? (
