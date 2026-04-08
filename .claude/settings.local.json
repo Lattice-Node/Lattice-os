@@ -52,7 +52,8 @@
       "Bash(git commit -m 'debug: add error.tsx boundary to surface client exceptions on native:*)",
       "Bash(git commit -m 'chore\\(ios\\): bump MARKETING_VERSION 1.0 -> 1.0.1 to bypass Apple upload rate limit:*)",
       "Bash(git commit -m 'fix\\(native\\): retry nativeFetch on 401 + global error handler for early crashes:*)",
-      "Bash(git commit -m 'fix\\(native\\): disable SessionProvider auto-fetch \\(would 404 on capacitor:// scheme\\):*)"
+      "Bash(git commit -m 'fix\\(native\\): disable SessionProvider auto-fetch \\(would 404 on capacitor:// scheme\\):*)",
+      "Bash(git commit -m 'fix\\(home\\): wrap entire data fetch + render in try/catch, null-safe props:*)"
     ]
   }
 }
