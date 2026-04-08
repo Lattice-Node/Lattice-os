@@ -29,6 +29,8 @@ model User {
   currentPeriodEnd    DateTime?
   onboardingCompleted Boolean          @default(false)
   interests          String[]         @default([])
+  monthlyRuns        Int              @default(0)
+  monthlyRunsResetAt DateTime         @default(now())
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   agents         UserAgent[]

@@ -13,7 +13,6 @@ const MENU = [
   { href: "/inbox/", label: "受信箱", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><path d="M3 5h14M3 10h14M3 15h9"/></svg> },
   { href: "#tasks", label: "タスク", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><path d="M4 10l4 4 8-8"/></svg> },
   { href: "/agents/new/", label: "新規作成", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.5"><path d="M10 4v12M4 10h12"/></svg> },
-  { href: "#invite", label: "招待", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><circle cx="8" cy="7" r="3.5"/><path d="M2 17c0-3 2.5-5 6-5s6 2 6 5"/><path d="M14 6v5M11.5 8.5h5"/></svg> },
   { href: "/pricing/", label: "プラン", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><rect x="3" y="5" width="14" height="10" rx="1.5"/><path d="M3 8h14"/></svg> },
   { href: "/settings/", label: "設定", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><circle cx="10" cy="10" r="2.5"/><path d="M10 3v2M10 15v2M3 10h2M15 10h2M5.3 5.3l1.4 1.4M13.3 13.3l1.4 1.4M5.3 14.7l1.4-1.4M13.3 6.7l1.4-1.4"/></svg> },
 ];
@@ -88,11 +87,10 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
     setCopied(true); setTimeout(() => setCopied(false), 2000);
   };
 
-  const guestAllowed = ["/node/", "/store/", "/pricing/", "#tasks", "#invite"];
+  const guestAllowed = ["/node/", "/store/", "/pricing/", "#tasks"];
   const nav = (href: string) => {
     hapticImpact("light");
     if (href === "#tasks") { document.getElementById("tasks-section")?.scrollIntoView({ behavior: "smooth" }); return; }
-    if (href === "#invite") { document.getElementById("invite-section")?.scrollIntoView({ behavior: "smooth" }); return; }
     if (!isLoggedIn && !guestAllowed.includes(href)) { router.push("/login/"); return; }
     router.push(href);
   };
@@ -182,18 +180,11 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
 
         {isLoggedIn && (<>
         {/* 統計 */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 20 }}>
+        {/* Stats grid: credits/referral cards hidden in Phase 1 */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8, marginBottom: 20 }}>
           <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "14px 8px", textAlign: "center", transition: "background .2s" }}>
             <p style={{ ...S.mono, fontSize: 24, fontWeight: 700, color: "var(--text-display)", margin: "0 0 2px" }}>{agentCount}</p>
             <p style={{ ...S.mono, fontSize: 9, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", margin: 0 }}>エージェント</p>
-          </div>
-          <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "14px 8px", textAlign: "center", transition: "background .2s" }}>
-            <p style={{ ...S.mono, fontSize: 24, fontWeight: 700, color: "var(--text-display)", margin: "0 0 2px" }}>{credits}</p>
-            <p style={{ ...S.mono, fontSize: 9, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", margin: 0 }}>クレジット</p>
-          </div>
-          <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "14px 8px", textAlign: "center", transition: "background .2s" }}>
-            <p style={{ ...S.mono, fontSize: 24, fontWeight: 700, color: "var(--text-display)", margin: "0 0 2px" }}>{referralCount}</p>
-            <p style={{ ...S.mono, fontSize: 9, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", margin: 0 }}>招待済み</p>
           </div>
         </div>
 
@@ -243,51 +234,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
           </div>
         </div>
 
-        {/* 招待 */}
-        <div id="invite-section">
-          <p style={{ ...S.label, margin: "0 0 8px" }}>友達を招待</p>
-          <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "16px 14px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--accent)" strokeWidth="1.4"><circle cx="8" cy="7" r="3.5"/><path d="M2 17c0-3 2.5-5 6-5s6 2 6 5"/><path d="M14 6v5M11.5 8.5h5"/></svg>
-              <div>
-                <p style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)", margin: "0 0 1px" }}>1人招待で +10cr</p>
-                <p style={{ fontSize: 10, color: "var(--text-secondary)", margin: 0 }}>友達にも+10crプレゼント</p>
-              </div>
-            </div>
-
-            {referralCode ? (
-              <>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
-                  <div style={{ flex: 1, padding: "8px 12px", borderRadius: 6, background: "var(--bg)", border: "1px solid var(--border)" }}>
-                    <p style={{ ...S.mono, fontSize: 9, color: "var(--text-secondary)", margin: "0 0 1px", textTransform: "uppercase", letterSpacing: "0.08em" }}>招待コード</p>
-                    <p style={{ ...S.mono, fontSize: 16, fontWeight: 700, color: "var(--text-display)", margin: 0, letterSpacing: "0.1em" }}>{referralCode}</p>
-                  </div>
-                  <button onClick={copyLink} style={{
-                    padding: "8px 14px", borderRadius: 999, border: "none",
-                    background: copied ? "var(--success)" : "var(--accent)", color: "#fff",
-                    fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
-                  }}>{copied ? "コピー済み" : "コピー"}</button>
-                </div>
-                {referralCount > 0 && (
-                  <p style={{ ...S.mono, fontSize: 11, color: "var(--success)", margin: "0 0 6px" }}>{referralCount}人が参加</p>
-                )}
-                {social.length > 0 && social[0].claimable && (
-                  <button onClick={() => claim("invite")} disabled={claiming === "invite"} style={{
-                    width: "100%", padding: "8px", borderRadius: 999, border: "none",
-                    background: "var(--warning)", color: "#1a1400", fontSize: 12, fontWeight: 700,
-                    cursor: "pointer", fontFamily: "inherit",
-                  }}>{claiming === "invite" ? "..." : `招待報酬を受け取る (+${social[0].unclaimed! * 10}cr)`}</button>
-                )}
-              </>
-            ) : (
-              <button onClick={genReferral} style={{
-                width: "100%", padding: "10px", borderRadius: 999, border: "none",
-                background: "var(--accent)", color: "#fff", fontSize: 12, fontWeight: 600,
-                cursor: "pointer", fontFamily: "inherit",
-              }}>招待コードを発行する</button>
-            )}
-          </div>
-        </div>
+        {/* 招待 section hidden in Phase 1 (will return as LP system in Phase 2) */}
 
         {/* ロードマップ */}
         <div style={{ marginTop: 24 }}>

@@ -435,18 +435,7 @@ const handleLineGenerate = async () => {
           </button>
         </div>
 
-        {/* Credits */}
-        <div style={cardStyle}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <p style={{ ...sectionLabel, margin: 0 }}>クレジット</p>
-            <span style={{ fontSize: 24, fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>{credits}</span>
-          </div>
-          <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: "0 0 12px" }}>配布 {distributedCredits} cr + 購入 {purchasedCredits} cr</p>
-          <button onClick={() => setShowCredit(true)} style={{ width: "100%", padding: "11px 16px", borderRadius: 8, border: "1px solid var(--border)", background: "transparent", color: "var(--btn-bg)", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span>クレジットを追加</span>
-            <span style={{ fontSize: 16 }}>...</span>
-          </button>
-        </div>
+        {/* Credits card hidden in Phase 1 — replaced by monthly run counter */}
 
         {/* Connections */}
         <div style={cardStyle}>
