@@ -92,7 +92,9 @@
       "Bash(git commit -m 'feat\\(tier0-1\\): add lib/monetization.ts + .env.example with payment UI flags:*)",
       "Bash(git commit -m 'feat\\(tier0-2\\): server-side platform gate on /api/stripe/checkout and /cancel:*)",
       "Bash(git commit -m 'feat\\(tier0-3\\): gate Settings payment UI behind isPaymentUiVisible\\(\\):*)",
-      "Bash(git commit -m 'feat\\(tier0-4\\): hide /pricing route + filter pricing entry from home menu when web payment off:*)"
+      "Bash(git commit -m 'feat\\(tier0-4\\): hide /pricing route + filter pricing entry from home menu when web payment off:*)",
+      "Bash(git commit -m 'fix\\(deps\\): sync package-lock.json with @capacitor/browser:*)",
+      "Bash(git commit -m 'feat: rewrite /terms and /privacy pages with current plan structure + Lattice design system:*)"
     ]
   }
 }
