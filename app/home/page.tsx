@@ -9,20 +9,23 @@ export default function HomePage() {
   const router = useRouter();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [dbg, setDbg] = useState<string>("init");
 
   useEffect(() => {
     let cancelled = false;
-    // Hard timeout: if fetch hangs longer than 8s, force fallback to unauth state
+    setDbg("useEffect started");
     const hardTimeout = setTimeout(() => {
       if (!cancelled) {
-        console.warn("[home] hard timeout reached, falling back to unauth");
+        setDbg((d) => d + " | TIMEOUT");
         setData({ isLoggedIn: false });
         setLoading(false);
       }
     }, 8000);
     (async () => {
       try {
+        setDbg("fetching /api/home");
         const res = await nativeFetch("/api/home");
+        setDbg(`fetch -> ${res.status}`);
         if (cancelled) return;
         if (!res.ok) {
           setData({ isLoggedIn: false });
@@ -31,8 +34,9 @@ export default function HomePage() {
         let json: any = null;
         try {
           json = await res.json();
+          setDbg(`json ok, isLoggedIn=${json?.isLoggedIn}`);
         } catch (e) {
-          console.error("[home] json parse failed", e);
+          setDbg(`json parse fail: ${e instanceof Error ? e.message : String(e)}`);
           setData({ isLoggedIn: false });
           return;
         }
@@ -53,7 +57,7 @@ export default function HomePage() {
           }
         }
       } catch (e) {
-        console.error("[home] fetch failed", e);
+        setDbg(`fetch ERROR: ${e instanceof Error ? e.message : String(e)}`);
         if (!cancelled) setData({ isLoggedIn: false });
       } finally {
         clearTimeout(hardTimeout);
@@ -68,7 +72,14 @@ export default function HomePage() {
   }, []);
 
   if (loading || !data) {
-    return <div style={{ padding: 20, color: "var(--text-secondary)" }}>読み込み中...</div>;
+    return (
+      <div style={{ padding: 20, color: "var(--text-secondary)" }}>
+        読み込み中...
+        <div style={{ marginTop: 12, fontSize: 10, color: "#666", fontFamily: "monospace" }}>
+          DBG: {dbg}
+        </div>
+      </div>
+    );
   }
 
   try {
