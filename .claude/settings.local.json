@@ -106,7 +106,8 @@
       "Bash(git commit -m 'fix\\(tier1-5\\): clear purchasing state when Stripe Browser sheet is dismissed:*)",
       "Bash(git commit -m 'feat\\(tier2-1\\): RevenueCat webhook endpoint with full event handling:*)",
       "Bash(git commit -m 'feat\\(tier2-2\\): lib/revenuecat.ts client wrapper stub:*)",
-      "Bash(git commit -m 'feat\\(tier2-3\\): Restore Purchases button in Settings \\(iOS, always visible\\):*)"
+      "Bash(git commit -m 'feat\\(tier2-3\\): Restore Purchases button in Settings \\(iOS, always visible\\):*)",
+      "Bash(git commit -m 'feat\\(tier2-4\\): subscriptionPlatform double-charge guard on Stripe checkout:*)"
     ]
   }
 }

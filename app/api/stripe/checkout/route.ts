@@ -68,6 +68,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Tier 2.4: double-charge prevention.
+  // If the user already pays via iOS IAP, refuse Stripe checkout.
+  const existingUser = await prisma.user.findUnique({
+    where: { email: session.email },
+    select: { subscriptionPlatform: true },
+  });
+  if (existingUser?.subscriptionPlatform === "ios") {
+    return NextResponse.json(
+      {
+        error: "iOSアプリで既にサブスクリプションをご契約中です。Web からの追加購入はできません。",
+        platformConflict: true,
+      },
+      { status: 409 }
+    );
+  }
+
   // Phase 1: revenue auto-stop guard. Block new purchases when YTD >= ¥750,000.
   // Existing subscribers continue normally (Stripe renewals bypass this endpoint).
   const ytd = await getYtdRevenue();
