@@ -104,7 +104,8 @@
       "Bash(git commit -m 'feat\\(tier1-2\\): cancel-at-period-end with lazy demotion via planExpiresAt:*)",
       "Bash(git commit -m 'feat\\(tier1-4\\): Apple subscription management link in Settings \\(iOS + paid only\\):*)",
       "Bash(git commit -m 'fix\\(tier1-5\\): clear purchasing state when Stripe Browser sheet is dismissed:*)",
-      "Bash(git commit -m 'feat\\(tier2-1\\): RevenueCat webhook endpoint with full event handling:*)"
+      "Bash(git commit -m 'feat\\(tier2-1\\): RevenueCat webhook endpoint with full event handling:*)",
+      "Bash(git commit -m 'feat\\(tier2-2\\): lib/revenuecat.ts client wrapper stub:*)"
     ]
   }
 }
