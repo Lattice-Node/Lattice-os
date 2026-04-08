@@ -43,7 +43,8 @@
       "Bash(grep -L \"jsonWithCors\\\\|corsOptions\" app/api/**/route.ts)",
       "Bash(find app/api -name \"route.ts\" -exec grep -L \"jsonWithCors\\\\|corsOptions\" {} \\\\;)",
       "Bash(grep:*)",
-      "Bash(git commit -m 'fix\\(ui\\): reduce bottom nav padding to YouTube-style \\(icons close to home indicator\\):*)"
+      "Bash(git commit -m 'fix\\(ui\\): reduce bottom nav padding to YouTube-style \\(icons close to home indicator\\):*)",
+      "Bash(git commit -m 'fix\\(ui\\): tighter bottom nav, pull icons closer to home indicator:*)"
     ]
   }
 }
