@@ -12,11 +12,7 @@ function LoginContent() {
   const [refSaved, setRefSaved] = useState(false);
   const [isNative, setIsNative] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
-  const [loginError, setLoginError] = useState<string | null>(
-    errParam && errParam !== "Configuration"
-      ? "ログインに失敗しました。もう一度お試しください。"
-      : null
-  );
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   useEffect(() => {
     if (ref) {
@@ -43,67 +39,41 @@ function LoginContent() {
     }
 
     try {
-      setLoginError("[1] Loading plugin...");
       const { FirebaseAuthentication } = await import("@capacitor-firebase/authentication");
-
-      setLoginError("[2] Plugin loaded. Checking current user...");
-      try {
-        const current = await FirebaseAuthentication.getCurrentUser();
-        setLoginError(`[3] Current user: ${current.user ? current.user.email : "none"}. Calling signInWithGoogle...`);
-      } catch (e) {
-        setLoginError(`[3a] getCurrentUser failed: ${e instanceof Error ? e.message : String(e)}. Continuing...`);
-      }
-
-      const startTime = Date.now();
 
       const signInPromise = FirebaseAuthentication.signInWithGoogle();
       const timeoutPromise = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error("TIMEOUT after 30s")), 30000)
       );
-
-      const result = await Promise.race([signInPromise, timeoutPromise]);
-
-      const elapsed = Date.now() - startTime;
-      setLoginError(`[4] signInWithGoogle returned in ${elapsed}ms. Fetching Firebase ID token...`);
+      await Promise.race([signInPromise, timeoutPromise]);
 
       const tokenResult = await FirebaseAuthentication.getIdToken({ forceRefresh: true });
       const idToken = tokenResult.token;
-      if (!idToken) {
-        throw new Error("Failed to get Firebase ID token after sign-in");
-      }
-
-      setLoginError(`[5] Got idToken (${idToken.length} chars). Calling native-session...`);
+      if (!idToken) throw new Error("Failed to get Firebase ID token");
 
       const sessionRes = await fetch("https://www.lattice-protocol.com/api/auth/native-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken }),
-        credentials: "include",
       });
 
-      setLoginError(`[6] native-session status: ${sessionRes.status}`);
-
       if (!sessionRes.ok) {
-        const errBody = await sessionRes.text();
-        throw new Error(`native-session failed: ${sessionRes.status} ${errBody.slice(0, 200)}`);
+        throw new Error(`認証サーバエラー (${sessionRes.status})`);
       }
 
       const data = await sessionRes.json();
-      setLoginError(`[7] Session OK. Saving token...`);
-
       if (data.sessionToken) {
         const { saveNativeSession } = await import("@/lib/native-fetch");
         await saveNativeSession(data.sessionToken);
       }
 
-      setLoginError(`[8] Redirecting to /home...`);
-      // Small delay to ensure Preferences.set has flushed before navigation
-      await new Promise((r) => setTimeout(r, 200));
-      router.replace("/home/");
+      // Hard reload to /home/ to ensure clean state for second-login flow
+      await new Promise((r) => setTimeout(r, 150));
+      window.location.replace("/home/");
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       console.error("[login] google native failed", msg);
-      setLoginError(`FAILED: ${msg}`);
+      setLoginError("ログインに失敗しました。もう一度お試しください。");
       setLoading(null);
     }
   };
@@ -119,67 +89,40 @@ function LoginContent() {
     }
 
     try {
-      setLoginError("[1] Loading plugin...");
       const { FirebaseAuthentication } = await import("@capacitor-firebase/authentication");
-
-      setLoginError("[2] Plugin loaded. Checking current user...");
-      try {
-        const current = await FirebaseAuthentication.getCurrentUser();
-        setLoginError(`[3] Current user: ${current.user ? current.user.email : "none"}. Calling signInWithApple...`);
-      } catch (e) {
-        setLoginError(`[3a] getCurrentUser failed: ${e instanceof Error ? e.message : String(e)}. Continuing...`);
-      }
-
-      const startTime = Date.now();
 
       const signInPromise = FirebaseAuthentication.signInWithApple();
       const timeoutPromise = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error("TIMEOUT after 30s")), 30000)
       );
-
-      const result = await Promise.race([signInPromise, timeoutPromise]);
-
-      const elapsed = Date.now() - startTime;
-      setLoginError(`[4] signInWithApple returned in ${elapsed}ms. Fetching Firebase ID token...`);
+      await Promise.race([signInPromise, timeoutPromise]);
 
       const tokenResult = await FirebaseAuthentication.getIdToken({ forceRefresh: true });
       const idToken = tokenResult.token;
-      if (!idToken) {
-        throw new Error("Failed to get Firebase ID token after sign-in");
-      }
-
-      setLoginError(`[5] Got idToken (${idToken.length} chars). Calling native-session...`);
+      if (!idToken) throw new Error("Failed to get Firebase ID token");
 
       const sessionRes = await fetch("https://www.lattice-protocol.com/api/auth/native-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken }),
-        credentials: "include",
       });
 
-      setLoginError(`[6] native-session status: ${sessionRes.status}`);
-
       if (!sessionRes.ok) {
-        const errBody = await sessionRes.text();
-        throw new Error(`native-session failed: ${sessionRes.status} ${errBody.slice(0, 200)}`);
+        throw new Error(`認証サーバエラー (${sessionRes.status})`);
       }
 
       const data = await sessionRes.json();
-      setLoginError(`[7] Session OK. Saving token...`);
-
       if (data.sessionToken) {
         const { saveNativeSession } = await import("@/lib/native-fetch");
         await saveNativeSession(data.sessionToken);
       }
 
-      setLoginError(`[8] Redirecting to /home...`);
-      // Small delay to ensure Preferences.set has flushed before navigation
-      await new Promise((r) => setTimeout(r, 200));
-      router.replace("/home/");
+      await new Promise((r) => setTimeout(r, 150));
+      window.location.replace("/home/");
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       console.error("[login] apple native failed", msg);
-      setLoginError(`FAILED: ${msg}`);
+      setLoginError("ログインに失敗しました。もう一度お試しください。");
       setLoading(null);
     }
   };

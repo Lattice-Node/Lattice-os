@@ -18,12 +18,13 @@ async function universalSignOut() {
         console.warn("[signout] firebase signOut failed", e);
       }
       await clearNativeSession();
-      window.location.href = "/login/";
+      // Hard reload to fully reset React state, in-memory caches, all listeners
+      window.location.replace("/login/");
       return;
     }
     await signOut({ callbackUrl: "/" });
   } catch {
-    window.location.href = "/login/";
+    window.location.replace("/login/");
   }
 }
 

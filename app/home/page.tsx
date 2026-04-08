@@ -54,7 +54,8 @@ export default function HomePage() {
     return () => {
       cancelled = true;
     };
-  }, [router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (loading || !data) {
     return <div style={{ padding: 20, color: "var(--text-secondary)" }}>読み込み中...</div>;

@@ -55,7 +55,8 @@
       "Bash(git commit -m 'fix\\(native\\): disable SessionProvider auto-fetch \\(would 404 on capacitor:// scheme\\):*)",
       "Bash(git commit -m 'fix\\(home\\): wrap entire data fetch + render in try/catch, null-safe props:*)",
       "Bash(git commit -m 'fix\\(native\\): use router.replace instead of window.location.href after login:*)",
-      "Bash(git commit -m 'fix\\(native\\): add global-error.tsx to catch layout/provider errors + visible build marker:*)"
+      "Bash(git commit -m 'fix\\(native\\): add global-error.tsx to catch layout/provider errors + visible build marker:*)",
+      "Bash(git commit -m 'fix\\(native\\): clean login UX + hard reload on logout/login to avoid stuck state:*)"
     ]
   }
 }
