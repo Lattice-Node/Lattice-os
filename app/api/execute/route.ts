@@ -5,6 +5,7 @@ import { authAny } from "@/lib/auth-any";
 import { prisma } from "@/lib/prisma";
 import { consumeCredits } from "@/lib/credits";
 import { checkRunCap, consumeRun } from "@/lib/monthly-runs";
+import { logClaudeUsage } from "@/lib/claude-usage";
 import { getGmailToken, sendGmailMessage, readGmailMessages } from "@/lib/gmail";
 import {
   buildDailyAiNewsFallback,
@@ -125,6 +126,14 @@ async function runWithAnthropic(
       ],
       messages,
       tools,
+    });
+
+    await logClaudeUsage({
+      userId: toolContext?.userId || null,
+      route: "execute",
+      model: process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001",
+      usage: message.usage as any,
+      webSearches: toolContext?.webSearchAllowed ? 1 : 0,
     });
 
     // If stop_reason is "end_turn" or no tool_use, we're done

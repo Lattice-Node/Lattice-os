@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { logClaudeUsage } from "@/lib/claude-usage";
 
 export async function POST(
   req: Request,
@@ -52,6 +53,12 @@ export async function POST(
           content: `あなたは「${node.name}」というNodeです。\n\n今日の会話:\n${conversation}`,
         },
       ],
+    });
+
+    await logClaudeUsage({
+      route: "node-diary",
+      model: "claude-haiku-4-5-20251001",
+      usage: response.usage as any,
     });
 
     const diaryContent = response.content[0].type === "text" ? response.content[0].text : "";

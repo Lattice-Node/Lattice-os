@@ -61,6 +61,16 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await res.json();
+
+    try {
+      const { logClaudeUsage } = await import("@/lib/claude-usage");
+      await logClaudeUsage({
+        route: "agents-parse",
+        model: "claude-haiku-4-5-20251001",
+        usage: data.usage,
+      });
+    } catch {}
+
     const text = data.content?.[0]?.text ?? "";
 
     try {

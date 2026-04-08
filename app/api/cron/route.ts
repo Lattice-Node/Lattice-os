@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { consumeCredits } from "@/lib/credits";
 import { checkRunCap, consumeRun } from "@/lib/monthly-runs";
+import { logClaudeUsage } from "@/lib/claude-usage";
 import Anthropic from "@anthropic-ai/sdk";
 import { extractTextFromClaudeResponse, isDailyAiNewsAgent, normalizeDailyAiNewsOutput, buildDailyAiNewsSystemPrompt, buildDailyAiNewsUserPrompt } from "@/lib/agents/daily-ai-news";
 import { getGmailToken, sendGmailMessage, readGmailMessages } from "@/lib/gmail";
@@ -218,6 +219,14 @@ export async function GET(req: NextRequest) {
           ],
           messages,
           tools,
+        });
+
+        await logClaudeUsage({
+          userId: user.id,
+          route: "cron",
+          model: process.env.ANTHROPIC_MODEL || "claude-haiku-4-5-20251001",
+          usage: message.usage as any,
+          webSearches: webSearchAllowed ? 1 : 0,
         });
 
         if (message.stop_reason !== "tool_use") {

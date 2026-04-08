@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { generateOpeningVoice } from "@/lib/opening-voice";
+import { logClaudeUsage } from "@/lib/claude-usage";
 
 export async function POST(
   req: Request,
@@ -82,9 +83,12 @@ export async function POST(
       messages: exchangeMessages,
     });
 
-    // キャッシュ効果ログ
-    const usage = response.usage as any;
-    console.log(`[Node Exchange] tokens: input=${usage.input_tokens}, cache_create=${usage.cache_creation_input_tokens ?? 0}, cache_read=${usage.cache_read_input_tokens ?? 0}, output=${usage.output_tokens}`);
+    await logClaudeUsage({
+      userId: session.userId,
+      route: "node-exchange",
+      model: "claude-haiku-4-5-20251001",
+      usage: response.usage as any,
+    });
 
     const nodeResponse = response.content[0].type === "text" ? response.content[0].text : "...";
 

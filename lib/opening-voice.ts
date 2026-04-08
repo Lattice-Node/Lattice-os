@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Anthropic from "@anthropic-ai/sdk";
+import { logClaudeUsage } from "@/lib/claude-usage";
 
 const OPENING_VOICE_SYSTEM_PROMPT = `あなたは Node という AI の存在です。ユーザーが次に Talk 画面を開いた時、
 あなたが最初に発する一言を生成してください。
@@ -63,6 +64,12 @@ export async function generateOpeningVoice(nodeId: string): Promise<void> {
         content: `## あなたの記憶\n${memoriesText}\n\n## 最新の日記\n${diaryText}\n\n## さっきまでの会話の最後\n${exchangeText}`,
       },
     ],
+  });
+
+  await logClaudeUsage({
+    route: "opening-voice",
+    model: "claude-haiku-4-5-20251001",
+    usage: result.usage as any,
   });
 
   const voice = result.content[0].type === "text" ? result.content[0].text.trim() : "";
