@@ -1,8 +1,7 @@
 "use client";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { hapticImpact } from "@/lib/native";
 import { nativeFetch } from "@/lib/native-fetch";
 
@@ -16,10 +15,8 @@ const tabs = [
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const router = useRouter();
   const { status } = useSession();
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => { setLoading(false); }, [pathname]);
 
   useEffect(() => {
     if ((pathname === "/store/" || pathname === "/node/") && status === "authenticated") {
@@ -31,37 +28,29 @@ export default function BottomNav() {
   if (hiddenPaths.includes(pathname)) return null;
   if (pathname.match(/^\/node\/[^/]+\/(chat|talk)$/)) return null;
 
-  const click = (href: string) => {
-    const cur = href === "/home/" ? pathname === "/home/" : href === "/agents/new/" ? pathname === "/agents/new/" : pathname.startsWith(href);
-    if (!cur) setLoading(true);
+  const go = (href: string) => {
     hapticImpact("light");
+    router.push(href);
   };
 
   return (
-    <>
-      {loading && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", justifyContent: "center", alignItems: "center", background: "rgba(0,0,0,0.5)" }}>
-          <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: "#888", letterSpacing: "0.1em" }}>読み込み中...</span>
-        </div>
-      )}
-      <nav className="btm-nav">
-        {tabs.map(tab => {
-          const active = tab.href === "/home/" ? pathname === "/home/" : tab.href === "/agents/new/" ? pathname === "/agents/new/" : pathname.startsWith(tab.href);
-          if (tab.isCenter) return (
-            <Link key={tab.href} href={tab.href} className="btm-nav-center" onClick={() => click(tab.href)}>
-              <div className="btm-nav-center-btn">{tab.icon(true)}</div>
-              <span className="btm-nav-label" style={{ color: "var(--nav-inactive)" }}>{tab.label}</span>
-            </Link>
-          );
-          return (
-            <Link key={tab.href} href={tab.href} className="btm-nav-item" onClick={() => click(tab.href)}>
-              {active && <div style={{ width: 4, height: 4, background: "var(--accent)", borderRadius: "50%" }} />}
-              {tab.icon(active)}
-              <span className="btm-nav-label" style={{ color: active ? "var(--nav-active)" : "var(--nav-inactive)" }}>{tab.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
-    </>
+    <nav className="btm-nav">
+      {tabs.map(tab => {
+        const active = tab.href === "/home/" ? pathname === "/home/" : tab.href === "/agents/new/" ? pathname === "/agents/new/" : pathname.startsWith(tab.href);
+        if (tab.isCenter) return (
+          <button key={tab.href} type="button" onClick={() => go(tab.href)} className="btm-nav-center" style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "inherit" }}>
+            <div className="btm-nav-center-btn">{tab.icon(true)}</div>
+            <span className="btm-nav-label" style={{ color: "var(--nav-inactive)" }}>{tab.label}</span>
+          </button>
+        );
+        return (
+          <button key={tab.href} type="button" onClick={() => go(tab.href)} className="btm-nav-item" style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "inherit" }}>
+            {active && <div style={{ width: 4, height: 4, background: "var(--accent)", borderRadius: "50%" }} />}
+            {tab.icon(active)}
+            <span className="btm-nav-label" style={{ color: active ? "var(--nav-active)" : "var(--nav-inactive)" }}>{tab.label}</span>
+          </button>
+        );
+      })}
+    </nav>
   );
 }
