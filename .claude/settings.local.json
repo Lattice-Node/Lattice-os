@@ -94,7 +94,8 @@
       "Bash(git commit -m 'feat\\(tier0-3\\): gate Settings payment UI behind isPaymentUiVisible\\(\\):*)",
       "Bash(git commit -m 'feat\\(tier0-4\\): hide /pricing route + filter pricing entry from home menu when web payment off:*)",
       "Bash(git commit -m 'fix\\(deps\\): sync package-lock.json with @capacitor/browser:*)",
-      "Bash(git commit -m 'feat: rewrite /terms and /privacy pages with current plan structure + Lattice design system:*)"
+      "Bash(git commit -m 'feat: rewrite /terms and /privacy pages with current plan structure + Lattice design system:*)",
+      "Bash(git commit -m 'fix\\(auth\\): resilient native-session user creation + verbose login errors:*)"
     ]
   }
 }

@@ -62,7 +62,8 @@ function LoginContent() {
       });
 
       if (!sessionRes.ok) {
-        throw new Error(`認証サーバエラー (${sessionRes.status})`);
+        const errBody = await sessionRes.text().catch(() => "");
+        throw new Error(`認証サーバエラー ${sessionRes.status}: ${errBody.slice(0, 200)}`);
       }
 
       const data = await sessionRes.json();
@@ -77,7 +78,7 @@ function LoginContent() {
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       console.error("[login] google native failed", msg);
-      setLoginError("ログインに失敗しました。もう一度お試しください。");
+      setLoginError(`ログインに失敗しました: ${msg.slice(0, 200)}`);
       setLoading(null);
     }
   };
@@ -112,7 +113,8 @@ function LoginContent() {
       });
 
       if (!sessionRes.ok) {
-        throw new Error(`認証サーバエラー (${sessionRes.status})`);
+        const errBody = await sessionRes.text().catch(() => "");
+        throw new Error(`認証サーバエラー ${sessionRes.status}: ${errBody.slice(0, 200)}`);
       }
 
       const data = await sessionRes.json();
@@ -126,7 +128,7 @@ function LoginContent() {
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       console.error("[login] apple native failed", msg);
-      setLoginError("ログインに失敗しました。もう一度お試しください。");
+      setLoginError(`ログインに失敗しました: ${msg.slice(0, 200)}`);
       setLoading(null);
     }
   };
