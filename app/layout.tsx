@@ -62,7 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body style={{ margin: 0, padding: 0 }}>
         <div style={{ position: "fixed", top: 0, left: 0, zIndex: 999998, padding: "2px 6px", background: "#222", color: "#0f0", fontSize: 9, fontFamily: "monospace", pointerEvents: "none" }}>
-          BUILD: dbg-3315c9c
+          BUILD: hardnav-2026-04-08-T17
         </div>
         <Providers>
           <NavDebug />
