@@ -193,8 +193,13 @@ const handleLineGenerate = async () => {
     setCanceling(true);
     try {
       const res = await nativeFetch("/api/stripe/cancel", { method: "POST" });
-      if (res.ok) window.location.reload();
-    } catch { setCanceling(false); setCancelConfirm(false); }
+      if (res.ok) router.refresh();
+    } catch {
+      // ignore
+    } finally {
+      setCanceling(false);
+      setCancelConfirm(false);
+    }
   };
 
   const planLabel = plan === "business" ? "Business" : plan === "pro" ? "Pro" : plan === "starter" ? "Starter" : plan === "personal" ? "Starter" : "Free";

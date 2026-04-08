@@ -41,12 +41,20 @@ export default function OnboardingClient() {
 
   const handleComplete = async () => {
     setSubmitting(true);
-    await nativeFetch("/api/onboarding/complete", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ interests }),
-    });
-    router.push("/home/");
+    try {
+      const res = await nativeFetch("/api/onboarding/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ interests }),
+      });
+      if (!res.ok) throw new Error("failed");
+      router.push("/home/");
+    } catch (e) {
+      console.error("[onboarding] complete failed", e);
+      alert("保存に失敗しました。もう一度お試しください。");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const isLast = step === 2;

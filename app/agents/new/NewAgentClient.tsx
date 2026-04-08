@@ -130,6 +130,7 @@ export default function NewAgentClient({ isPaid = false, connectedProviders = []
       router.push(`/agents/detail/?id=${data.agent.id}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : "エラーが発生しました");
+    } finally {
       setSaving(false);
     }
   }

@@ -72,7 +72,8 @@
       "Bash(git commit -m 'fix\\(ui\\): pull bottom nav icons closer to home indicator \\(YouTube-style\\):*)",
       "Bash(git commit -m 'fix\\(ui\\): remove BottomNav loading overlay that blocked taps + use button+router.push:*)",
       "Bash(git commit -m 'fix\\(native\\): more bug sweep — Apple login router.replace, agents list dynamic href, error fallback to /home/:*)",
-      "Bash(git commit -m 'fix\\(stripe\\): always reset purchasing state + use anchor click for native external nav:*)"
+      "Bash(git commit -m 'fix\\(stripe\\): always reset purchasing state + use anchor click for native external nav:*)",
+      "Bash(git commit -m 'fix\\(native\\): finally blocks for loading states + router.refresh instead of reload:*)"
     ]
   }
 }

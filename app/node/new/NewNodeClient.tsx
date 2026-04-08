@@ -19,20 +19,25 @@ export default function NewNodeClient() {
     setSubmitting(true);
     setError("");
 
-    const res = await nativeFetch("/api/node", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: name.trim(), description: description.trim() }),
-    });
+    try {
+      const res = await nativeFetch("/api/node", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim(), description: description.trim() }),
+      });
 
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      setError(data.error || "作成に失敗しました");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || "作成に失敗しました");
+        return;
+      }
+
+      router.push("/node/");
+    } catch (e) {
+      setError("作成に失敗しました");
+    } finally {
       setSubmitting(false);
-      return;
     }
-
-    router.push("/node/");
   };
 
   const inputStyle = {
