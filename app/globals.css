@@ -29,6 +29,23 @@ html, body {
 ::-webkit-scrollbar { width: 0; height: 0; display: none; }
 * { scrollbar-width: none; }
 
+/* Disable iOS long-press text selection / callout menus on UI elements */
+body {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+/* Re-enable text selection only inside input/textarea (so users can edit) */
+input, textarea, [contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+/* Prevent iOS auto-zoom when focusing inputs (triggered by fontSize < 16px) */
+input, textarea, select {
+  font-size: 16px;
+}
+
 /* ── Dark (default) ── */
 :root, [data-theme="dark"] {
   --bg:#000; --surface:#111; --surface-raised:#1A1A1A;
