@@ -159,15 +159,16 @@ const handleLineGenerate = async () => {
       if (!data.url) throw new Error("no url returned");
 
       if (isNativePlatform()) {
-        // Capacitor doesn't honor window.open(url, '_system'). Use an anchor tag
-        // with target="_blank" — WKWebView routes external https URLs to Safari.
-        const a = document.createElement("a");
-        a.href = data.url;
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        // Use Capacitor's Browser plugin to open Stripe in an in-app SafariViewController.
+        // This is the only reliable way to open external URLs from a Capacitor WebView.
+        try {
+          const { Browser } = await import("@capacitor/browser");
+          await Browser.open({ url: data.url, presentationStyle: "popover" });
+        } catch (browserErr) {
+          console.error("[stripe] Browser plugin failed", browserErr);
+          // Last-resort fallback
+          window.location.href = data.url;
+        }
       } else {
         window.location.href = data.url;
       }

@@ -33,6 +33,7 @@
     "FirebaseAppPlugin",
     "FirebaseAuthenticationPlugin",
     "AppPlugin",
+    "BrowserPlugin",
     "CAPCameraPlugin",
     "HapticsPlugin",
     "LocalNotificationsPlugin",
