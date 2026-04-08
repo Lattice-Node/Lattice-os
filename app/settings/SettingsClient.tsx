@@ -105,7 +105,15 @@ export default function SettingsClient({ name, email, image, credits, distribute
   const [canceling, setCanceling] = useState(false);
   const [cancelConfirm, setCancelConfirm] = useState(false);
   const [isYearly, setIsYearly] = useState(false);
+  const [usage, setUsage] = useState<{ monthlyRunsUsed: number; monthlyRunsCap: number; nextResetAt: string } | null>(null);
   const { theme, toggleTheme } = useApp();
+
+  useEffect(() => {
+    nativeFetch("/api/usage")
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => { if (d && typeof d.monthlyRunsCap === "number") setUsage(d); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     nativeFetch("/api/connections").then(r => r.json()).then(d => setConnections(d.connections || [])).catch(() => {});
@@ -428,14 +436,49 @@ const handleLineGenerate = async () => {
             {isPaid && <span style={{ fontSize: 11, color: "var(--success)", background: "var(--surface)", padding: "3px 10px", borderRadius: 20 }}>有効</span>}
           </div>
           {periodEnd && <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: "4px 0 14px" }}>次回請求日: {periodEnd}</p>}
-          {!isPaid && <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: "4px 0 14px" }}>月15回の自動実行・エージェント3体まで</p>}
           <button onClick={() => setShowPlans(true)} style={{ width: "100%", padding: "11px 16px", borderRadius: 8, border: "1px solid var(--border)", background: "transparent", color: "var(--btn-bg)", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span>{isPaid ? "プラン変更" : "アップグレード"}</span>
             <span style={{ fontSize: 16 }}>...</span>
           </button>
         </div>
 
-        {/* Credits card hidden in Phase 1 — replaced by monthly run counter */}
+        {/* Monthly run counter (Phase 1) */}
+        {usage && (
+          <div style={cardStyle}>
+            <p style={sectionLabel}>今月の実行回数</p>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
+              <span style={{ fontSize: 28, fontWeight: 700, color: "var(--text-display)" }}>
+                {usage.monthlyRunsUsed}
+                <span style={{ fontSize: 16, color: "var(--text-secondary)", fontWeight: 500 }}> / {usage.monthlyRunsCap}</span>
+              </span>
+              {usage.monthlyRunsUsed >= usage.monthlyRunsCap && (
+                <span style={{ fontSize: 11, color: "var(--accent)", background: "var(--surface)", padding: "3px 10px", borderRadius: 20 }}>上限到達</span>
+              )}
+            </div>
+            <div style={{ width: "100%", height: 6, background: "var(--border)", borderRadius: 3, overflow: "hidden", marginBottom: 8 }}>
+              <div style={{
+                width: `${Math.min(100, Math.round((usage.monthlyRunsUsed / Math.max(1, usage.monthlyRunsCap)) * 100))}%`,
+                height: "100%",
+                background: usage.monthlyRunsUsed >= usage.monthlyRunsCap ? "var(--accent)" : "var(--btn-bg)",
+                transition: "width 0.5s ease",
+              }} />
+            </div>
+            <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: 0 }}>
+              {(() => {
+                const d = new Date(usage.nextResetAt);
+                return `${d.getMonth() + 1}月${d.getDate()}日にリセット`;
+              })()}
+            </p>
+            {usage.monthlyRunsUsed >= usage.monthlyRunsCap && (
+              <button
+                onClick={() => setShowPlans(true)}
+                style={{ width: "100%", marginTop: 12, padding: "11px 16px", borderRadius: 8, border: "none", background: "var(--btn-bg)", color: "var(--btn-text)", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}
+              >
+                プランをアップグレード
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Connections */}
         <div style={cardStyle}>
