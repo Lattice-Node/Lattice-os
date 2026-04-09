@@ -135,7 +135,8 @@
       "Bash(git commit -m 'fix\\(ui\\): add accent circle back to + \\(作成\\) tab button:*)",
       "Bash(git commit -m 'fix\\(ui\\): cap safe-area-inset-bottom on tab bar \\(Capacitor quirk\\):*)",
       "Bash(git commit -m 'fix\\(ui\\): correct .app-shell padding-bottom \\(was 72+34, now 49+34\\):*)",
-      "Bash(git commit -m 'debug\\(ui\\): add visible debug overlay to inspect tab bar gap:*)"
+      "Bash(git commit -m 'debug\\(ui\\): add visible debug overlay to inspect tab bar gap:*)",
+      "Bash(git commit -m 'fix\\(ios\\): change contentInset to '\\\\''never'\\\\'' so WebView covers full screen:*)"
     ]
   }
 }
