@@ -24,6 +24,31 @@ export default function BottomNav() {
     }
   }, [pathname, status]);
 
+  // TEMPORARY: debug overlay showing actual computed dimensions
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const targets = [
+      { name: "body", el: document.body },
+      { name: ".app-shell", el: document.querySelector(".app-shell") },
+      { name: ".btm-nav", el: document.querySelector(".btm-nav") },
+    ];
+    const lines: string[] = [];
+    targets.forEach(({ name, el }) => {
+      if (!el) { lines.push(`${name}: NOT FOUND`); return; }
+      const cs = getComputedStyle(el as Element);
+      const rect = (el as HTMLElement).getBoundingClientRect();
+      lines.push(`${name}: pb=${cs.paddingBottom} h=${Math.round(rect.height)} btm=${Math.round(rect.bottom)}`);
+    });
+    lines.push(`vp: innerH=${window.innerHeight} screenH=${screen.height}`);
+    const d = document.createElement("div");
+    d.id = "__navdbg";
+    d.style.cssText = "position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;background:red;color:#fff;font:9px/1.3 monospace;padding:4px 8px;z-index:99999;white-space:pre;pointer-events:none";
+    d.textContent = lines.join("\n");
+    document.getElementById("__navdbg")?.remove();
+    document.body.appendChild(d);
+    setTimeout(() => document.getElementById("__navdbg")?.remove(), 60000);
+  }, []);
+
   const hiddenPaths = ["/login/", "/privacy/", "/terms/", "/pricing/"];
   if (hiddenPaths.includes(pathname)) return null;
   if (pathname.match(/^\/node\/[^/]+\/(chat|talk)$/)) return null;
