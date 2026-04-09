@@ -24,6 +24,20 @@ export default function BottomNav() {
     }
   }, [pathname, status]);
 
+  // Temporary debug: log actual computed safe-area and bar height on iOS
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const nav = document.querySelector(".btm-nav") as HTMLElement;
+    if (nav) {
+      const cs = getComputedStyle(nav);
+      console.log("[BottomNav debug]", {
+        paddingBottom: cs.paddingBottom,
+        height: nav.offsetHeight,
+        clientHeight: nav.clientHeight,
+      });
+    }
+  }, []);
+
   const hiddenPaths = ["/login/", "/privacy/", "/terms/", "/pricing/"];
   if (hiddenPaths.includes(pathname)) return null;
   if (pathname.match(/^\/node\/[^/]+\/(chat|talk)$/)) return null;

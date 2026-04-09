@@ -98,7 +98,7 @@ html, body {
 
 /* ── Bottom Nav ── */
 /* Bottom tab bar — matches iOS UITabBar: 49pt interactive content + safe-area background */
-.btm-nav { position:fixed;bottom:0;left:0;right:0;z-index:100;display:flex;align-items:stretch;background:var(--nav-bg);border-top:1px solid var(--nav-border);padding-bottom:env(safe-area-inset-bottom, 0px);transition:background .25s,border-color .25s; }
+.btm-nav { position:fixed;bottom:0;left:0;right:0;z-index:100;display:flex;align-items:stretch;background:var(--nav-bg);border-top:1px solid var(--nav-border);padding-bottom:min(env(safe-area-inset-bottom, 0px), 34px);transition:background .25s,border-color .25s; }
 .btm-nav-label { font-size:10px;font-family:"Space Mono",monospace;letter-spacing:.02em; }
 .btm-nav button:active { opacity:.6; }
 

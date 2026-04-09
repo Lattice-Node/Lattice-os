@@ -132,7 +132,8 @@
       "WebFetch(domain:moussahellal.medium.com)",
       "Bash(git commit -m 'fix\\(ui\\): match iOS UITabBar spec exactly — 49pt interactive + 34pt safe area:*)",
       "Bash(git commit -m 'fix\\(ui\\): rebuild bottom tab bar to iOS standard + improve tap responsiveness:*)",
-      "Bash(git commit -m 'fix\\(ui\\): add accent circle back to + \\(作成\\) tab button:*)"
+      "Bash(git commit -m 'fix\\(ui\\): add accent circle back to + \\(作成\\) tab button:*)",
+      "Bash(git commit -m 'fix\\(ui\\): cap safe-area-inset-bottom on tab bar \\(Capacitor quirk\\):*)"
     ]
   }
 }
