@@ -94,7 +94,7 @@ html, body {
   padding-top: env(safe-area-inset-top, 0px);
 }
 
-.app-shell { min-height:100dvh; padding-bottom: calc(72px + var(--safe-bottom)); }
+.app-shell { padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px)); }
 
 /* ── Bottom Nav ── */
 /* Bottom tab bar — matches iOS UITabBar: 49pt interactive content + safe-area background */
