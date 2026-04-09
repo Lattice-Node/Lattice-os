@@ -33,9 +33,11 @@ export default function BottomNav() {
     router.push(href);
   };
 
+  // Apple HIG: UITabBar interactive zone is 49pt. Icons + labels centered within.
+  // The safe-area padding below (34pt on notch iPhones) is handled by .btm-nav CSS.
   const itemBtnStyle: React.CSSProperties = {
     flex: 1,
-    minHeight: 48,
+    height: 49,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -43,7 +45,7 @@ export default function BottomNav() {
     gap: 2,
     background: "none",
     border: "none",
-    padding: "6px 0",
+    padding: 0,
     cursor: "pointer",
     fontFamily: "inherit",
     touchAction: "manipulation",
