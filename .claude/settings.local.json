@@ -121,7 +121,8 @@
       "Bash(git commit -m 'fix\\(ui\\): revert nav button layout to centered + increase bottom padding for reliable taps:*)",
       "Bash(git commit -m 'fix\\(ios\\): defer bottom-edge system gesture for YouTube-level nav positioning:*)",
       "Bash(git commit -m 'fix\\(ui\\): add loading feedback to purchase and restore buttons:*)",
-      "Bash(git commit -m 'fix\\(ui\\): update plan card display to match current spec \\(150/800 runs\\):*)"
+      "Bash(git commit -m 'fix\\(ui\\): update plan card display to match current spec \\(150/800 runs\\):*)",
+      "Bash(git commit -m 'fix\\(ui\\): hardcode JPY price display \\(Japan-only launch\\):*)"
     ]
   }
 }

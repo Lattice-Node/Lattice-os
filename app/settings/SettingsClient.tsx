@@ -136,13 +136,12 @@ export default function SettingsClient({ name, email, image, credits, distribute
         try {
           const offering = await getOfferings();
           if (!offering) return;
-          const starterPkg = offering.availablePackages.find((p) => p.identifier === "$rc_monthly")
-            || offering.monthly
-            || offering.availablePackages.find((p) => p.identifier === "starter_monthly");
-          const proPkg = offering.availablePackages.find((p) => p.identifier === "pro_monthly");
+          // Japan-only launch: hardcode JPY display. The actual purchase still uses
+          // RevenueCat packages (fetched by handleIapPurchase via getOfferings).
+          // When we expand internationally, switch back to product.priceString.
           setIapPrices({
-            starter: starterPkg?.product.priceString,
-            pro: proPkg?.product.priceString,
+            starter: "¥980",
+            pro: "¥2,480",
           });
         } catch (e) {
           console.warn("[settings] failed to fetch iap prices", e);
