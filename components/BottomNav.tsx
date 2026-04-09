@@ -35,15 +35,15 @@ export default function BottomNav() {
 
   const itemBtnStyle: React.CSSProperties = {
     flex: 1,
-    minHeight: 48,
+    minHeight: 54,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-end",
     gap: 2,
     background: "none",
     border: "none",
-    padding: "6px 0",
+    padding: "12px 0 4px",
     cursor: "pointer",
     fontFamily: "inherit",
     touchAction: "manipulation",
