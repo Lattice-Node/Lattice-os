@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useApp } from "@/lib/theme";
 import { nativeFetch, clearNativeSession } from "@/lib/native-fetch";
 import { isPaymentUiVisible } from "@/lib/monetization";
+import { getPlanLimits } from "@/lib/plan-limits";
 import { restorePurchases, getOfferings, purchasePackage } from "@/lib/revenuecat";
 
 const isNativePlatform = (): boolean =>
@@ -29,60 +30,67 @@ const CREDIT_PLANS = [
   { id: "credits_1000", label: "1,000", price: "3,500", priceNum: 3500, perUnit: "500", desc: "" },
 ];
 
+// Plan display config. Runs and agent caps are pulled from lib/plan-limits.ts so UI stays
+// in sync with enforcement code automatically.
+const _fl = getPlanLimits("free");
+const _sl = getPlanLimits("starter");
+const _pl = getPlanLimits("pro");
+const _bl = getPlanLimits("business");
+
 const SUB_PLANS = [
   {
     id: "free", label: "Free", price: 0, yearlyPrice: 0,
-    runs: 15, agents: 3, badge: "",
+    runs: _fl.monthlyRunsCap, agents: _fl.agentCap, badge: "",
     features: [
-      { text: "AIエージェント 3体まで", ok: true },
-      { text: "月15回の自動実行", ok: true },
-      { text: "Web検索 + AI要約", ok: true },
+      { text: `AIエージェント ${_fl.agentCap}体まで`, ok: true },
+      { text: `月${_fl.monthlyRunsCap}回の自動実行`, ok: true },
+      { text: "Web検索 + AI要約", ok: _fl.webSearch },
       { text: "テンプレートストア", ok: true },
       { text: "Gmail / Discord連携", ok: false },
-      { text: "Tool Use（自律実行）", ok: false },
-      { text: "AI記憶 / AI学習", ok: false },
+      { text: "Tool Use（自律実行）", ok: _fl.toolUse },
+      { text: "AI記憶 / AI学習", ok: _fl.memoryInjection !== "none" },
       { text: "LINE連携", ok: false },
     ],
   },
   {
     id: "starter", label: "Starter", price: 980, yearlyPrice: 9800,
-    runs: 50, agents: 10, badge: "",
+    runs: _sl.monthlyRunsCap, agents: _sl.agentCap, badge: "",
     features: [
-      { text: "AIエージェント 10体まで", ok: true },
-      { text: "月50回の自動実行", ok: true },
-      { text: "Web検索 + AI要約", ok: true },
+      { text: `AIエージェント ${_sl.agentCap}体まで`, ok: true },
+      { text: `月${_sl.monthlyRunsCap}回の自動実行`, ok: true },
+      { text: "Web検索 + AI要約", ok: _sl.webSearch },
+      { text: "Tool Use（自律実行）", ok: _sl.toolUse },
       { text: "テンプレートストア", ok: true },
       { text: "Gmail / Discord連携", ok: true },
-      { text: "Tool Use（自律実行）", ok: false },
-      { text: "AI記憶 / AI学習", ok: false },
+      { text: "AI記憶 / AI学習", ok: _sl.memoryInjection !== "none" },
       { text: "LINE連携", ok: false },
     ],
   },
   {
     id: "pro", label: "Pro", price: 2480, yearlyPrice: 24800,
-    runs: 250, agents: -1, badge: "人気",
+    runs: _pl.monthlyRunsCap, agents: _pl.agentCap, badge: "人気",
     features: [
       { text: "AIエージェント 無制限", ok: true },
-      { text: "月250回の自動実行", ok: true },
-      { text: "Web検索 + AI要約", ok: true },
-      { text: "テンプレートストア", ok: true },
+      { text: `月${_pl.monthlyRunsCap}回の自動実行`, ok: true },
+      { text: "Web検索 + AI要約", ok: _pl.webSearch },
+      { text: "Tool Use（全機能）", ok: _pl.toolUse },
+      { text: "テンプレートストア", ok: _pl.storeFullAccess },
       { text: "Gmail / Discord連携", ok: true },
-      { text: "Tool Use（自律実行）", ok: true },
-      { text: "AI記憶 / AI学習", ok: true },
+      { text: "AI記憶 / AI学習", ok: _pl.memoryInjection !== "none" },
       { text: "LINE連携", ok: false },
     ],
   },
   {
     id: "business", label: "Business", price: 6980, yearlyPrice: 69800,
-    runs: 1000, agents: -1, badge: "",
+    runs: _bl.monthlyRunsCap, agents: _bl.agentCap, badge: "",
     features: [
       { text: "AIエージェント 無制限", ok: true },
-      { text: "月1,000回の自動実行", ok: true },
-      { text: "Web検索 + AI要約", ok: true },
-      { text: "テンプレートストア", ok: true },
+      { text: `月${_bl.monthlyRunsCap.toLocaleString()}回の自動実行`, ok: true },
+      { text: "Web検索 + AI要約", ok: _bl.webSearch },
+      { text: "Tool Use（全機能）", ok: _bl.toolUse },
+      { text: "テンプレートストア", ok: _bl.storeFullAccess },
       { text: "Gmail / Discord連携", ok: true },
-      { text: "Tool Use（自律実行）", ok: true },
-      { text: "AI記憶 / AI学習", ok: true },
+      { text: "AI記憶 / AI学習", ok: _bl.memoryInjection !== "none" },
       { text: "LINE連携 + 優先サポート", ok: true },
     ],
   },
@@ -398,7 +406,7 @@ const handleLineGenerate = async () => {
               const isPro = p.id === "pro";
               const monthlyEquiv = isYearly && p.yearlyPrice > 0 ? Math.round(p.yearlyPrice / 12) : p.price;
               const savings = isYearly && p.price > 0 ? p.price * 12 - p.yearlyPrice : 0;
-              const costPerRun = p.price > 0 ? Math.round(monthlyEquiv / p.runs) : 0;
+              const costPerRun = p.price > 0 ? Math.round((monthlyEquiv / p.runs) * 10) / 10 : 0;
 
               return (
                 <div key={p.id} style={{
