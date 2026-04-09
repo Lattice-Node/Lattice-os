@@ -191,6 +191,44 @@ workflows:
             raise "ERROR: #{plist_path} does not exist on disk"
           end
           RUBY
+      - name: Add LatticeViewController.swift to Xcode Compile Sources
+        script: |
+          cd ios/App
+          ruby <<'RUBY'
+          require "xcodeproj"
+
+          project = Xcodeproj::Project.open("App.xcodeproj")
+          target = project.targets.find { |t| t.name == "App" }
+          raise "App target not found" unless target
+
+          app_group = project.main_group["App"]
+          raise "App group not found" unless app_group
+
+          swift_file = "LatticeViewController.swift"
+          file_ref = app_group.files.find { |f| f.path == swift_file }
+
+          if file_ref.nil?
+            file_ref = app_group.new_reference(swift_file)
+            puts "Created file reference for #{swift_file}"
+          else
+            puts "File reference already exists for #{swift_file}"
+          end
+
+          sources_phase = target.source_build_phase
+          already_added = sources_phase.files.any? { |bf|
+            bf.file_ref && bf.file_ref.path == swift_file
+          }
+
+          if already_added
+            puts "Already in Compile Sources, skipping"
+          else
+            sources_phase.add_file_reference(file_ref)
+            puts "Added #{swift_file} to Compile Sources build phase"
+          end
+
+          project.save
+          puts "project.pbxproj saved with #{swift_file}"
+          RUBY
       - name: Force set CODE_SIGN_ENTITLEMENTS in Xcode project
         script: |
           cd ios/App
