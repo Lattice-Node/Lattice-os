@@ -118,7 +118,8 @@
       "Bash(git commit -m 'fix\\(ui\\): pull bottom nav further down to match YouTube/X positioning:*)",
       "Bash(git commit -m 'fix\\(ui\\): increase bottom nav padding slightly to avoid home indicator gesture conflict:*)",
       "Bash(git commit -m 'fix\\(ui\\): fix bottom nav tap responsiveness by expanding touch target upward:*)",
-      "Bash(git commit -m 'fix\\(ui\\): revert nav button layout to centered + increase bottom padding for reliable taps:*)"
+      "Bash(git commit -m 'fix\\(ui\\): revert nav button layout to centered + increase bottom padding for reliable taps:*)",
+      "Bash(git commit -m 'fix\\(ios\\): defer bottom-edge system gesture for YouTube-level nav positioning:*)"
     ]
   }
 }
