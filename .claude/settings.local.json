@@ -123,7 +123,8 @@
       "Bash(git commit -m 'fix\\(ui\\): add loading feedback to purchase and restore buttons:*)",
       "Bash(git commit -m 'fix\\(ui\\): update plan card display to match current spec \\(150/800 runs\\):*)",
       "Bash(git commit -m 'fix\\(ui\\): hardcode JPY price display \\(Japan-only launch\\):*)",
-      "Bash(git commit -m 'fix\\(ios\\): add LatticeViewController.swift to Xcode Compile Sources via CI:*)"
+      "Bash(git commit -m 'fix\\(ios\\): add LatticeViewController.swift to Xcode Compile Sources via CI:*)",
+      "Bash(git commit -m 'fix: critical bug sweep — dynamic imports for RevenueCat + push nav fix:*)"
     ]
   }
 }

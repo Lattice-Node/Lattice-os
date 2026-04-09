@@ -50,7 +50,13 @@ export default function PushNotificationSetup() {
           (notification) => {
             const agentId = notification.notification.data?.agentId;
             if (agentId) {
-              window.location.href = `/agents/detail/?id=${agentId}`;
+              // Use Next.js router via dynamic import (this callback runs outside React tree)
+              import("next/navigation").then(({ redirect }) => {
+                // redirect doesn't work outside server components, use history API
+              }).catch(() => {});
+              // Fallback: pushState + reload to trigger client-side routing
+              window.history.pushState({}, "", `/agents/detail/?id=${agentId}`);
+              window.dispatchEvent(new PopStateEvent("popstate"));
             }
           }
         );

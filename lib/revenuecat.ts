@@ -9,19 +9,25 @@
  * the native bridge.
  */
 
-import { Capacitor } from "@capacitor/core";
-import {
-  Purchases,
-  type PurchasesOffering,
-  type PurchasesPackage,
-  type CustomerInfo,
-} from "@revenuecat/purchases-capacitor";
+// Dynamic imports only — @capacitor/core and @revenuecat/purchases-capacitor are
+// browser-only modules that must NOT be statically imported at module level.
+// Static import would break Next.js SSR/static export.
+
+type PurchasesOffering = any;
+type PurchasesPackage = any;
+type CustomerInfo = any;
 
 const isEnabled = (): boolean => {
   if (typeof window === "undefined") return false;
-  if (Capacitor.getPlatform() !== "ios") return false;
+  const cap = (window as any).Capacitor;
+  if (!cap?.getPlatform || cap.getPlatform() !== "ios") return false;
   return process.env.NEXT_PUBLIC_IOS_PAYMENT_ENABLED === "true";
 };
+
+async function getPurchases() {
+  const mod = await import("@revenuecat/purchases-capacitor");
+  return mod.Purchases;
+}
 
 let initialized = false;
 
@@ -40,6 +46,7 @@ export async function initRevenueCat(userId: string): Promise<void> {
   }
 
   try {
+    const Purchases = await getPurchases();
     await Purchases.configure({
       apiKey,
       appUserID: userId,
@@ -58,6 +65,7 @@ export async function initRevenueCat(userId: string): Promise<void> {
 export async function getOfferings(): Promise<PurchasesOffering | null> {
   if (!isEnabled()) return null;
   try {
+    const Purchases = await getPurchases();
     const offerings = await Purchases.getOfferings();
     return offerings.current ?? null;
   } catch (e) {
@@ -75,6 +83,7 @@ export async function purchasePackage(pkg: PurchasesPackage): Promise<CustomerIn
     throw new Error("IAP not enabled");
   }
   try {
+    const Purchases = await getPurchases();
     const result = await Purchases.purchasePackage({ aPackage: pkg });
     return result.customerInfo;
   } catch (e: any) {
@@ -94,6 +103,7 @@ export async function purchasePackage(pkg: PurchasesPackage): Promise<CustomerIn
 export async function restorePurchases(): Promise<CustomerInfo | null> {
   if (!isEnabled()) return null;
   try {
+    const Purchases = await getPurchases();
     const result = await Purchases.restorePurchases();
     return result.customerInfo;
   } catch (e) {
@@ -109,6 +119,7 @@ export async function restorePurchases(): Promise<CustomerInfo | null> {
 export async function getActiveEntitlements(): Promise<string[]> {
   if (!isEnabled()) return [];
   try {
+    const Purchases = await getPurchases();
     const result = await Purchases.getCustomerInfo();
     return Object.keys(result.customerInfo.entitlements.active);
   } catch (e) {
