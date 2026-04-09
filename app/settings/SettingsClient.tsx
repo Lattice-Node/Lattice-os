@@ -97,6 +97,7 @@ export default function SettingsClient({ name, email, image, credits, distribute
   const [subView, setSubView] = useState<string | null>(null);
   const [newsDetail, setNewsDetail] = useState<number | null>(null);
   const [purchasing, setPurchasing] = useState<string | null>(null);
+  const [restoring, setRestoring] = useState(false);
   const [showCredit, setShowCredit] = useState(false);
   const [showPlans, setShowPlans] = useState(false);
   const [connections, setConnections] = useState<{id:string,provider:string,metadata:string}[]>([]);
@@ -351,8 +352,8 @@ const handleLineGenerate = async () => {
                   <p style={{ fontSize: 18, fontWeight: 700, color: "var(--text-display)", margin: 0 }}>{p.label} cr</p>
                   <p style={{ fontSize: 22, fontWeight: 700, color: "var(--text-display)", margin: 0 }}>{p.price}</p>
                 </div>
-                <button onClick={() => handlePurchase(p.id)} disabled={purchasing === p.id} style={{ width: "100%", padding: "11px", borderRadius: 8, border: "none", background: p.popular ? "var(--btn-bg)" : "var(--surface-raised)", color: p.popular ? "#fff" : "var(--text-secondary)", fontSize: 14, fontWeight: 600, cursor: purchasing === p.id ? "default" : "pointer", fontFamily: "inherit", opacity: purchasing === p.id ? 0.5 : 1 }}>
-                  {purchasing === p.id ? "..." : "購入する"}
+                <button onClick={() => handlePurchase(p.id)} disabled={!!purchasing} style={{ width: "100%", padding: "11px", borderRadius: 8, border: "none", background: p.popular ? "var(--btn-bg)" : "var(--surface-raised)", color: p.popular ? "#fff" : "var(--text-secondary)", fontSize: 14, fontWeight: 600, cursor: purchasing ? "default" : "pointer", fontFamily: "inherit", opacity: purchasing ? 0.5 : 1 }}>
+                  {purchasing === p.id ? "処理中..." : "購入する"}
                 </button>
               </div>
             ))}
@@ -462,17 +463,17 @@ const handleLineGenerate = async () => {
 
                   <button
                     onClick={() => !isCurrent && handlePurchase(isYearly ? p.id + "_yearly" : p.id)}
-                    disabled={isCurrent || purchasing === p.id}
+                    disabled={isCurrent || !!purchasing}
                     style={{
                       width: "100%", padding: "12px", borderRadius: 10, border: "none",
                       background: isCurrent ? "var(--surface-raised)" : isPro ? "linear-gradient(135deg, var(--btn-bg), #5b5fd6)" : "var(--surface)",
                       color: isCurrent ? "var(--text-secondary)" : "#fff",
                       fontSize: 14, fontWeight: 600, cursor: isCurrent ? "default" : "pointer",
-                      fontFamily: "inherit", opacity: purchasing === p.id ? 0.5 : 1,
+                      fontFamily: "inherit", opacity: purchasing ? 0.5 : 1,
                       ...((!isCurrent && !isPro) ? { border: "1px solid var(--border)" } : {}),
                     }}
                   >
-                    {isCurrent ? "現在のプラン" : purchasing === p.id ? "..." : p.price === 0 ? "現在のプラン" : `${p.label}を始める`}
+                    {isCurrent ? "現在のプラン" : purchasing === p.id ? "処理中..." : purchasing ? "お待ちください" : p.price === 0 ? "現在のプラン" : `${p.label}を始める`}
                   </button>
                 </div>
               );
@@ -589,7 +590,9 @@ const handleLineGenerate = async () => {
           {/* Phase 4: Restore Purchases button (iOS only, always visible — required by Apple Guideline 3.1.1) */}
           {isNativePlatform() && (
             <button
+              disabled={restoring}
               onClick={async () => {
+                setRestoring(true);
                 try {
                   const customerInfo = await restorePurchases();
                   if (customerInfo === null) {
@@ -598,7 +601,6 @@ const handleLineGenerate = async () => {
                   }
                   const activeEntitlements = Object.keys(customerInfo.entitlements?.active || {});
                   if (activeEntitlements.length > 0) {
-                    // RevenueCat webhook will sync to DB on its own; refresh local UI
                     try {
                       const usageRes = await nativeFetch("/api/usage");
                       if (usageRes.ok) {
@@ -613,6 +615,8 @@ const handleLineGenerate = async () => {
                 } catch (e) {
                   console.error("[restore] failed", e);
                   alert("購入の復元に失敗しました");
+                } finally {
+                  setRestoring(false);
                 }
               }}
               style={{
@@ -632,8 +636,8 @@ const handleLineGenerate = async () => {
                 gap: 2,
               }}
             >
-              <span style={{ fontWeight: 500 }}>購入を復元</span>
-              <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>以前購入したサブスクリプションを復元します</span>
+              <span style={{ fontWeight: 500 }}>{restoring ? "復元中..." : "購入を復元"}</span>
+              <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>{restoring ? "しばらくお待ちください" : "以前購入したサブスクリプションを復元します"}</span>
             </button>
           )}
           {paymentVisible ? (
