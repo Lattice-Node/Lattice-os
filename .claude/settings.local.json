@@ -115,7 +115,8 @@
       "Bash(git commit -m 'feat\\(iap\\): show RevenueCat-localized prices on iOS plan cards:*)",
       "Bash(git commit -m 'feat\\(iap\\): activate Restore Purchases functionality:*)",
       "Bash(git commit --allow-empty -m 'feat\\(iap\\): complete IAP integration:*)",
-      "Bash(git commit -m 'fix\\(ui\\): pull bottom nav further down to match YouTube/X positioning:*)"
+      "Bash(git commit -m 'fix\\(ui\\): pull bottom nav further down to match YouTube/X positioning:*)",
+      "Bash(git commit -m 'fix\\(ui\\): increase bottom nav padding slightly to avoid home indicator gesture conflict:*)"
     ]
   }
 }
