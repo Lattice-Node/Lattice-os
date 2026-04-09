@@ -6,7 +6,7 @@ import { useApp } from "@/lib/theme";
 import { nativeFetch, clearNativeSession } from "@/lib/native-fetch";
 import { isPaymentUiVisible } from "@/lib/monetization";
 import { getPlanLimits } from "@/lib/plan-limits";
-import { restorePurchases, getOfferings, purchasePackage } from "@/lib/revenuecat";
+import { restorePurchases, getOfferings, purchasePackage, initRevenueCat } from "@/lib/revenuecat";
 
 const isNativePlatform = (): boolean =>
   typeof window !== "undefined" && !!(window as any).Capacitor?.isNativePlatform?.();
@@ -213,9 +213,26 @@ const handleLineGenerate = async () => {
   const handleIapPurchase = async (planId: "starter" | "pro") => {
     setPurchasing(planId);
     try {
-      const offering = await getOfferings();
+      // Ensure RevenueCat is configured before any SDK call.
+      // RevenueCatBoot may not have finished yet (async race on first load).
+      try {
+        const homeRes = await nativeFetch("/api/home");
+        if (homeRes.ok) {
+          const homeData = await homeRes.json();
+          if (homeData?.userId) {
+            await initRevenueCat(homeData.userId);
+          }
+        }
+      } catch (initErr) {
+        console.warn("[handleIapPurchase] init fallback failed", initErr);
+      }
+
+      // Fetch offerings with 10s timeout
+      const offeringPromise = getOfferings();
+      const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 10000));
+      const offering = await Promise.race([offeringPromise, timeoutPromise]);
       if (!offering) {
-        throw new Error("商品情報を取得できませんでした");
+        throw new Error("商品情報を取得できませんでした（タイムアウトまたは未設定）");
       }
       // RevenueCat package mapping:
       //   starter → '$rc_monthly' (the offering's monthly package)
@@ -232,9 +249,12 @@ const handleLineGenerate = async () => {
         throw new Error(`プラン (${planId}) の商品が見つかりません`);
       }
 
-      const customerInfo = await purchasePackage(pkg);
+      // purchasePackage opens the native StoreKit dialog. Give it 60s before timeout.
+      const purchasePromise = purchasePackage(pkg);
+      const purchaseTimeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), 60000));
+      const customerInfo = await Promise.race([purchasePromise, purchaseTimeout]);
       if (customerInfo === null) {
-        // User cancelled — silent
+        // User cancelled or timeout — silent
         return;
       }
       // Server-side state will be updated via RevenueCat webhook → Vercel.
