@@ -45,28 +45,25 @@ export async function initRevenueCat(userId: string): Promise<void> {
     return;
   }
 
-  try {
+  // Wrap entire init in 8s timeout — dynamic import OR configure can hang
+  // if the native plugin isn't properly linked
+  const initWork = async () => {
     console.log("[revenuecat] importing SDK...");
     const Purchases = await getPurchases();
     console.log("[revenuecat] SDK imported. Calling configure...");
-
-    // Timeout: if configure hangs for >8s, skip and mark as failed
-    const configPromise = Purchases.configure({
-      apiKey,
-      appUserID: userId,
-    });
-    const timeoutPromise = new Promise<"timeout">((resolve) =>
-      setTimeout(() => resolve("timeout"), 8000)
-    );
-    const result = await Promise.race([configPromise, timeoutPromise]);
-    if (result === "timeout") {
-      console.error("[revenuecat] configure TIMED OUT after 8s — native plugin may not be linked");
-      return;
-    }
+    await Purchases.configure({ apiKey, appUserID: userId });
     initialized = true;
     console.log("[revenuecat] initialized for user", userId);
+  };
+
+  try {
+    const timeout = new Promise<"timeout">((r) => setTimeout(() => r("timeout"), 8000));
+    const result = await Promise.race([initWork(), timeout]);
+    if (result === "timeout") {
+      console.error("[revenuecat] init TIMED OUT after 8s — SDK import or configure hung. Native plugin may not be linked.");
+    }
   } catch (e) {
-    console.error("[revenuecat] configure failed", e);
+    console.error("[revenuecat] init failed", e);
   }
 }
 

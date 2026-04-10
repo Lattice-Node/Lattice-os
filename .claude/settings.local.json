@@ -140,7 +140,8 @@
       "Bash(git commit -m 'fix\\(iap\\): ensure RevenueCat init before purchase + add timeouts:*)",
       "Bash(git commit -m 'debug\\(iap\\): add step-by-step visible diagnostic to purchase flow:*)",
       "Bash(git commit -m 'debug\\(iap\\): split IAP step 1 into 1a/1b/1c to find exact hang point:*)",
-      "Bash(git commit -m 'debug\\(iap\\): add 8s timeout to Purchases.configure + more logging:*)"
+      "Bash(git commit -m 'debug\\(iap\\): add 8s timeout to Purchases.configure + more logging:*)",
+      "Bash(git commit -m 'fix\\(iap\\): wrap entire RevenueCat init in 8s timeout \\(import was hanging, not configure\\):*)"
     ]
   }
 }
