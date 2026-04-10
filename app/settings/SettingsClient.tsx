@@ -224,9 +224,9 @@ const handleLineGenerate = async () => {
 
       // Step 1c: Configure RevenueCat
       const apiKey = process.env.NEXT_PUBLIC_REVENUECAT_API_KEY_IOS;
-      setIapDebug(`[IAP 1c] API key: ${apiKey ? apiKey.slice(0, 10) + "..." : "MISSING"}`);
+      setIapDebug(`[IAP 1c] API key: ${apiKey ? apiKey.slice(0, 10) + "..." : "MISSING"}. configure呼び出し中(8s timeout)...`);
       await initRevenueCat(homeData.userId);
-      setIapDebug("[IAP 2] 初期化完了。商品取得中...");
+      setIapDebug("[IAP 2] init完了 or timeout。商品取得中...");
 
       // Step 2: Get offerings
       const offering = await getOfferings();
