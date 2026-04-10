@@ -106,6 +106,7 @@ export default function SettingsClient({ name, email, image, credits, distribute
   const [newsDetail, setNewsDetail] = useState<number | null>(null);
   const [purchasing, setPurchasing] = useState<string | null>(null);
   const [restoring, setRestoring] = useState(false);
+  const [iapDebug, setIapDebug] = useState<string | null>(null);
   const [showCredit, setShowCredit] = useState(false);
   const [showPlans, setShowPlans] = useState(false);
   const [connections, setConnections] = useState<{id:string,provider:string,metadata:string}[]>([]);
@@ -213,52 +214,42 @@ const handleLineGenerate = async () => {
   const handleIapPurchase = async (planId: "starter" | "pro") => {
     setPurchasing(planId);
     try {
-      // Ensure RevenueCat is configured before any SDK call.
-      // RevenueCatBoot may not have finished yet (async race on first load).
-      try {
-        const homeRes = await nativeFetch("/api/home");
-        if (homeRes.ok) {
-          const homeData = await homeRes.json();
-          if (homeData?.userId) {
-            await initRevenueCat(homeData.userId);
-          }
-        }
-      } catch (initErr) {
-        console.warn("[handleIapPurchase] init fallback failed", initErr);
-      }
+      // Step 1: Init RevenueCat
+      setIapDebug("[IAP 1] RevenueCat 初期化中...");
+      const homeRes = await nativeFetch("/api/home");
+      if (!homeRes.ok) throw new Error("ユーザー情報取得失敗");
+      const homeData = await homeRes.json();
+      if (!homeData?.userId) throw new Error("userId が見つかりません");
+      await initRevenueCat(homeData.userId);
+      setIapDebug("[IAP 2] 初期化完了。商品取得中...");
 
-      // Fetch offerings with 10s timeout
-      const offeringPromise = getOfferings();
-      const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 10000));
-      const offering = await Promise.race([offeringPromise, timeoutPromise]);
-      if (!offering) {
-        throw new Error("商品情報を取得できませんでした（タイムアウトまたは未設定）");
-      }
-      // RevenueCat package mapping:
-      //   starter → '$rc_monthly' (the offering's monthly package)
-      //   pro     → 'pro_monthly'
+      // Step 2: Get offerings
+      const offering = await getOfferings();
+      if (!offering) throw new Error("offering が null — API key 未設定 or 商品未登録");
+      const pkgIds = offering.availablePackages.map((p: any) => p.identifier).join(", ");
+      setIapDebug(`[IAP 3] offering取得成功。packages: [${pkgIds}]`);
+
+      // Step 3: Find package
       let pkg = null;
       if (planId === "starter") {
-        pkg = offering.availablePackages.find((p) => p.identifier === "$rc_monthly")
+        pkg = offering.availablePackages.find((p: any) => p.identifier === "$rc_monthly")
           || offering.monthly
-          || offering.availablePackages.find((p) => p.identifier === "starter_monthly");
+          || offering.availablePackages.find((p: any) => p.identifier === "starter_monthly");
       } else if (planId === "pro") {
-        pkg = offering.availablePackages.find((p) => p.identifier === "pro_monthly");
+        pkg = offering.availablePackages.find((p: any) => p.identifier === "pro_monthly");
       }
-      if (!pkg) {
-        throw new Error(`プラン (${planId}) の商品が見つかりません`);
-      }
+      if (!pkg) throw new Error(`パッケージ未発見 (${planId})。利用可能: [${pkgIds}]`);
+      setIapDebug(`[IAP 4] パッケージ発見: ${(pkg as any).identifier}。購入ダイアログ表示中...`);
 
-      // purchasePackage opens the native StoreKit dialog. Give it 60s before timeout.
-      const purchasePromise = purchasePackage(pkg);
-      const purchaseTimeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), 60000));
-      const customerInfo = await Promise.race([purchasePromise, purchaseTimeout]);
+      // Step 4: Purchase
+      const customerInfo = await purchasePackage(pkg);
       if (customerInfo === null) {
-        // User cancelled or timeout — silent
-        return;
+        setIapDebug(null);
+        return; // cancelled
       }
-      // Server-side state will be updated via RevenueCat webhook → Vercel.
-      // Refresh local UI by re-fetching usage.
+      setIapDebug("[IAP 5] 購入成功！データ同期中...");
+
+      // Step 5: Refresh
       try {
         const usageRes = await nativeFetch("/api/usage");
         if (usageRes.ok) {
@@ -266,11 +257,13 @@ const handleLineGenerate = async () => {
           if (u && typeof u.monthlyRunsCap === "number") setUsage(u);
         }
       } catch {}
+      setIapDebug(null);
       alert("ご購入ありがとうございます");
       setShowPlans(false);
     } catch (e: any) {
       console.error("[handleIapPurchase] failed", e);
       const msg = e?.message || String(e);
+      setIapDebug(`[IAP ERROR] ${msg.slice(0, 300)}`);
       alert(`購入に失敗しました: ${msg.slice(0, 200)}`);
     } finally {
       setPurchasing(null);
@@ -405,6 +398,13 @@ const handleLineGenerate = async () => {
           <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: "0 0 20px" }}>
             AIエージェントが、あなたの代わりに働きます
           </p>
+
+          {/* Temporary IAP debug display */}
+          {iapDebug && (
+            <div style={{ background: "#1a1a00", border: "1px solid #ff0", borderRadius: 8, padding: "8px 12px", marginBottom: 12, fontSize: 11, fontFamily: "monospace", color: "#ff0", wordBreak: "break-all" }}>
+              {iapDebug}
+            </div>
+          )}
 
           {/* Yearly/Monthly toggle — Web only (iOS IAP currently has only monthly products) */}
           {!isNativePlatform() && (
