@@ -214,12 +214,17 @@ const handleLineGenerate = async () => {
   const handleIapPurchase = async (planId: "starter" | "pro") => {
     setPurchasing(planId);
     try {
-      // Step 1: Init RevenueCat
-      setIapDebug("[IAP 1] RevenueCat 初期化中...");
+      // Step 1: Get userId
+      setIapDebug("[IAP 1a] /api/home 取得中...");
       const homeRes = await nativeFetch("/api/home");
-      if (!homeRes.ok) throw new Error("ユーザー情報取得失敗");
+      if (!homeRes.ok) throw new Error(`/api/home failed: ${homeRes.status}`);
       const homeData = await homeRes.json();
       if (!homeData?.userId) throw new Error("userId が見つかりません");
+      setIapDebug(`[IAP 1b] userId=${homeData.userId.slice(0,8)}... initRevenueCat呼び出し中...`);
+
+      // Step 1c: Configure RevenueCat
+      const apiKey = process.env.NEXT_PUBLIC_REVENUECAT_API_KEY_IOS;
+      setIapDebug(`[IAP 1c] API key: ${apiKey ? apiKey.slice(0, 10) + "..." : "MISSING"}`);
       await initRevenueCat(homeData.userId);
       setIapDebug("[IAP 2] 初期化完了。商品取得中...");
 

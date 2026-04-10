@@ -138,7 +138,8 @@
       "Bash(git commit -m 'debug\\(ui\\): add visible debug overlay to inspect tab bar gap:*)",
       "Bash(git commit -m 'fix\\(ios\\): change contentInset to '\\\\''never'\\\\'' so WebView covers full screen:*)",
       "Bash(git commit -m 'fix\\(iap\\): ensure RevenueCat init before purchase + add timeouts:*)",
-      "Bash(git commit -m 'debug\\(iap\\): add step-by-step visible diagnostic to purchase flow:*)"
+      "Bash(git commit -m 'debug\\(iap\\): add step-by-step visible diagnostic to purchase flow:*)",
+      "Bash(git commit -m 'debug\\(iap\\): split IAP step 1 into 1a/1b/1c to find exact hang point:*)"
     ]
   }
 }
