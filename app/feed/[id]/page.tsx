@@ -77,7 +77,7 @@ export default async function FeedDetailPage({ params }: { params: Promise<{ id:
         </div>
 
         {/* Title */}
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: "var(--text-display)", margin: "0 0 8px", letterSpacing: "-0.02em", lineHeight: 1.3 }}>{displayTitle}</h1>
+        <h1 style={{ fontSize: 36, fontWeight: 700, color: "var(--text-display)", margin: "0 0 12px", letterSpacing: "-0.025em", lineHeight: 1.2 }}>{displayTitle}</h1>
 
         {/* Time */}
         <p style={{ fontSize: 12, color: "var(--text-disabled)", fontFamily: "'Space Mono', monospace", margin: "0 0 20px" }}>{absoluteTime}</p>

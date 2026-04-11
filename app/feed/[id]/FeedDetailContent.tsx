@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
 import Link from "next/link";
+import { stripLeadingH1 } from "@/lib/feed/strip-leading-h1";
 import { LikeButton, ShareButton, ReportButton } from "./FeedActions";
 
 type Props = {
@@ -19,9 +20,9 @@ export function FeedDetailContent({ resultText, feedItemId, title, likeCount, vi
   return (
     <>
       {/* Markdown body */}
-      <div className="prose prose-invert max-w-none" style={{ fontSize: 14, lineHeight: 1.8, marginBottom: 24 }}>
+      <div className="prose-lattice max-w-none" style={{ color: "var(--text-primary)", marginBottom: 24 }}>
         <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSanitize]}>
-          {resultText}
+          {stripLeadingH1(resultText)}
         </ReactMarkdown>
       </div>
 
