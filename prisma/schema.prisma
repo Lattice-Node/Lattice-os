@@ -8,58 +8,61 @@ datasource db {
 }
 
 model User {
-  id             String           @id @default(cuid())
-  email          String           @unique
-  name           String           @default("")
-  plan           String           @default("free")
+  id                   String              @id @default(cuid())
+  email                String              @unique
+  name                 String              @default("")
+  plan                 String              @default("free")
   /// @deprecated distributedCredits + purchasedCredits に移行中
-  credits             Int              @default(30)
-  distributedCredits  Int              @default(30)
-  purchasedCredits    Int              @default(0)
-  role           String           @default("user")
-  handle         String?          @unique
-  displayName    String           @default("")
-  avatarUrl      String?
-  publicId       String?          @unique
-  referralCode   String?  @unique
-  referredBy     String?
-  referralCount  Int      @default(0)
-  stripeCustomerId    String?
+  credits              Int                 @default(30)
+  distributedCredits   Int                 @default(30)
+  purchasedCredits     Int                 @default(0)
+  role                 String              @default("user")
+  handle               String?             @unique
+  displayName          String              @default("")
+  avatarUrl            String?
+  publicId             String?             @unique
+  referralCode         String?             @unique
+  referredBy           String?
+  referralCount        Int                 @default(0)
+  stripeCustomerId     String?
   stripeSubscriptionId String?
-  currentPeriodEnd    DateTime?
-  planExpiresAt       DateTime?
+  currentPeriodEnd     DateTime?
+  planExpiresAt        DateTime?
   subscriptionPlatform String?
-  onboardingCompleted Boolean          @default(false)
-  interests          String[]         @default([])
-  monthlyRunsUsed    Int              @default(0)
-  monthlyRunsResetAt DateTime         @default(now())
-  backgroundTheme    String           @default("dark")
-  customBackgroundUrl String?
-  currentStreak      Int              @default(0)
-  longestStreak      Int              @default(0)
-  lastLoginDate      DateTime?
-  inviteCode         String?          @unique
-  invitedByUserId    String?
-  inviteRewardGiven  Boolean          @default(false)
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  agents         UserAgent[]
-  logs           AgentLog[]
-  UserConnection UserConnection[]
-  linkCodes      LinkCode[]
-  deviceTokens   DeviceToken[]
-  taskCompletions TaskCompletion[]
-  creditTransactions CreditTransaction[]
-  nodes          Node[]
-  appLayout      UserAppLayout?
+  onboardingCompleted  Boolean             @default(false)
+  interests            String[]            @default([])
+  monthlyRunsUsed      Int                 @default(0)
+  monthlyRunsResetAt   DateTime            @default(now())
+  backgroundTheme      String              @default("dark")
+  customBackgroundUrl  String?
+  currentStreak        Int                 @default(0)
+  longestStreak        Int                 @default(0)
+  lastLoginDate        DateTime?
+  inviteCode           String?             @unique
+  invitedByUserId      String?
+  inviteRewardGiven    Boolean             @default(false)
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  agents               UserAgent[]
+  logs                 AgentLog[]
+  UserConnection       UserConnection[]
+  linkCodes            LinkCode[]
+  deviceTokens         DeviceToken[]
+  taskCompletions      TaskCompletion[]
+  creditTransactions   CreditTransaction[]
+  nodes                Node[]
+  appLayout            UserAppLayout?
+  publicFeedItems      PublicFeedItem[]
+  feedLikes            FeedLike[]
+  feedReports          FeedReport[]        @relation("reporter")
 }
 
 model UserAppLayout {
   id         String   @id @default(cuid())
   userId     String   @unique
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  apps       Json     // Array of { id: string, position: number }
-  hiddenApps Json     // Array of app ids user removed
+  apps       Json // Array of { id: string, position: number }
+  hiddenApps Json // Array of app ids user removed
   updatedAt  DateTime @updatedAt
   createdAt  DateTime @default(now())
 }
@@ -91,34 +94,34 @@ model TaskCompletion {
   credits   Int
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
- 
+
   @@index([userId, taskId, createdAt])
 }
 
-
 model UserAgent {
-  id           String     @id @default(cuid())
-  userId       String
-  name         String
-  description  String     @default("")
-  prompt       String
-  trigger      String
-  triggerCron  String     @default("")
-  connections  String     @default("[]")
-  active       Boolean    @default(true)
-  outputType   String     @default("app")
-  outputConfig String     @default("{}")
-  useWebSearch Boolean    @default(false)
-  runCount     Int        @default(0)
-  isPublic        Boolean    @default(false)
-  publicUseCount  Int        @default(0)
+  id               String           @id @default(cuid())
+  userId           String
+  name             String
+  description      String           @default("")
+  prompt           String
+  trigger          String
+  triggerCron      String           @default("")
+  connections      String           @default("[]")
+  active           Boolean          @default(true)
+  outputType       String           @default("app")
+  outputConfig     String           @default("{}")
+  useWebSearch     Boolean          @default(false)
+  runCount         Int              @default(0)
+  isPublic         Boolean          @default(false)
+  publicUseCount   Int              @default(0)
   originalAuthorId String?
-  lastRunAt    DateTime?
-  nextRunAt    DateTime?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  user         User       @relation(fields: [userId], references: [id])
-  logs         AgentLog[]
+  lastRunAt        DateTime?
+  nextRunAt        DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  user             User             @relation(fields: [userId], references: [id])
+  logs             AgentLog[]
+  publicFeedItems  PublicFeedItem[]
 }
 
 model AgentLog {
@@ -145,12 +148,12 @@ model RevenueCatEventProcessed {
 model RevenueRecord {
   id              String   @id @default(cuid())
   date            DateTime
-  amount          Int      // JPY
+  amount          Int // JPY
   userId          String?
-  platform        String   // 'ios' | 'web'
+  platform        String // 'ios' | 'web'
   productId       String
-  transactionType String   // 'subscription_new' | 'subscription_renewal' | 'subscription_cancel' | 'one_time'
-  externalId      String?  // Stripe sub/invoice ID or RevenueCat transaction ID
+  transactionType String // 'subscription_new' | 'subscription_renewal' | 'subscription_cancel' | 'one_time'
+  externalId      String? // Stripe sub/invoice ID or RevenueCat transaction ID
   createdAt       DateTime @default(now())
 
   @@index([date])
@@ -159,17 +162,17 @@ model RevenueRecord {
 }
 
 model ClaudeUsageLog {
-  id                String   @id @default(cuid())
-  userId            String?
-  route             String
-  model             String
-  inputTokens       Int      @default(0)
-  outputTokens      Int      @default(0)
-  cacheReadTokens   Int      @default(0)
-  cacheWriteTokens  Int      @default(0)
-  webSearches       Int      @default(0)
-  costJpyEstimate   Float    @default(0)
-  createdAt         DateTime @default(now())
+  id               String   @id @default(cuid())
+  userId           String?
+  route            String
+  model            String
+  inputTokens      Int      @default(0)
+  outputTokens     Int      @default(0)
+  cacheReadTokens  Int      @default(0)
+  cacheWriteTokens Int      @default(0)
+  webSearches      Int      @default(0)
+  costJpyEstimate  Float    @default(0)
+  createdAt        DateTime @default(now())
 
   @@index([userId, createdAt])
   @@index([route, createdAt])
@@ -243,19 +246,19 @@ model CreditTransaction {
 }
 
 model Node {
-  id          String        @id @default(cuid())
-  userId      String
-  name        String
-  description String        @default("")
-  status      String        @default("active")
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  user        User          @relation(fields: [userId], references: [id])
-  messages    NodeMessage[]
-  memories    NodeMemory[]
-  diaries     NodeDiary[]
+  id                    String         @id @default(cuid())
+  userId                String
+  name                  String
+  description           String         @default("")
+  status                String         @default("active")
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  user                  User           @relation(fields: [userId], references: [id])
+  messages              NodeMessage[]
+  memories              NodeMemory[]
+  diaries               NodeDiary[]
   exchanges             NodeExchange[]
-  openingVoice          String?   @db.Text
+  openingVoice          String?        @db.Text
   openingVoiceCreatedAt DateTime?
 
   @@index([userId])
@@ -302,4 +305,51 @@ model NodeExchange {
   node         Node     @relation(fields: [nodeId], references: [id], onDelete: Cascade)
 
   @@index([nodeId, createdAt])
+}
+
+model PublicFeedItem {
+  id           String       @id @default(cuid())
+  agentId      String
+  agent        UserAgent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resultText   String       @db.Text
+  resultMeta   Json?
+  agentName    String
+  likeCount    Int          @default(0)
+  viewCount    Int          @default(0)
+  isHidden     Boolean      @default(false)
+  hiddenReason String?
+  createdAt    DateTime     @default(now())
+  likes        FeedLike[]
+  reports      FeedReport[]
+
+  @@index([createdAt])
+  @@index([userId])
+  @@index([agentId])
+}
+
+model FeedLike {
+  id         String         @id @default(cuid())
+  feedItemId String
+  feedItem   PublicFeedItem @relation(fields: [feedItemId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime       @default(now())
+
+  @@unique([feedItemId, userId])
+  @@index([userId])
+}
+
+model FeedReport {
+  id         String         @id @default(cuid())
+  feedItemId String
+  feedItem   PublicFeedItem @relation(fields: [feedItemId], references: [id], onDelete: Cascade)
+  reporterId String
+  reporter   User           @relation("reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  reason     String         @db.Text
+  status     String         @default("pending")
+  createdAt  DateTime       @default(now())
+
+  @@index([status])
 }

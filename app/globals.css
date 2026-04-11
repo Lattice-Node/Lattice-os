@@ -225,6 +225,9 @@ body[data-route="apps"] .app-shell { background: transparent; }
 /* ── Responsive ── */
 @media (min-width:481px) { .page { max-width:420px; } .btm-nav { max-width:420px;left:50%;transform:translateX(-50%);border-radius:16px 16px 0 0; } }
 
+/* ── Feed ── */
+.feed-header { padding:16px 0 8px; }
+
 /* ── Animations ── */
 @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 .animate-in { opacity:0;animation:fadeUp .4s ease forwards; }

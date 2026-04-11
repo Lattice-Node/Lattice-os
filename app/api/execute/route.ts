@@ -455,6 +455,22 @@ export async function POST(req: NextRequest) {
     // Achievements: first execution
     try { await unlockAchievement(user.id, "first_execution"); } catch {}
 
+    // Auto-create feed item if agent is public and execution succeeded
+    if (finalStatus === "success" && agent.isPublic && finalOutput) {
+      try {
+        await prisma.publicFeedItem.create({
+          data: {
+            agentId: agent.id,
+            userId: user.id,
+            agentName: agent.name,
+            resultText: finalOutput.slice(0, 10000),
+          },
+        });
+      } catch (feedErr) {
+        console.error("[feed] auto-publish failed:", feedErr);
+      }
+    }
+
     // Invite reward: first execution by an invited user → +10 credits to both
     try {
       const fullUser = await prisma.user.findUnique({

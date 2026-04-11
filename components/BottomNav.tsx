@@ -12,7 +12,7 @@ const tabs = [
     return <svg width="24" height="24" viewBox="0 0 24 24" fill="none">{[0,1,2,3].map(r=>[0,1,2,3].map(col=><circle key={`${r}-${col}`} cx={4.5+col*5} cy={4.5+r*5} r={1.8} fill={c}/>))}</svg>;
   }},
   { href: "/agents/new/", label: "作成", isCenter: true, icon: (_a: boolean) => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg> },
-  { href: "/inbox/", label: "受信箱", icon: (a: boolean) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={a ? "var(--nav-active)" : "var(--nav-inactive)"} strokeWidth="1.5"><path d="M4 6h16M4 12h16M4 18h10"/></svg> },
+  { href: "/feed/", label: "フィード", icon: (a: boolean) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={a ? "var(--nav-active)" : "var(--nav-inactive)"} strokeWidth="1.5"><path d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z" /><line x1="2" y1="10" x2="22" y2="10" /><line x1="6" y1="14" x2="18" y2="14" /><line x1="6" y1="18" x2="14" y2="18" /></svg> },
   { href: "/settings/", label: "設定", icon: (a: boolean) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={a ? "var(--nav-active)" : "var(--nav-inactive)"} strokeWidth="1.5"><circle cx="12" cy="8.5" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg> },
 ];
 
