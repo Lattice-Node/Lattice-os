@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { hapticImpact } from "@/lib/native";
 import { nativeFetch } from "@/lib/native-fetch";
 import { isPaymentUiVisible } from "@/lib/monetization";
+import { getPlanLimits } from "@/lib/plan-limits";
 
 interface Task { id: string; label: string; credits: number; type: string; category: string; completed: boolean; claimable: boolean; count?: number; unclaimed?: number; }
 interface Props { name: string; avatarUrl: string | null; credits: number; plan: string; agentCount: number; isLoggedIn: boolean; }
@@ -40,9 +41,16 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
   const [copied, setCopied] = useState(false);
   const [refApplied, setRefApplied] = useState(false);
   const [tab, setTab] = useState<"daily" | "start" | "feature">("daily");
+  const [usage, setUsage] = useState<{ monthlyRunsUsed: number; monthlyRunsCap: number } | null>(null);
   // Tier 0: filter pricing menu entry when payment UI is disabled
   const [paymentVisible, setPaymentVisible] = useState(false);
   useEffect(() => { setPaymentVisible(isPaymentUiVisible()); }, []);
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    nativeFetch("/api/usage").then(r => r.ok ? r.json() : null).then(d => {
+      if (d && typeof d.monthlyRunsCap === "number") setUsage(d);
+    }).catch(() => {});
+  }, [isLoggedIn]);
   const visibleMenu = paymentVisible ? MENU : MENU.filter((m) => m.href !== "/pricing/");
   const router = useRouter();
 
@@ -184,14 +192,48 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
         </div>
 
         {isLoggedIn && (<>
-        {/* 統計 */}
-        {/* Stats grid: credits/referral cards hidden in Phase 1 */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 8, marginBottom: 20 }}>
-          <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "14px 8px", textAlign: "center", transition: "background .2s" }}>
-            <p style={{ ...S.mono, fontSize: 24, fontWeight: 700, color: "var(--text-display)", margin: "0 0 2px" }}>{agentCount}</p>
-            <p style={{ ...S.mono, fontSize: 9, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.08em", margin: 0 }}>エージェント</p>
-          </div>
-        </div>
+        {/* Plan status card */}
+        {(() => {
+          const limits = getPlanLimits(plan);
+          const planColor = plan === "pro" ? "#f59e0b" : plan === "starter" || plan === "personal" ? "#3b82f6" : "#64748b";
+          const planBg = plan === "pro" ? "rgba(245,158,11,0.08)" : plan === "starter" || plan === "personal" ? "rgba(59,130,246,0.08)" : "var(--surface)";
+          const agentCap = limits.agentCap;
+          const isUnlimitedAgents = agentCap === -1;
+          const runsUsed = usage?.monthlyRunsUsed ?? 0;
+          const runsCap = usage?.monthlyRunsCap ?? limits.monthlyRunsCap;
+          const isUnlimitedRuns = runsCap >= 99999;
+          const planLabel = plan === "pro" ? "Pro" : plan === "starter" || plan === "personal" ? "Starter" : "Free";
+          return (
+            <div style={{ background: planBg, border: `1px solid ${planColor}22`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
+              <p style={{ fontSize: 26, fontWeight: 700, color: planColor, margin: "0 0 20px", letterSpacing: "-0.02em" }}>{planLabel}</p>
+              {/* Agents */}
+              <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: "0 0 2px" }}>エージェント</p>
+              <p style={{ fontSize: 18, fontWeight: 500, color: "var(--text-display)", margin: "0 0 8px" }}>
+                {agentCount}{isUnlimitedAgents ? " / ∞" : ` / ${agentCap}`}
+              </p>
+              {!isUnlimitedAgents && (
+                <div style={{ width: "100%", height: 5, background: "var(--border)", borderRadius: 3, overflow: "hidden", marginBottom: 16 }}>
+                  <div style={{ width: `${Math.min(100, (agentCount / Math.max(1, agentCap)) * 100)}%`, height: "100%", background: planColor, borderRadius: 3, transition: "width 0.3s" }} />
+                </div>
+              )}
+              {isUnlimitedAgents && <div style={{ height: 16 }} />}
+              {/* Monthly runs */}
+              <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: "0 0 2px" }}>今月の実行</p>
+              {isUnlimitedRuns ? (
+                <p style={{ fontSize: 18, fontWeight: 500, color: "var(--text-display)", margin: "0 0 8px" }}>{runsUsed} / 無制限</p>
+              ) : (
+                <>
+                  <p style={{ fontSize: 18, fontWeight: 500, color: "var(--text-display)", margin: "0 0 8px" }}>
+                    {runsUsed} / {runsCap}
+                  </p>
+                  <div style={{ width: "100%", height: 5, background: "var(--border)", borderRadius: 3, overflow: "hidden" }}>
+                    <div style={{ width: `${Math.min(100, (runsUsed / Math.max(1, runsCap)) * 100)}%`, height: "100%", background: planColor, borderRadius: 3, transition: "width 0.3s" }} />
+                  </div>
+                </>
+              )}
+            </div>
+          );
+        })()}
 
         {/* タスク */}
         <div id="tasks-section">
