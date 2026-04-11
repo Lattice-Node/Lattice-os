@@ -52,6 +52,19 @@ export async function GET(req: Request) {
   const appEntries = layout.apps as Array<{ id: string; position: number }>;
   const hiddenIds = layout.hiddenApps as string[];
 
+  // Auto-append new registry apps that aren't in layout or hidden
+  const knownIds = new Set([...appEntries.map((a) => a.id), ...hiddenIds]);
+  const newAppIds = registry.map((a) => a.id).filter((id) => !knownIds.has(id));
+  if (newAppIds.length > 0) {
+    const maxPos = appEntries.length > 0 ? Math.max(...appEntries.map((a) => a.position)) : -1;
+    const newEntries = newAppIds.map((id, i) => ({ id, position: maxPos + 1 + i }));
+    appEntries.push(...newEntries);
+    await prisma.userAppLayout.update({
+      where: { userId: session.userId },
+      data: { apps: appEntries },
+    });
+  }
+
   const visible = appEntries
     .map((entry) => {
       const def = registry.find((a) => a.id === entry.id);
