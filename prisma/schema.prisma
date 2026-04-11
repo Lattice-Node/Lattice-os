@@ -315,6 +315,8 @@ model PublicFeedItem {
   userId       String
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   resultText   String       @db.Text
+  title        String       @default("")
+  previewText  String       @default("")
   resultMeta   Json?
   agentName    String
   likeCount    Int          @default(0)

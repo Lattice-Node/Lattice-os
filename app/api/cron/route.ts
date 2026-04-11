@@ -7,6 +7,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import { extractTextFromClaudeResponse, isDailyAiNewsAgent, normalizeDailyAiNewsOutput, buildDailyAiNewsSystemPrompt, buildDailyAiNewsUserPrompt } from "@/lib/agents/daily-ai-news";
 import { getGmailToken, sendGmailMessage, readGmailMessages } from "@/lib/gmail";
 import { notifyCronComplete } from "@/lib/push-notify-user";
+import { extractTitle } from "@/lib/feed/extract-title";
+import { extractPreview } from "@/lib/feed/extract-preview";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -336,6 +338,8 @@ export async function GET(req: NextRequest) {
               userId: user.id,
               agentName: agent.name,
               resultText: output.slice(0, 10000),
+              title: extractTitle(output, agent.name),
+              previewText: extractPreview(output),
             },
           });
           console.debug("[FEED_DEBUG:cron] created for agent:", agent.id);

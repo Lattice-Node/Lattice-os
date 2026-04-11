@@ -7,6 +7,8 @@ import { consumeCredits } from "@/lib/credits";
 import { checkRunCap, consumeRun } from "@/lib/monthly-runs";
 import { unlockAchievement } from "@/lib/achievements";
 import { logClaudeUsage } from "@/lib/claude-usage";
+import { extractTitle } from "@/lib/feed/extract-title";
+import { extractPreview } from "@/lib/feed/extract-preview";
 import { getGmailToken, sendGmailMessage, readGmailMessages } from "@/lib/gmail";
 import {
   buildDailyAiNewsFallback,
@@ -466,6 +468,8 @@ export async function POST(req: NextRequest) {
             userId: user.id,
             agentName: agent.name,
             resultText: finalOutput.slice(0, 10000),
+            title: extractTitle(finalOutput, agent.name),
+            previewText: extractPreview(finalOutput),
           },
         });
         console.debug("[FEED_DEBUG] created:", feedItem.id);
