@@ -6,6 +6,7 @@ import BottomNav from "@/components/BottomNav";
 import NetworkStatus from "@/components/NetworkStatus";
 import MorningBriefingSetup from "@/components/MorningBriefingSetup";
 import RevenueCatBoot from "@/components/RevenueCatBoot";
+import BackgroundProvider from "@/components/BackgroundProvider";
 
 export const metadata: Metadata = {
   title: "Lattice - 自然言語で動くAIエージェント",
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <NetworkStatus />
           <MorningBriefingSetup />
           <RevenueCatBoot />
+          <BackgroundProvider />
         </Providers>
       </body>
     </html>

@@ -106,6 +106,7 @@ export default function SettingsClient({ name, email, image, credits, distribute
   const [newsDetail, setNewsDetail] = useState<number | null>(null);
   const [purchasing, setPurchasing] = useState<string | null>(null);
   const [restoring, setRestoring] = useState(false);
+  const [backgroundTheme, setBackgroundTheme] = useState("dark");
   const [showCredit, setShowCredit] = useState(false);
   const [showPlans, setShowPlans] = useState(false);
   const [connections, setConnections] = useState<{id:string,provider:string,metadata:string}[]>([]);
@@ -128,6 +129,11 @@ export default function SettingsClient({ name, email, image, credits, distribute
     nativeFetch("/api/usage")
       .then((r) => r.ok ? r.json() : null)
       .then((d) => { if (d && typeof d.monthlyRunsCap === "number") setUsage(d); })
+      .catch(() => {});
+
+    nativeFetch("/api/user/background")
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => { if (d?.theme) setBackgroundTheme(d.theme); })
       .catch(() => {});
 
     // Phase 4: fetch iOS-localized prices from RevenueCat offerings
@@ -910,6 +916,59 @@ const handleLineGenerate = async () => {
           <button onClick={toggleTheme} className={`toggle ${theme === "dark" ? "on" : "off"}`}>
             <div className="toggle-knob" />
           </button>
+        </div>
+
+        {/* 背景テーマ */}
+        <div style={cardStyle}>
+          <p style={sectionLabel}>背景</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+            {(() => {
+              const { BACKGROUND_THEMES } = require("@/lib/backgrounds");
+              return BACKGROUND_THEMES.map((t: any) => {
+                const isLocked = t.isPro && !isPaid && !isAdmin;
+                const isActive = backgroundTheme === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    disabled={isLocked}
+                    onClick={() => {
+                      if (isLocked || t.id === "custom") return;
+                      nativeFetch("/api/user/background", {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ theme: t.id }),
+                      }).then(() => {
+                        setBackgroundTheme(t.id);
+                        document.documentElement.style.background = t.full || "#0a0a0a";
+                        document.body.style.background = t.full || "#0a0a0a";
+                      }).catch(() => {});
+                    }}
+                    style={{
+                      width: "100%",
+                      aspectRatio: "3/4",
+                      borderRadius: 10,
+                      border: isActive ? "2px solid var(--btn-bg)" : "1px solid var(--border)",
+                      background: t.preview,
+                      cursor: isLocked ? "default" : "pointer",
+                      opacity: isLocked ? 0.4 : 1,
+                      position: "relative",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "flex-end",
+                      padding: "0 0 6px",
+                      fontFamily: "inherit",
+                    }}
+                  >
+                    {isLocked && (
+                      <span style={{ position: "absolute", top: 6, right: 6, fontSize: 10, background: "rgba(0,0,0,0.5)", color: "#fff", padding: "1px 5px", borderRadius: 4 }}>PRO</span>
+                    )}
+                    <span style={{ fontSize: 9, color: "#fff", textShadow: "0 1px 3px rgba(0,0,0,0.6)", fontFamily: "'Space Mono', monospace" }}>{t.name}</span>
+                  </button>
+                );
+              });
+            })()}
+          </div>
         </div>
 
         <button onClick={() => handleSignOut()} style={{ width: "100%", padding: "13px", borderRadius: 999, border: "1px solid var(--border-visible)", background: "transparent", color: "var(--accent)", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", marginBottom: 10 }}>
