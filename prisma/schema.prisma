@@ -35,6 +35,12 @@ model User {
   monthlyRunsResetAt DateTime         @default(now())
   backgroundTheme    String           @default("dark")
   customBackgroundUrl String?
+  currentStreak      Int              @default(0)
+  longestStreak      Int              @default(0)
+  lastLoginDate      DateTime?
+  inviteCode         String?          @unique
+  invitedByUserId    String?
+  inviteRewardGiven  Boolean          @default(false)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   agents         UserAgent[]
@@ -56,6 +62,16 @@ model UserAppLayout {
   hiddenApps Json     // Array of app ids user removed
   updatedAt  DateTime @updatedAt
   createdAt  DateTime @default(now())
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+
+  @@unique([userId, achievementId])
+  @@index([userId])
 }
 
 model AppOverride {

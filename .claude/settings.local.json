@@ -155,7 +155,8 @@
       "Bash(git commit -m 'feat\\(admin\\): app icon customization with AppOverride model:*)",
       "Bash(git commit -m 'feat\\(bg\\): background theme system — 10 presets + settings UI + provider:*)",
       "Bash(git commit -m 'feat\\(haptics\\): add useHaptics hook with cached module import:*)",
-      "Bash(git commit -m 'feat\\(anim\\): page transitions, cascade grid entry, count-up, progress bars, spring modal, enhanced jiggle:*)"
+      "Bash(git commit -m 'feat\\(anim\\): page transitions, cascade grid entry, count-up, progress bars, spring modal, enhanced jiggle:*)",
+      "Bash(git commit -m 'feat\\(db\\): add streak, achievement, invite fields to User model:*)"
     ]
   }
 }
