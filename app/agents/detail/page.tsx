@@ -44,6 +44,7 @@ function AgentDetailInner() {
   const [outputStatus, setOutputStatus] = useState<"success" | "error" | "">(
     ""
   );
+  const [showPublishConfirm, setShowPublishConfirm] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -79,10 +80,17 @@ function AgentDetailInner() {
 
   async function handleTogglePublic() {
     if (!agent) return;
+    if (!agent.isPublic) {
+      setShowPublishConfirm(true);
+      return;
+    }
+    await doTogglePublic(false);
+  }
+  async function doTogglePublic(isPublic: boolean) {
     const res = await nativeFetch("/api/agents/" + id, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isPublic: !agent.isPublic }),
+      body: JSON.stringify({ isPublic }),
     });
     const data = await res.json();
     setAgent(data.agent);
@@ -246,8 +254,8 @@ function AgentDetailInner() {
           </p>
           <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: 0 }}>
             {agent.isPublic
-              ? "\u307F\u3093\u306A\u306E\u30A8\u30FC\u30B8\u30A7\u30F3\u30C8\u306B\u8868\u793A\u4E2D \u00B7 " + (agent.publicUseCount || 0) + "\u4EBA\u304C\u5229\u7528"
-              : "\u30B9\u30C8\u30A2\u306B\u516C\u958B\u3057\u3066\u4ED6\u306E\u30E6\u30FC\u30B6\u30FC\u304C\u4F7F\u3048\u308B\u3088\u3046\u306B\u3059\u308B"}
+              ? "実行結果がフィードに自動投稿されます"
+              : "公開すると実行結果がフィードに投稿されます"}
           </p>
         </div>
         <button onClick={handleTogglePublic} style={{
@@ -422,6 +430,30 @@ function AgentDetailInner() {
       >
         エージェントを削除
       </button>
+
+      {showPublishConfirm && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }} onClick={() => setShowPublishConfirm(false)}>
+          <div style={{ background: "var(--surface)", borderRadius: 16, padding: 24, maxWidth: 360, width: "100%" }} onClick={(e) => e.stopPropagation()}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-display)", margin: "0 0 16px" }}>このエージェントを公開しますか?</h2>
+            <div style={{ background: "var(--bg)", borderRadius: 12, padding: 16, marginBottom: 12, fontSize: 13, color: "var(--text-primary)", lineHeight: 1.7 }}>
+              <p style={{ margin: "0 0 8px" }}>公開すると、以下のことが起こります:</p>
+              <ul style={{ margin: 0, paddingLeft: 20 }}>
+                <li>実行結果が全ユーザーのフィードに表示されます</li>
+                <li>あなたのアイコンと表示名が一緒に表示されます</li>
+                <li>他のユーザーがいいねできます</li>
+              </ul>
+            </div>
+            <div style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 12, padding: 16, marginBottom: 20, fontSize: 13, lineHeight: 1.6 }}>
+              <p style={{ fontWeight: 700, color: "#ef4444", margin: "0 0 4px" }}>注意</p>
+              <p style={{ color: "var(--text-primary)", margin: 0 }}>個人情報（メールアドレス、電話番号、本名など）を扱うエージェントは公開しないでください。</p>
+            </div>
+            <div style={{ display: "flex", gap: 12 }}>
+              <button onClick={() => setShowPublishConfirm(false)} style={{ flex: 1, padding: 12, borderRadius: 12, fontSize: 14, fontWeight: 600, border: "1px solid var(--border)", background: "var(--surface)", color: "var(--text-primary)", cursor: "pointer", fontFamily: "inherit" }}>キャンセル</button>
+              <button onClick={async () => { await doTogglePublic(true); setShowPublishConfirm(false); }} style={{ flex: 1, padding: 12, borderRadius: 12, fontSize: 14, fontWeight: 600, border: "none", background: "var(--btn-bg)", color: "var(--btn-text)", cursor: "pointer", fontFamily: "inherit" }}>公開する</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

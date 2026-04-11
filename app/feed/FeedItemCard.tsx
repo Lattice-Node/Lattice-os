@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useHaptics } from "@/hooks/useHaptics";
 import { nativeFetch } from "@/lib/native-fetch";
 
@@ -36,6 +36,10 @@ export default function FeedItemCard({ item, onLikeToggle }: { item: FeedItem; o
   const { trigger } = useHaptics();
   const cardRef = useRef<HTMLDivElement>(null);
   const viewedRef = useRef(false);
+  const [showReport, setShowReport] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [reportSubmitting, setReportSubmitting] = useState(false);
+  const [reported, setReported] = useState(false);
 
   useEffect(() => {
     if (!cardRef.current || viewedRef.current) return;
@@ -124,11 +128,51 @@ export default function FeedItemCard({ item, onLikeToggle }: { item: FeedItem; o
           <span>{item.viewCount}</span>
         </div>
 
-        {/* Report placeholder */}
-        <button style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "none", color: "var(--text-disabled)", fontSize: 13, padding: "4px 8px", borderRadius: 8, cursor: "pointer", marginLeft: "auto" }}>
+        {/* Report */}
+        <button onClick={() => !reported && setShowReport(true)} style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "none", color: reported ? "var(--text-disabled)" : "var(--text-secondary)", fontSize: 13, padding: "4px 8px", borderRadius: 8, cursor: reported ? "default" : "pointer", marginLeft: "auto", opacity: reported ? 0.5 : 1 }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" /><line x1="4" y1="22" x2="4" y2="15" /></svg>
         </button>
       </div>
+
+      {/* Report modal */}
+      {showReport && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }} onClick={() => setShowReport(false)}>
+          <div style={{ background: "var(--surface)", borderRadius: 16, padding: 24, maxWidth: 360, width: "100%" }} onClick={(e) => e.stopPropagation()}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-display)", margin: "0 0 8px" }}>投稿を通報</h2>
+            <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: "0 0 20px" }}>この投稿の問題点を教えてください</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
+              {[
+                { value: "spam", label: "スパム・宣伝" },
+                { value: "inappropriate", label: "不適切な内容" },
+                { value: "harassment", label: "嫌がらせ" },
+                { value: "privacy", label: "個人情報を含む" },
+                { value: "other", label: "その他" },
+              ].map((opt) => (
+                <label key={opt.value} style={{ display: "flex", alignItems: "center", gap: 12, padding: 12, background: "var(--bg)", borderRadius: 10, cursor: "pointer", fontSize: 14, color: "var(--text-primary)", border: reportReason === opt.value ? "1px solid var(--btn-bg)" : "1px solid transparent" }}>
+                  <input type="radio" name="report-reason" value={opt.value} checked={reportReason === opt.value} onChange={(e) => setReportReason(e.target.value)} style={{ accentColor: "var(--btn-bg)" }} />
+                  {opt.label}
+                </label>
+              ))}
+            </div>
+            <div style={{ display: "flex", gap: 12 }}>
+              <button onClick={() => { setShowReport(false); setReportReason(""); }} style={{ flex: 1, padding: 12, borderRadius: 12, fontSize: 14, fontWeight: 600, border: "1px solid var(--border)", background: "var(--surface)", color: "var(--text-primary)", cursor: "pointer", fontFamily: "inherit" }}>キャンセル</button>
+              <button
+                disabled={!reportReason || reportSubmitting}
+                onClick={async () => {
+                  setReportSubmitting(true);
+                  try {
+                    const res = await nativeFetch("/api/feed/report", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ feedItemId: item.id, reason: reportReason }) });
+                    if (res.ok) { setReported(true); setShowReport(false); setReportReason(""); }
+                  } catch {} finally { setReportSubmitting(false); }
+                }}
+                style={{ flex: 1, padding: 12, borderRadius: 12, fontSize: 14, fontWeight: 600, border: "none", background: !reportReason ? "var(--border)" : "var(--accent)", color: "#fff", cursor: !reportReason ? "default" : "pointer", fontFamily: "inherit", opacity: reportSubmitting ? 0.5 : 1 }}
+              >
+                {reportSubmitting ? "送信中..." : "通報する"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

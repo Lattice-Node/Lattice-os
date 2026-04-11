@@ -26,6 +26,7 @@ const ICONS = {
   message: "M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z",
   inbox: "M4 6h16M4 12h16M4 18h10",
   settings: "M12 15a3 3 0 100-6 3 3 0 000 6zM19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33",
+  myfeed: "M20 21v-2a4 4 0 00-3-3.87M4 21v-2a4 4 0 013-3.87M16 3.13a4 4 0 010 7.75M8 3.13a4 4 0 000 7.75M12 14a4 4 0 100-8 4 4 0 000 8z",
 };
 
 export const APPS_REGISTRY: AppDefinition[] = [
@@ -38,6 +39,7 @@ export const APPS_REGISTRY: AppDefinition[] = [
   { id: "plan",     name: "プラン",       icon: ICONS.card,     route: "/settings/",  color: "#ec4899", color1: "#ec4899", color2: "#be185d" },
   { id: "invite",   name: "招待",         icon: ICONS.userPlus, route: "/invite/",    color: "#06b6d4", color1: "#06b6d4", color2: "#0e7490" },
   { id: "feedback", name: "フィードバック", icon: ICONS.message,  route: "/feedback/",  color: "#f97316", color1: "#f97316", color2: "#c2410c" },
+  { id: "myfeed",   name: "マイフィード",   icon: ICONS.myfeed,   route: "/my-feed/",   color: "#ec4899", color1: "#ec4899", color2: "#9333ea" },
   { id: "settings", name: "設定",         icon: ICONS.settings, route: "/settings/",  color: "#94a3b8", color1: "#94a3b8", color2: "#475569" },
 ];
 
