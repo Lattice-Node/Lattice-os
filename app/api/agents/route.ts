@@ -100,5 +100,11 @@ export async function POST(req: Request) {
       nextRunAt,
     },
   });
+  // Achievement: first agent created
+  try {
+    const { unlockAchievement } = await import("@/lib/achievements");
+    await unlockAchievement(user.id, "first_agent");
+  } catch {}
+
   return NextResponse.json({ agent });
 }

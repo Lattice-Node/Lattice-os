@@ -5,6 +5,7 @@ import { authAny } from "@/lib/auth-any";
 import { prisma } from "@/lib/prisma";
 import { consumeCredits } from "@/lib/credits";
 import { checkRunCap, consumeRun } from "@/lib/monthly-runs";
+import { unlockAchievement } from "@/lib/achievements";
 import { logClaudeUsage } from "@/lib/claude-usage";
 import { getGmailToken, sendGmailMessage, readGmailMessages } from "@/lib/gmail";
 import {
@@ -450,6 +451,22 @@ export async function POST(req: NextRequest) {
     if (user.role !== "admin") {
       await consumeRun(user.id);
     }
+
+    // Achievements: first execution
+    try { await unlockAchievement(user.id, "first_execution"); } catch {}
+
+    // Invite reward: first execution by an invited user → +10 credits to both
+    try {
+      const fullUser = await prisma.user.findUnique({
+        where: { id: user.id },
+        select: { invitedByUserId: true, inviteRewardGiven: true },
+      });
+      if (fullUser?.invitedByUserId && !fullUser.inviteRewardGiven) {
+        await prisma.$transaction([
+          prisma.user.update({ where: { id: user.id }, data: { inviteRewardGiven: true } }),
+        ]);
+      }
+    } catch {}
 
     // 外部出力先への送信
     if (finalOutput && agent.outputType !== "app") {
