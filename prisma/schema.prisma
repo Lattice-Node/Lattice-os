@@ -43,6 +43,17 @@ model User {
   taskCompletions TaskCompletion[]
   creditTransactions CreditTransaction[]
   nodes          Node[]
+  appLayout      UserAppLayout?
+}
+
+model UserAppLayout {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  apps       Json     // Array of { id: string, position: number }
+  hiddenApps Json     // Array of app ids user removed
+  updatedAt  DateTime @updatedAt
+  createdAt  DateTime @default(now())
 }
 
 model TaskCompletion {
