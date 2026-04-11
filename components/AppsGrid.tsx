@@ -76,16 +76,21 @@ function SortableApp({
           onTap(app.route);
         }}
         style={{
-          background: app.color1 && app.color2
+          background: (app as any).iconImageUrl ? "transparent" : (app.color1 && app.color2
             ? `linear-gradient(135deg, ${app.color1} 0%, ${app.color2} 100%)`
-            : app.color,
-          boxShadow: "0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
+            : app.color),
+          boxShadow: (app as any).iconImageUrl ? "none" : "0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
           position: "relative",
+          overflow: "hidden",
         }}
       >
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}>
-          <path d={app.icon} />
-        </svg>
+        {(app as any).iconImageUrl ? (
+          <img src={(app as any).iconImageUrl} alt={app.name} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 16 }} />
+        ) : (
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}>
+            <path d={app.icon} />
+          </svg>
+        )}
         {editMode && (
           <button
             className="app-delete-btn"
@@ -400,14 +405,18 @@ export default function AppsGrid() {
                     }}
                   >
                     <div className="app-cell" style={{
-                      background: app.color1 && app.color2
+                      background: (app as any).iconImageUrl ? "transparent" : (app.color1 && app.color2
                         ? `linear-gradient(135deg, ${app.color1} 0%, ${app.color2} 100%)`
-                        : app.color,
+                        : app.color),
                       boxShadow: "0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
                     }}>
-                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}>
-                        <path d={app.icon} />
-                      </svg>
+                      {(app as any).iconImageUrl ? (
+                        <img src={(app as any).iconImageUrl} alt={app.name} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 16 }} />
+                      ) : (
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}>
+                          <path d={app.icon} />
+                        </svg>
+                      )}
                     </div>
                     <span className="app-grid-label">{app.name}</span>
                   </div>

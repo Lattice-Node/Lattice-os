@@ -7,6 +7,7 @@ export interface AppDefinition {
   id: string;
   name: string;
   icon: string;  // SVG path data for a 24x24 viewBox
+  iconImageUrl?: string | null; // uploaded image overrides SVG icon
   route: string;
   color: string;  // kept for backward compat
   color1: string; // gradient start

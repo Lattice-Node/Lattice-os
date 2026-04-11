@@ -14,6 +14,7 @@ async function getRegistryWithOverrides(): Promise<AppDefinition[]> {
         ...app,
         name: ov.name ?? app.name,
         icon: ov.iconName ?? app.icon,
+        iconImageUrl: ov.iconImageUrl ?? null,
         color1: ov.color1 ?? app.color1,
         color2: ov.color2 ?? app.color2,
       };

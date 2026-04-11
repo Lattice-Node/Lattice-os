@@ -78,13 +78,14 @@ model UserAchievement {
 }
 
 model AppOverride {
-  id        String   @id @default(cuid())
-  appId     String   @unique
-  iconName  String?
-  color1    String?
-  color2    String?
-  name      String?
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(cuid())
+  appId        String   @unique
+  iconName     String?
+  iconImageUrl String?  @db.Text
+  color1       String?
+  color2       String?
+  name         String?
+  updatedAt    DateTime @updatedAt
 }
 
 model TaskCompletion {
