@@ -304,6 +304,7 @@ export async function POST(req: NextRequest) {
         outputType: true,
         outputConfig: true,
         useWebSearch: true,
+        isPublic: true,
       },
     });
 
@@ -456,9 +457,10 @@ export async function POST(req: NextRequest) {
     try { await unlockAchievement(user.id, "first_execution"); } catch {}
 
     // Auto-create feed item if agent is public and execution succeeded
+    console.debug("[FEED_DEBUG] agent.isPublic:", agent.isPublic, "finalStatus:", finalStatus, "outputLen:", finalOutput?.length);
     if (finalStatus === "success" && agent.isPublic && finalOutput) {
       try {
-        await prisma.publicFeedItem.create({
+        const feedItem = await prisma.publicFeedItem.create({
           data: {
             agentId: agent.id,
             userId: user.id,
@@ -466,8 +468,9 @@ export async function POST(req: NextRequest) {
             resultText: finalOutput.slice(0, 10000),
           },
         });
+        console.debug("[FEED_DEBUG] created:", feedItem.id);
       } catch (feedErr) {
-        console.error("[feed] auto-publish failed:", feedErr);
+        console.error("[FEED_DEBUG] create failed:", feedErr);
       }
     }
 

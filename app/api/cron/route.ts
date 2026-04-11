@@ -327,6 +327,23 @@ export async function GET(req: NextRequest) {
         }
       }
 
+      // Auto-create feed item if agent is public
+      if (agent.isPublic && output) {
+        try {
+          await prisma.publicFeedItem.create({
+            data: {
+              agentId: agent.id,
+              userId: user.id,
+              agentName: agent.name,
+              resultText: output.slice(0, 10000),
+            },
+          });
+          console.debug("[FEED_DEBUG:cron] created for agent:", agent.id);
+        } catch (feedErr) {
+          console.error("[FEED_DEBUG:cron] create failed:", feedErr);
+        }
+      }
+
 await notifyCronComplete({ userId: user.id, agentName: agent.name, agentId: agent.id, success: true, output });
 
       results.push({ id: agent.id, name: agent.name, status: "success" });
