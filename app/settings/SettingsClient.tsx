@@ -494,6 +494,11 @@ const handleLineGenerate = async () => {
             })}
           </div>
 
+          {/* Legal note (特定商取引法 compliance) */}
+          <p style={{ fontSize: 11, color: "var(--text-secondary)", textAlign: "center", lineHeight: 1.6, margin: "16px 0 0" }}>
+            購入することで、<button onClick={() => router.push("/tokushoho/")} style={{ background: "none", border: "none", color: "var(--accent)", textDecoration: "underline", fontSize: 11, cursor: "pointer", fontFamily: "inherit", padding: 0 }}>特定商取引法に基づく表記</button>に同意したものとみなされます。
+          </p>
+
           {/* Comparison with other AI services */}
           <div style={{ marginTop: 20, padding: "16px", background: "var(--surface)", borderRadius: 16, border: "1px solid var(--border)", textAlign: "center" }}>
             <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: "0 0 10px" }}>他のAIサービスとの比較</p>
@@ -899,8 +904,12 @@ const handleLineGenerate = async () => {
             <span style={{ fontSize: 14, color: "var(--text-primary)" }}>プライバシーポリシー</span>
             <span style={{ fontSize: 14, color: "var(--text-disabled)" }}>&rarr;</span>
           </button>
-          <button onClick={() => router.push("/terms/")} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", background: "transparent", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
+          <button onClick={() => router.push("/terms/")} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid var(--border)", background: "transparent", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
             <span style={{ fontSize: 14, color: "var(--text-primary)" }}>利用規約</span>
+            <span style={{ fontSize: 14, color: "var(--text-disabled)" }}>&rarr;</span>
+          </button>
+          <button onClick={() => router.push("/tokushoho/")} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", background: "transparent", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
+            <span style={{ fontSize: 14, color: "var(--text-primary)" }}>特定商取引法に基づく表記</span>
             <span style={{ fontSize: 14, color: "var(--text-disabled)" }}>&rarr;</span>
           </button>
         </div>

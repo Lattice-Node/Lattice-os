@@ -24,6 +24,7 @@ export default function Footer() {
         <div style={{ display: "flex", gap: 24 }}>
           <Link href="/privacy/" style={{ fontSize: 13, color: "#444", textDecoration: "none" }}>Privacy</Link>
           <Link href="/terms/" style={{ fontSize: 13, color: "#444", textDecoration: "none" }}>Terms</Link>
+          <Link href="/tokushoho/" style={{ fontSize: 13, color: "#444", textDecoration: "none" }}>特商法</Link>
           <Link href="https://x.com/Lattice_Node" style={{ fontSize: 13, color: "#444", textDecoration: "none" }}>X</Link>
         </div>
         <span style={{ fontSize: 13, color: "#333" }}>&copy; 2026 Lattice</span>
