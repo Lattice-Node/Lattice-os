@@ -5,6 +5,7 @@ import { nativeFetch } from "@/lib/native-fetch";
 interface ProfileEditProps {
   oauthName: string;
   oauthImage: string;
+  email: string;
   initialHandle: string | null;
   initialDisplayName: string;
   initialAvatarUrl: string | null;
@@ -60,7 +61,7 @@ function getAvatarDisplay(avatarUrl: string | null, oauthImage: string, name: st
   return { type: "initial", initial: (name || "U")[0].toUpperCase(), bg: "var(--btn-bg)" };
 }
 
-export default function ProfileEdit({ oauthName, oauthImage, initialHandle, initialDisplayName, initialAvatarUrl, initialPublicId }: ProfileEditProps) {
+export default function ProfileEdit({ oauthName, oauthImage, email, initialHandle, initialDisplayName, initialAvatarUrl, initialPublicId }: ProfileEditProps) {
   const [editing, setEditing] = useState(false);
   const [handle, setHandle] = useState(initialHandle || "");
   const [displayName, setDisplayName] = useState(initialDisplayName || "");
@@ -106,7 +107,7 @@ export default function ProfileEdit({ oauthName, oauthImage, initialHandle, init
     return (
       <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: 20, marginBottom: 12 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <p style={{ fontSize: 11, color: "var(--text-secondary)", letterSpacing: "0.06em", textTransform: "uppercase", margin: 0 }}>プロフィール編集</p>
+          <p style={{ fontSize: 11, color: "var(--text-secondary)", letterSpacing: "0.06em", textTransform: "uppercase", margin: 0 }}>アカウント編集</p>
           <button onClick={() => { setEditing(false); setError(""); }} style={{ background: "none", border: "none", color: "var(--text-disabled)", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>キャンセル</button>
         </div>
 
@@ -164,7 +165,7 @@ export default function ProfileEdit({ oauthName, oauthImage, initialHandle, init
   return (
     <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: 20, marginBottom: 12 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-        <p style={{ fontSize: 11, color: "var(--text-secondary)", letterSpacing: "0.06em", textTransform: "uppercase", margin: 0 }}>プロフィール</p>
+        <p style={{ fontSize: 11, color: "var(--text-secondary)", letterSpacing: "0.06em", textTransform: "uppercase", margin: 0 }}>アカウント</p>
         <button onClick={() => setEditing(true)} style={{ background: "none", border: "none", color: "var(--btn-bg)", fontSize: 12, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>編集</button>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
@@ -184,6 +185,12 @@ export default function ProfileEdit({ oauthName, oauthImage, initialHandle, init
           )}
         </div>
       </div>
+      {email && (
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", borderRadius: 8, background: "var(--bg)", marginBottom: publicId ? 6 : 0 }}>
+          <span style={{ fontSize: 12, color: "var(--text-disabled)" }}>メール</span>
+          <span style={{ fontSize: 13, color: "var(--text-secondary)" }}>{email}</span>
+        </div>
+      )}
       {publicId && (
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 14px", borderRadius: 8, background: "var(--bg)" }}>
           <span style={{ fontSize: 12, color: "var(--text-disabled)" }}>ID</span>

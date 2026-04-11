@@ -546,24 +546,53 @@ const handleLineGenerate = async () => {
           </div>
         )}
 
-        {/* Account */}
-        <div style={cardStyle}>
-          <p style={sectionLabel}>アカウント</p>
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            {image ? (
-              <img src={image} alt={name} width={44} height={44} style={{ borderRadius: "50%", border: "1px solid var(--border)" }} />
-            ) : (
-              <div style={{ width: 44, height: 44, borderRadius: "50%", background: "var(--border)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-secondary)" strokeWidth="1.5"><circle cx="10" cy="7" r="4" /><path d="M3 18c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5" /></svg>
-              </div>
-            )}
-            <div>
-              <p style={{ fontSize: 15, fontWeight: 600, color: "var(--text-primary)", margin: "0 0 3px" }}>{name || "ユーザー"}</p>
-              <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: 0 }}>{email}</p>
-            </div>
-          </div>
-        </div>
+        {/* Account (merged with profile) */}
         {profileSection}
+
+        <button onClick={() => handleSignOut()} style={{ width: "100%", padding: "13px", borderRadius: 999, border: "1px solid var(--border-visible)", background: "transparent", color: "var(--accent)", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", marginBottom: 10 }}>
+          ログアウト
+        </button>
+        <button onClick={handleDelete} disabled={deleting} style={{ width: "100%", padding: "13px", borderRadius: 10, border: "1px solid var(--border)", background: "transparent", color: confirm ? "var(--accent)" : "var(--text-secondary)", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", marginBottom: 12 }}>
+          {deleting ? "削除中..." : confirm ? "もう一度タップで確定" : "アカウントを削除"}
+        </button>
+
+        {/* Monthly run counter (Phase 1) */}
+        {usage && (
+          <div style={cardStyle}>
+            <p style={sectionLabel}>今月の実行回数</p>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
+              <span style={{ fontSize: 28, fontWeight: 700, color: "var(--text-display)" }}>
+                {usage.monthlyRunsUsed}
+                <span style={{ fontSize: 16, color: "var(--text-secondary)", fontWeight: 500 }}> / {usage.monthlyRunsCap}</span>
+              </span>
+              {usage.monthlyRunsUsed >= usage.monthlyRunsCap && (
+                <span style={{ fontSize: 11, color: "var(--accent)", background: "var(--surface)", padding: "3px 10px", borderRadius: 20 }}>上限到達</span>
+              )}
+            </div>
+            <div style={{ width: "100%", height: 6, background: "var(--border)", borderRadius: 3, overflow: "hidden", marginBottom: 8 }}>
+              <div style={{
+                width: `${Math.min(100, Math.round((usage.monthlyRunsUsed / Math.max(1, usage.monthlyRunsCap)) * 100))}%`,
+                height: "100%",
+                background: usage.monthlyRunsUsed >= usage.monthlyRunsCap ? "var(--accent)" : "var(--btn-bg)",
+                transition: "width 0.5s ease",
+              }} />
+            </div>
+            <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: 0 }}>
+              {(() => {
+                const d = new Date(usage.nextResetAt);
+                return `${d.getMonth() + 1}月${d.getDate()}日にリセット`;
+              })()}
+            </p>
+            {usage.monthlyRunsUsed >= usage.monthlyRunsCap && paymentVisible && (
+              <button
+                onClick={() => setShowPlans(true)}
+                style={{ width: "100%", marginTop: 12, padding: "11px 16px", borderRadius: 8, border: "none", background: "var(--btn-bg)", color: "var(--btn-text)", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}
+              >
+                プランをアップグレード
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Plan */}
         <div style={cardStyle}>
@@ -671,44 +700,6 @@ const handleLineGenerate = async () => {
           )}
         </div>
 
-        {/* Monthly run counter (Phase 1) */}
-        {usage && (
-          <div style={cardStyle}>
-            <p style={sectionLabel}>今月の実行回数</p>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
-              <span style={{ fontSize: 28, fontWeight: 700, color: "var(--text-display)" }}>
-                {usage.monthlyRunsUsed}
-                <span style={{ fontSize: 16, color: "var(--text-secondary)", fontWeight: 500 }}> / {usage.monthlyRunsCap}</span>
-              </span>
-              {usage.monthlyRunsUsed >= usage.monthlyRunsCap && (
-                <span style={{ fontSize: 11, color: "var(--accent)", background: "var(--surface)", padding: "3px 10px", borderRadius: 20 }}>上限到達</span>
-              )}
-            </div>
-            <div style={{ width: "100%", height: 6, background: "var(--border)", borderRadius: 3, overflow: "hidden", marginBottom: 8 }}>
-              <div style={{
-                width: `${Math.min(100, Math.round((usage.monthlyRunsUsed / Math.max(1, usage.monthlyRunsCap)) * 100))}%`,
-                height: "100%",
-                background: usage.monthlyRunsUsed >= usage.monthlyRunsCap ? "var(--accent)" : "var(--btn-bg)",
-                transition: "width 0.5s ease",
-              }} />
-            </div>
-            <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: 0 }}>
-              {(() => {
-                const d = new Date(usage.nextResetAt);
-                return `${d.getMonth() + 1}月${d.getDate()}日にリセット`;
-              })()}
-            </p>
-            {usage.monthlyRunsUsed >= usage.monthlyRunsCap && paymentVisible && (
-              <button
-                onClick={() => setShowPlans(true)}
-                style={{ width: "100%", marginTop: 12, padding: "11px 16px", borderRadius: 8, border: "none", background: "var(--btn-bg)", color: "var(--btn-text)", fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}
-              >
-                プランをアップグレード
-              </button>
-            )}
-          </div>
-        )}
-
         {/* Connections */}
         <div style={cardStyle}>
           <p style={sectionLabel}>サービス連携</p>
@@ -769,7 +760,69 @@ const handleLineGenerate = async () => {
           )}
         </div>
 
-        {/* Lattice News & About - card buttons */}
+        {/* Appearance + Background */}
+        <div style={cardStyle}>
+          <p style={sectionLabel}>外観</p>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <div>
+              <p style={{ fontSize: 13, color: "var(--text-primary)", margin: "0 0 2px", fontWeight: 500 }}>外観モード</p>
+              <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: 0 }}>{theme === "dark" ? "ダーク" : "ライト"}</p>
+            </div>
+            <button onClick={toggleTheme} className={`toggle ${theme === "dark" ? "on" : "off"}`}>
+              <div className="toggle-knob" />
+            </button>
+          </div>
+          <p style={{ fontSize: 11, color: "var(--text-secondary)", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 10px" }}>背景テーマ</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+            {(() => {
+              const { BACKGROUND_THEMES } = require("@/lib/backgrounds");
+              return BACKGROUND_THEMES.map((t: any) => {
+                const isLocked = t.isPro && !isPaid && !isAdmin;
+                const isActive = backgroundTheme === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    disabled={isLocked}
+                    onClick={() => {
+                      if (isLocked || t.id === "custom") return;
+                      nativeFetch("/api/user/background", {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ theme: t.id }),
+                      }).then(() => {
+                        setBackgroundTheme(t.id);
+                      }).catch(() => {});
+                    }}
+                    style={{
+                      width: "100%",
+                      aspectRatio: "3/4",
+                      borderRadius: 10,
+                      border: isActive ? "2px solid var(--btn-bg)" : "1px solid var(--border)",
+                      background: t.preview,
+                      cursor: isLocked ? "default" : "pointer",
+                      opacity: isLocked ? 0.4 : 1,
+                      position: "relative",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "flex-end",
+                      padding: "0 0 6px",
+                      fontFamily: "inherit",
+                    }}
+                  >
+                    {isLocked && (
+                      <span style={{ position: "absolute", top: 6, right: 6, fontSize: 10, background: "rgba(0,0,0,0.5)", color: "#fff", padding: "1px 5px", borderRadius: 4 }}>PRO</span>
+                    )}
+                    <span style={{ fontSize: 9, color: "#fff", textShadow: "0 1px 3px rgba(0,0,0,0.6)", fontFamily: "'Space Mono', monospace" }}>{t.name}</span>
+                  </button>
+                );
+              });
+            })()}
+          </div>
+          <p style={{ fontSize: 11, color: "var(--text-disabled)", margin: "8px 0 0", lineHeight: 1.5 }}>背景テーマはアプリページに適用されます</p>
+        </div>
+
+        {/* Lattice について */}
         <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
           <button onClick={() => setSubView("news")} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", background: "transparent", border: "none", borderBottom: "1px solid var(--border)", cursor: "pointer", fontFamily: "inherit" }}>
             <div style={{ textAlign: "left" }}>
@@ -898,94 +951,24 @@ const handleLineGenerate = async () => {
             </div>
           </div>
         )}
-        {/* Links */}
+        {/* 法的情報 */}
         <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, overflow: "hidden", marginBottom: 12 }}>
+          <p style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, color: "var(--text-secondary)", letterSpacing: "0.1em", textTransform: "uppercase", margin: 0, padding: "14px 20px 4px" }}>法的情報</p>
           <button onClick={() => router.push("/privacy/")} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid var(--border)", background: "transparent", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
             <span style={{ fontSize: 14, color: "var(--text-primary)" }}>プライバシーポリシー</span>
-            <span style={{ fontSize: 14, color: "var(--text-disabled)" }}>&rarr;</span>
+            <span style={{ fontSize: 14, color: "var(--text-disabled)" }}>&rsaquo;</span>
           </button>
           <button onClick={() => router.push("/terms/")} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", borderBottom: "1px solid var(--border)", background: "transparent", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
             <span style={{ fontSize: 14, color: "var(--text-primary)" }}>利用規約</span>
-            <span style={{ fontSize: 14, color: "var(--text-disabled)" }}>&rarr;</span>
+            <span style={{ fontSize: 14, color: "var(--text-disabled)" }}>&rsaquo;</span>
           </button>
           <button onClick={() => router.push("/tokushoho/")} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 20px", background: "transparent", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
             <span style={{ fontSize: 14, color: "var(--text-primary)" }}>特定商取引法に基づく表記</span>
-            <span style={{ fontSize: 14, color: "var(--text-disabled)" }}>&rarr;</span>
+            <span style={{ fontSize: 14, color: "var(--text-disabled)" }}>&rsaquo;</span>
           </button>
         </div>
 
         <p style={{ fontSize: 12, color: "var(--text-disabled)", textAlign: "center", margin: "16px 0" }}>Lattice v0.1.0 beta</p>
-
-        {/* テーマ切替 */}
-        <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 10, padding: "14px 16px", marginBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div>
-            <p style={{ fontSize: 13, color: "var(--text-primary)", margin: "0 0 2px", fontWeight: 500 }}>外観モード</p>
-            <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: 0 }}>{theme === "dark" ? "ダーク" : "ライト"}</p>
-          </div>
-          <button onClick={toggleTheme} className={`toggle ${theme === "dark" ? "on" : "off"}`}>
-            <div className="toggle-knob" />
-          </button>
-        </div>
-
-        {/* 背景テーマ */}
-        <div style={cardStyle}>
-          <p style={sectionLabel}>背景</p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
-            {(() => {
-              const { BACKGROUND_THEMES } = require("@/lib/backgrounds");
-              return BACKGROUND_THEMES.map((t: any) => {
-                const isLocked = t.isPro && !isPaid && !isAdmin;
-                const isActive = backgroundTheme === t.id;
-                return (
-                  <button
-                    key={t.id}
-                    disabled={isLocked}
-                    onClick={() => {
-                      if (isLocked || t.id === "custom") return;
-                      nativeFetch("/api/user/background", {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ theme: t.id }),
-                      }).then(() => {
-                        setBackgroundTheme(t.id);
-                      }).catch(() => {});
-                    }}
-                    style={{
-                      width: "100%",
-                      aspectRatio: "3/4",
-                      borderRadius: 10,
-                      border: isActive ? "2px solid var(--btn-bg)" : "1px solid var(--border)",
-                      background: t.preview,
-                      cursor: isLocked ? "default" : "pointer",
-                      opacity: isLocked ? 0.4 : 1,
-                      position: "relative",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "flex-end",
-                      padding: "0 0 6px",
-                      fontFamily: "inherit",
-                    }}
-                  >
-                    {isLocked && (
-                      <span style={{ position: "absolute", top: 6, right: 6, fontSize: 10, background: "rgba(0,0,0,0.5)", color: "#fff", padding: "1px 5px", borderRadius: 4 }}>PRO</span>
-                    )}
-                    <span style={{ fontSize: 9, color: "#fff", textShadow: "0 1px 3px rgba(0,0,0,0.6)", fontFamily: "'Space Mono', monospace" }}>{t.name}</span>
-                  </button>
-                );
-              });
-            })()}
-          </div>
-          <p style={{ fontSize: 11, color: "var(--text-disabled)", margin: "8px 0 0", lineHeight: 1.5 }}>背景テーマはアプリページに適用されます</p>
-        </div>
-
-        <button onClick={() => handleSignOut()} style={{ width: "100%", padding: "13px", borderRadius: 999, border: "1px solid var(--border-visible)", background: "transparent", color: "var(--accent)", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", marginBottom: 10 }}>
-          ログアウト
-        </button>
-
-        <button onClick={handleDelete} disabled={deleting} style={{ width: "100%", padding: "13px", borderRadius: 10, border: "1px solid var(--border)", background: "transparent", color: confirm ? "var(--accent)" : "var(--text-secondary)", fontSize: 13, fontWeight: 500, cursor: "pointer", fontFamily: "inherit" }}>
-          {deleting ? "削除中..." : confirm ? "もう一度タップで確定" : "アカウントを削除"}
-        </button>
       </div>
     </main>
   );

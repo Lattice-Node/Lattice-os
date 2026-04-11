@@ -110,6 +110,7 @@ html, body {
 /* Bottom tab bar — matches iOS UITabBar: 49pt interactive content + safe-area background */
 .btm-nav { position:fixed;bottom:0;left:0;right:0;z-index:100;display:flex;align-items:stretch;background:rgba(10,10,15,0.98);border-top:1px solid rgba(255,255,255,0.06);padding-bottom:env(safe-area-inset-bottom, 0px);transition:background .25s; }
 body[data-route="apps"] .btm-nav { background:rgba(10,10,15,0.85);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px); }
+body[data-route="apps"] .app-shell { background: transparent; }
 .btm-nav-label { font-size:10px;font-family:"Space Mono",monospace;letter-spacing:.02em; }
 .btm-nav button:active { opacity:.6; }
 

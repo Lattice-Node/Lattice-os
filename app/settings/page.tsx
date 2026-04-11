@@ -44,6 +44,7 @@ function SettingsInner() {
         <ProfileEdit
           oauthName={data.name ?? ""}
           oauthImage={data.image ?? ""}
+          email={data.email ?? ""}
           initialHandle={data.handle ?? null}
           initialDisplayName={data.displayName ?? ""}
           initialAvatarUrl={data.avatarUrl ?? null}

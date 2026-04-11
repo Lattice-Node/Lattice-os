@@ -30,6 +30,7 @@ export default function BackgroundProvider() {
 
     if (!isApps) {
       document.documentElement.style.background = "";
+      document.documentElement.style.backgroundAttachment = "";
       document.body.style.background = "";
       document.body.style.backgroundAttachment = "";
       document.body.setAttribute("data-route", "other");
@@ -47,11 +48,13 @@ export default function BackgroundProvider() {
         : themeObj.full || "#0a0a0a";
 
     document.documentElement.style.background = bg;
+    document.documentElement.style.backgroundAttachment = "fixed";
     document.body.style.background = bg;
     document.body.style.backgroundAttachment = "fixed";
 
     return () => {
       document.documentElement.style.background = "";
+      document.documentElement.style.backgroundAttachment = "";
       document.body.style.background = "";
       document.body.style.backgroundAttachment = "";
       document.body.setAttribute("data-route", "other");
