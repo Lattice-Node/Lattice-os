@@ -36,7 +36,8 @@ export async function GET(req: Request) {
     select: {
       id: true,
       agentName: true,
-      resultText: true,
+      title: true,
+      previewText: true,
       likeCount: true,
       viewCount: true,
       createdAt: true,

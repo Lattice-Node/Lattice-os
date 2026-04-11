@@ -23,13 +23,27 @@ export async function GET(req: Request) {
     take: limit,
     skip: cursor ? 1 : 0,
     cursor: cursor ? { id: cursor } : undefined,
-    include: {
+    select: {
+      id: true,
+      title: true,
+      previewText: true,
+      agentName: true,
+      createdAt: true,
+      likeCount: true,
+      viewCount: true,
+      userId: true,
       user: {
         select: {
           id: true,
           displayName: true,
           handle: true,
           avatarUrl: true,
+        },
+      },
+      agent: {
+        select: {
+          id: true,
+          name: true,
         },
       },
       ...(userId
@@ -40,13 +54,15 @@ export async function GET(req: Request) {
 
   const result = items.map((item) => ({
     id: item.id,
+    title: item.title,
+    previewText: item.previewText,
     agentName: item.agentName,
-    resultText: item.resultText,
     likeCount: item.likeCount,
     viewCount: item.viewCount,
     isLikedByMe: userId ? (item as any).likes?.length > 0 : false,
     createdAt: item.createdAt.toISOString(),
     user: item.user,
+    agent: item.agent,
   }));
 
   const nextCursor = items.length === limit ? items[items.length - 1].id : null;
