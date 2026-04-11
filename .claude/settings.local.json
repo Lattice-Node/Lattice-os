@@ -151,7 +151,8 @@
       "Bash(git commit -m 'feat\\(nav\\): replace ノード with アプリ in tab bar:*)",
       "Bash(git commit -m 'refactor\\(home\\): remove menu/upcoming cards, add next-execution countdown + notifications:*)",
       "Bash(git commit -m 'feat\\(apps\\): iPhone-grade gradient icons with shadows:*)",
-      "Bash(git commit -m 'feat\\(apps\\): horizontal swipe pagination with page indicator:*)"
+      "Bash(git commit -m 'feat\\(apps\\): horizontal swipe pagination with page indicator:*)",
+      "Bash(git commit -m 'feat\\(admin\\): app icon customization with AppOverride model:*)"
     ]
   }
 }

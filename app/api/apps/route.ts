@@ -1,7 +1,27 @@
 import { authAny } from "@/lib/auth-any";
 import { prisma } from "@/lib/prisma";
 import { jsonWithCors, corsOptions } from "@/lib/cors";
-import { APPS_REGISTRY, DEFAULT_LAYOUT } from "@/lib/apps-registry";
+import { APPS_REGISTRY, DEFAULT_LAYOUT, type AppDefinition } from "@/lib/apps-registry";
+
+async function getRegistryWithOverrides(): Promise<AppDefinition[]> {
+  try {
+    const overrides = await prisma.appOverride.findMany();
+    const map = new Map(overrides.map((o) => [o.appId, o]));
+    return APPS_REGISTRY.map((app) => {
+      const ov = map.get(app.id);
+      if (!ov) return app;
+      return {
+        ...app,
+        name: ov.name ?? app.name,
+        icon: ov.iconName ?? app.icon,
+        color1: ov.color1 ?? app.color1,
+        color2: ov.color2 ?? app.color2,
+      };
+    });
+  } catch {
+    return APPS_REGISTRY;
+  }
+}
 
 export async function OPTIONS(req: Request) {
   return corsOptions(req);
@@ -27,18 +47,19 @@ export async function GET(req: Request) {
     });
   }
 
+  const registry = await getRegistryWithOverrides();
   const appEntries = layout.apps as Array<{ id: string; position: number }>;
   const hiddenIds = layout.hiddenApps as string[];
 
   const visible = appEntries
     .map((entry) => {
-      const def = APPS_REGISTRY.find((a) => a.id === entry.id);
+      const def = registry.find((a) => a.id === entry.id);
       return def ? { ...def, position: entry.position } : null;
     })
     .filter(Boolean)
     .sort((a, b) => a!.position - b!.position);
 
-  const available = APPS_REGISTRY.filter((a) => hiddenIds.includes(a.id));
+  const available = registry.filter((a) => hiddenIds.includes(a.id));
 
   return jsonWithCors(req, { visible, available });
 }

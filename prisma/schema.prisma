@@ -56,6 +56,16 @@ model UserAppLayout {
   createdAt  DateTime @default(now())
 }
 
+model AppOverride {
+  id        String   @id @default(cuid())
+  appId     String   @unique
+  iconName  String?
+  color1    String?
+  color2    String?
+  name      String?
+  updatedAt DateTime @updatedAt
+}
+
 model TaskCompletion {
   id        String   @id @default(cuid())
   userId    String
