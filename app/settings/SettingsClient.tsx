@@ -776,7 +776,7 @@ const handleLineGenerate = async () => {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
             {(() => {
               const { BACKGROUND_THEMES } = require("@/lib/backgrounds");
-              return BACKGROUND_THEMES.map((t: any) => {
+              return BACKGROUND_THEMES.filter((t: any) => t.id !== "custom").map((t: any) => {
                 const isLocked = t.isPro && !isPaid && !isAdmin;
                 const isActive = backgroundTheme === t.id;
                 return (
@@ -791,6 +791,7 @@ const handleLineGenerate = async () => {
                         body: JSON.stringify({ theme: t.id }),
                       }).then(() => {
                         setBackgroundTheme(t.id);
+                        window.dispatchEvent(new CustomEvent("lattice-theme-changed", { detail: { theme: t.id } }));
                       }).catch(() => {});
                     }}
                     style={{

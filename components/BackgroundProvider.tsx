@@ -11,6 +11,20 @@ export default function BackgroundProvider() {
   const [fetched, setFetched] = useState(false);
   const pathname = usePathname();
 
+  // Configure StatusBar overlay once on mount (iOS)
+  useEffect(() => {
+    (async () => {
+      try {
+        const isNative = !!(window as any).Capacitor?.isNativePlatform?.();
+        if (!isNative) return;
+        const { StatusBar, Style } = await import("@capacitor/status-bar");
+        await StatusBar.setOverlaysWebView({ overlay: true });
+        await StatusBar.setStyle({ style: Style.Dark });
+        await StatusBar.setBackgroundColor({ color: "#00000000" });
+      } catch {}
+    })();
+  }, []);
+
   // Fetch user's theme once
   useEffect(() => {
     if (fetched) return;
@@ -23,6 +37,17 @@ export default function BackgroundProvider() {
       })
       .catch(() => setFetched(true));
   }, [fetched]);
+
+  // Listen for theme changes from Settings
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail?.theme) setTheme(detail.theme);
+      if (detail?.customUrl !== undefined) setCustomUrl(detail.customUrl);
+    };
+    window.addEventListener("lattice-theme-changed", handler);
+    return () => window.removeEventListener("lattice-theme-changed", handler);
+  }, []);
 
   // Apply theme ONLY on /apps, restore default elsewhere
   useEffect(() => {

@@ -19,6 +19,11 @@ const config: CapacitorConfig = {
       skipNativeAuth: false,
       providers: ["google.com", "apple.com"],
     },
+    StatusBar: {
+      overlaysWebView: true,
+      style: "DARK",
+      backgroundColor: "#00000000",
+    },
   },
   ios: {
     contentInset: "never",
