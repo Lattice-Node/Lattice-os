@@ -10,9 +10,8 @@ import CountUp from "@/components/CountUp";
 import { useAchievement } from "@/components/AchievementToast";
 
 interface Task { id: string; label: string; credits: number; type: string; category: string; completed: boolean; claimable: boolean; count?: number; unclaimed?: number; }
-interface StreakInfo { currentStreak: number; longestStreak: number; }
 interface AchievementInfo { id: string; icon: string; title: string; description: string; }
-interface Props { name: string; avatarUrl: string | null; credits: number; plan: string; agentCount: number; isLoggedIn: boolean; nextExecution?: { agentName: string; scheduledAt: string } | null; streak?: StreakInfo | null; newAchievement?: AchievementInfo | null; }
+interface Props { name: string; avatarUrl: string | null; credits: number; plan: string; agentCount: number; isLoggedIn: boolean; nextExecution?: { agentName: string; scheduledAt: string } | null; newAchievement?: AchievementInfo | null; }
 
 const MENU = [
   { href: "/node/", label: "ノード", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><circle cx="10" cy="10" r="6"/><circle cx="10" cy="10" r="2"/><line x1="10" y1="4" x2="10" y2="6"/><line x1="10" y1="14" x2="10" y2="16"/><line x1="4" y1="10" x2="6" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/></svg> },
@@ -31,7 +30,7 @@ function Av({ url, name, size = 36 }: { url: string | null; name: string; size?:
   return <div style={{ width: size, height: size, borderRadius: "50%", background: "var(--btn-bg)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--btn-text)", fontSize: size * 0.4, fontWeight: 600 }}>{initial}</div>;
 }
 
-export default function HomeClient({ name, avatarUrl, credits: initCr, plan, agentCount, isLoggedIn, nextExecution, streak, newAchievement }: Props) {
+export default function HomeClient({ name, avatarUrl, credits: initCr, plan, agentCount, isLoggedIn, nextExecution, newAchievement }: Props) {
   const { show: showAchievement } = useAchievement();
 
   // Show achievement toast on first render if new
@@ -261,43 +260,6 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
             </div>
           );
         })()}
-
-        {/* Streak card */}
-        {streak && streak.currentStreak > 0 && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3, type: "spring", stiffness: 260, damping: 20 }}
-            style={{
-              background: "linear-gradient(135deg, #ea580c 0%, #dc2626 100%)",
-              borderRadius: 12,
-              padding: 16,
-              marginBottom: 20,
-              display: "flex",
-              alignItems: "center",
-              gap: 14,
-            }}
-          >
-            <motion.span
-              animate={{ scale: [1, 1.12, 1], rotate: [-2, 2, -2] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              style={{ fontSize: 40, lineHeight: 1 }}
-            >
-              🔥
-            </motion.span>
-            <div>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
-                <span style={{ fontSize: 32, fontWeight: 700, color: "#fff", fontFamily: "'Space Mono', monospace" }}>
-                  <CountUp to={streak.currentStreak} duration={600} />
-                </span>
-                <span style={{ fontSize: 14, color: "rgba(255,255,255,0.8)" }}>日</span>
-              </div>
-              <p style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", margin: "2px 0 0" }}>
-                連続ログイン{streak.longestStreak > streak.currentStreak ? ` · 最長 ${streak.longestStreak}日` : ""}
-              </p>
-            </div>
-          </motion.div>
-        )}
 
         {/* Next execution countdown */}
         {nextExecution && (

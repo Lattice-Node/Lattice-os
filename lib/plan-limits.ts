@@ -7,7 +7,7 @@
  *
  * Phase 2 (future):
  * - monthlyRunsCap will be exposed as "Life Points (LP)" in UI
- * - LP can be earned via referrals, streaks, X share bonuses
+ * - LP can be earned via referrals, X share bonuses
  */
 
 export type PlanId = "free" | "starter" | "personal" | "pro" | "business";

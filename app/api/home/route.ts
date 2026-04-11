@@ -1,8 +1,7 @@
 import { authAny } from "@/lib/auth-any";
 import { prisma } from "@/lib/prisma";
 import { jsonWithCors, corsOptions } from "@/lib/cors";
-import { updateLoginStreak } from "@/lib/streak";
-import { checkStreakAchievements, unlockAchievement } from "@/lib/achievements";
+import { unlockAchievement } from "@/lib/achievements";
 
 export async function OPTIONS(req: Request) {
   return corsOptions(req);
@@ -29,21 +28,10 @@ export async function GET(req: Request) {
 
     const agentCount = await prisma.userAgent.count({ where: { userId: user.id } });
 
-    // Streak + achievements (fire-and-forget, don't block response)
-    let streak = { currentStreak: 0, longestStreak: 0 };
+    // Achievements (fire-and-forget)
     let newAchievement = null;
     try {
-      const sr = await updateLoginStreak(user.id);
-      if (sr) {
-        streak = sr;
-        if (sr.incremented && sr.currentStreak === 1 && !sr.broken) {
-          newAchievement = await unlockAchievement(user.id, "first_login");
-        }
-        if (sr.incremented) {
-          const sa = await checkStreakAchievements(user.id, sr.currentStreak);
-          if (sa) newAchievement = sa;
-        }
-      }
+      newAchievement = await unlockAchievement(user.id, "first_login");
     } catch {}
 
     // Next scheduled execution
@@ -62,7 +50,6 @@ export async function GET(req: Request) {
       plan: user.role === "admin" ? "business" : (user.plan || "free"),
       agentCount,
       nextExecution: nextAgent ? { agentName: nextAgent.name, scheduledAt: nextAgent.nextRunAt!.toISOString() } : null,
-      streak,
       newAchievement,
     });
   } catch (e) {
