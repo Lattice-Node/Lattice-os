@@ -27,6 +27,8 @@ interface AppItem {
   icon: string;
   route: string;
   color: string;
+  color1?: string;
+  color2?: string;
   position: number;
 }
 
@@ -72,9 +74,15 @@ function SortableApp({
           }
           onTap(app.route);
         }}
-        style={{ background: app.color, position: "relative" }}
+        style={{
+          background: app.color1 && app.color2
+            ? `linear-gradient(135deg, ${app.color1} 0%, ${app.color2} 100%)`
+            : app.color,
+          boxShadow: "0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
+          position: "relative",
+        }}
       >
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}>
           <path d={app.icon} />
         </svg>
         {editMode && (
@@ -325,8 +333,13 @@ export default function AppsGrid() {
                       cursor: "pointer",
                     }}
                   >
-                    <div className="app-cell" style={{ background: app.color }}>
-                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <div className="app-cell" style={{
+                      background: app.color1 && app.color2
+                        ? `linear-gradient(135deg, ${app.color1} 0%, ${app.color2} 100%)`
+                        : app.color,
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15)",
+                    }}>
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}>
                         <path d={app.icon} />
                       </svg>
                     </div>

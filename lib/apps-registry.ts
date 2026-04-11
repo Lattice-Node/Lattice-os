@@ -8,7 +8,9 @@ export interface AppDefinition {
   name: string;
   icon: string;  // SVG path data for a 24x24 viewBox
   route: string;
-  color: string;
+  color: string;  // kept for backward compat
+  color1: string; // gradient start
+  color2: string; // gradient end
   description?: string;
 }
 
@@ -27,14 +29,14 @@ const ICONS = {
 };
 
 export const APPS_REGISTRY: AppDefinition[] = [
-  { id: "node",     name: "ノード",       icon: ICONS.network,  route: "/node/",           color: "#3b82f6" },
-  { id: "myagent",  name: "マイAgent",    icon: ICONS.bot,      route: "/agents/",         color: "#8b5cf6" },
-  { id: "tasks",    name: "タスク",       icon: ICONS.check,    route: "/home/#tasks",      color: "#10b981" },
-  { id: "store",    name: "ストア",       icon: ICONS.store,    route: "/store/",          color: "#f59e0b" },
-  { id: "inbox",    name: "受信箱",       icon: ICONS.inbox,    route: "/inbox/",          color: "#6366f1" },
-  { id: "history",  name: "履歴",         icon: ICONS.history,  route: "/inbox/",          color: "#64748b" },
-  { id: "plan",     name: "プラン",       icon: ICONS.card,     route: "/settings/",       color: "#ec4899" },
-  { id: "settings", name: "設定",         icon: ICONS.settings, route: "/settings/",       color: "#94a3b8" },
+  { id: "node",     name: "ノード",       icon: ICONS.network,  route: "/node/",      color: "#3b82f6", color1: "#3b82f6", color2: "#1d4ed8" },
+  { id: "myagent",  name: "マイAgent",    icon: ICONS.bot,      route: "/agents/",    color: "#a855f7", color1: "#a855f7", color2: "#6b21a8" },
+  { id: "tasks",    name: "タスク",       icon: ICONS.check,    route: "/home/#tasks", color: "#10b981", color1: "#10b981", color2: "#047857" },
+  { id: "store",    name: "ストア",       icon: ICONS.store,    route: "/store/",     color: "#f59e0b", color1: "#f59e0b", color2: "#d97706" },
+  { id: "inbox",    name: "受信箱",       icon: ICONS.inbox,    route: "/inbox/",     color: "#6366f1", color1: "#6366f1", color2: "#4338ca" },
+  { id: "history",  name: "履歴",         icon: ICONS.history,  route: "/inbox/",     color: "#64748b", color1: "#64748b", color2: "#334155" },
+  { id: "plan",     name: "プラン",       icon: ICONS.card,     route: "/settings/",  color: "#ec4899", color1: "#ec4899", color2: "#be185d" },
+  { id: "settings", name: "設定",         icon: ICONS.settings, route: "/settings/",  color: "#94a3b8", color1: "#94a3b8", color2: "#475569" },
 ];
 
 export const DEFAULT_LAYOUT = APPS_REGISTRY.map((app, i) => ({
