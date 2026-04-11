@@ -38,6 +38,19 @@ export default function HomePage() {
         setData(json || { isLoggedIn: false });
 
         if (json?.isLoggedIn) {
+          // Consume invite code from sessionStorage (set by /join page)
+          try {
+            const inviteCode = typeof window !== "undefined" ? sessionStorage.getItem("lattice_invite_code") : null;
+            if (inviteCode) {
+              await nativeFetch("/api/user/apply-invite", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code: inviteCode }),
+              });
+              sessionStorage.removeItem("lattice_invite_code");
+            }
+          } catch {}
+
           try {
             const stateRes = await nativeFetch("/api/onboarding/state");
             if (stateRes.ok) {

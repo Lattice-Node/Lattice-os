@@ -161,7 +161,8 @@
       "Bash(git commit -m 'feat\\(ui\\): streak card + achievement toast on home screen:*)",
       "Bash(git commit -m 'feat\\(invite\\): invite system — /api/invite, /invite page, /join flow, X share:*)",
       "Bash(git commit -m 'feat\\(achievements\\): trigger points for first_agent, first_execution, invite reward:*)",
-      "Bash(git commit -m 'feat\\(onboarding\\): 3-screen swipeable flow with framer-motion + complete API:*)"
+      "Bash(git commit -m 'feat\\(onboarding\\): 3-screen swipeable flow with framer-motion + complete API:*)",
+      "Bash(git commit -m 'feat\\(invite\\): apply-invite endpoint + sessionStorage consumption on home load:*)"
     ]
   }
 }
