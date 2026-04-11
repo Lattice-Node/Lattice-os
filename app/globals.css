@@ -193,6 +193,19 @@ html, body {
 .page-indicator .dot { width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.25);transition:all .3s ease; }
 .page-indicator .dot.active { background:rgba(255,255,255,0.85);width:8px;height:8px; }
 
+/* ── Onboarding ── */
+.onboarding-root { position:fixed;inset:0;background:linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:env(safe-area-inset-top, 0px) 24px calc(env(safe-area-inset-bottom, 0px) + 24px);z-index:1000; }
+.onboarding-skip { position:absolute;top:calc(env(safe-area-inset-top, 0px) + 16px);right:20px;background:none;border:none;color:rgba(255,255,255,0.5);font-size:14px;font-family:"Space Mono",monospace;padding:8px 12px; }
+.onboarding-screen { flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;max-width:320px;touch-action:pan-x; }
+.onboarding-icon { font-size:80px;margin-bottom:36px;filter:drop-shadow(0 4px 20px rgba(255,255,255,0.08)); }
+.onboarding-title { font-family:"Space Grotesk",sans-serif;font-size:30px;font-weight:700;color:#fff;margin:0 0 14px;line-height:1.2;letter-spacing:-0.02em; }
+.onboarding-desc { font-family:"Space Grotesk",sans-serif;font-size:15px;color:rgba(255,255,255,0.65);line-height:1.7;white-space:pre-line;margin:0; }
+.onboarding-footer { width:100%;max-width:320px;display:flex;flex-direction:column;align-items:center;gap:24px; }
+.onboarding-dots { display:flex;gap:8px; }
+.onboarding-dots .dot { width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.25);transition:all .3s ease; }
+.onboarding-dots .dot.active { background:#fff;width:24px;border-radius:4px; }
+.onboarding-cta { width:100%;padding:16px;background:#fff;color:#0f172a;border:none;border-radius:12px;font-size:16px;font-weight:600;font-family:"Space Grotesk",sans-serif; }
+
 /* ── Input ── */
 .input-area { background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;width:100%;color:var(--text-primary);font-size:14px;font-family:inherit;resize:none;outline:none;min-height:100px;transition:border-color .2s; }
 .input-area:focus { border-color:var(--text-secondary); }
