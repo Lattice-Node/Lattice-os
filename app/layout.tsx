@@ -7,6 +7,7 @@ import NetworkStatus from "@/components/NetworkStatus";
 import MorningBriefingSetup from "@/components/MorningBriefingSetup";
 import RevenueCatBoot from "@/components/RevenueCatBoot";
 import BackgroundProvider from "@/components/BackgroundProvider";
+import PageTransition from "@/components/PageTransition";
 
 export const metadata: Metadata = {
   title: "Lattice - 自然言語で動くAIエージェント",
@@ -36,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body style={{ margin: 0, padding: 0 }}>
         <Providers>
-          <div className="app-shell">{children}</div>
+          <div className="app-shell"><PageTransition>{children}</PageTransition></div>
           <BottomNav />
           <PushNotificationSetup />
           <NetworkStatus />

@@ -5,6 +5,8 @@ import { hapticImpact } from "@/lib/native";
 import { nativeFetch } from "@/lib/native-fetch";
 import { isPaymentUiVisible } from "@/lib/monetization";
 import { getPlanLimits } from "@/lib/plan-limits";
+import { motion } from "framer-motion";
+import CountUp from "@/components/CountUp";
 
 interface Task { id: string; label: string; credits: number; type: string; category: string; completed: boolean; claimable: boolean; count?: number; unclaimed?: number; }
 interface Props { name: string; avatarUrl: string | null; credits: number; plan: string; agentCount: number; isLoggedIn: boolean; nextExecution?: { agentName: string; scheduledAt: string } | null; }
@@ -220,12 +222,12 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2 }}>
                 <span style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "'Space Mono', monospace", letterSpacing: "0.04em" }}>エージェント</span>
                 <span style={{ fontSize: 16, fontWeight: 500, color: "var(--text-display)", fontFamily: "'Space Mono', monospace" }}>
-                  {agentCount}{isUnlimitedAgents ? " / ∞" : ` / ${agentCap}`}
+                  <CountUp to={agentCount} duration={600} />{isUnlimitedAgents ? " / ∞" : ` / ${agentCap}`}
                 </span>
               </div>
               {!isUnlimitedAgents && (
                 <div style={{ width: "100%", height: 6, background: "var(--border)", borderRadius: 3, overflow: "hidden", marginBottom: 12 }}>
-                  <div style={{ width: `${Math.min(100, (agentCount / Math.max(1, agentCap)) * 100)}%`, height: "100%", background: planColor, borderRadius: 3, transition: "width 0.3s ease" }} />
+                  <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, (agentCount / Math.max(1, agentCap)) * 100)}%` }} transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1], delay: 0.2 }} style={{ height: "100%", background: planColor, borderRadius: 3 }} />
                 </div>
               )}
               {isUnlimitedAgents && <div style={{ height: 12 }} />}
@@ -233,12 +235,12 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2 }}>
                 <span style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "'Space Mono', monospace", letterSpacing: "0.04em" }}>今月の実行</span>
                 <span style={{ fontSize: 16, fontWeight: 500, color: "var(--text-display)", fontFamily: "'Space Mono', monospace" }}>
-                  {isUnlimitedRuns ? `${runsUsed} / 無制限` : `${runsUsed} / ${runsCap}`}
+                  {isUnlimitedRuns ? <><CountUp to={runsUsed} duration={600} /> / 無制限</> : <><CountUp to={runsUsed} duration={600} /> / {runsCap}</>}
                 </span>
               </div>
               {!isUnlimitedRuns && (
                 <div style={{ width: "100%", height: 6, background: "var(--border)", borderRadius: 3, overflow: "hidden", marginBottom: 6 }}>
-                  <div style={{ width: `${Math.min(100, (runsUsed / Math.max(1, runsCap)) * 100)}%`, height: "100%", background: planColor, borderRadius: 3, transition: "width 0.3s ease" }} />
+                  <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, (runsUsed / Math.max(1, runsCap)) * 100)}%` }} transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1], delay: 0.3 }} style={{ height: "100%", background: planColor, borderRadius: 3 }} />
                 </div>
               )}
               {!isUnlimitedRuns && resetDate && (

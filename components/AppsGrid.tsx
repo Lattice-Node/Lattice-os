@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { nativeFetch } from "@/lib/native-fetch";
-import { hapticImpact } from "@/lib/native";
+import { useHaptics } from "@/hooks/useHaptics";
+import { motion } from "framer-motion";
 import {
   DndContext,
   closestCenter,
@@ -132,6 +133,8 @@ export default function AppsGrid() {
     return () => scroller.removeEventListener("scroll", onScroll);
   }, [apps.length]);
 
+  const { trigger: haptic } = useHaptics();
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } })
@@ -174,7 +177,7 @@ export default function AppsGrid() {
     const newIndex = apps.findIndex((a) => a.id === over.id);
     const newApps = arrayMove(apps, oldIndex, newIndex);
     setApps(newApps);
-    hapticImpact("light");
+    haptic("light");
     saveLayout(
       newApps,
       available.map((a) => a.id)
@@ -184,7 +187,7 @@ export default function AppsGrid() {
   const handleDelete = (id: string) => {
     const app = apps.find((a) => a.id === id);
     if (!app) return;
-    hapticImpact("medium");
+    haptic("medium");
     const newApps = apps.filter((a) => a.id !== id);
     const newAvailable = [...available, app];
     setApps(newApps);
@@ -198,7 +201,7 @@ export default function AppsGrid() {
   const handleAdd = (id: string) => {
     const app = available.find((a) => a.id === id);
     if (!app) return;
-    hapticImpact("light");
+    haptic("light");
     const newApps = [...apps, { ...app, position: apps.length }];
     const newAvailable = available.filter((a) => a.id !== id);
     setApps(newApps);
@@ -212,14 +215,14 @@ export default function AppsGrid() {
 
   const handleTap = (route: string) => {
     if (editMode) return;
-    hapticImpact("light");
+    haptic("light");
     router.push(route);
   };
 
   const handleLongPressStart = () => {
     longPressTimer.current = setTimeout(() => {
       setEditMode(true);
-      hapticImpact("medium");
+      haptic("medium");
     }, 500);
   };
 
@@ -250,17 +253,33 @@ export default function AppsGrid() {
             {pages.map((pageApps, pageIdx) => (
               <div key={pageIdx} className="apps-page">
                 <SortableContext items={pageApps.map((a) => a.id)} strategy={rectSortingStrategy}>
-                  <div className="apps-grid" style={{ padding: 0 }}>
+                  <motion.div
+                    className="apps-grid"
+                    style={{ padding: 0 }}
+                    initial="hidden"
+                    animate="show"
+                    variants={{
+                      hidden: { opacity: 0 },
+                      show: { opacity: 1, transition: { staggerChildren: 0.03, delayChildren: 0.05 } },
+                    }}
+                  >
                     {pageApps.map((app) => (
-                      <SortableApp
+                      <motion.div
                         key={app.id}
-                        app={app}
-                        editMode={editMode}
-                        onDelete={handleDelete}
-                        onTap={handleTap}
-                      />
+                        variants={{
+                          hidden: { opacity: 0, y: 16, scale: 0.85 },
+                          show: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 300, damping: 22 } },
+                        }}
+                      >
+                        <SortableApp
+                          app={app}
+                          editMode={editMode}
+                          onDelete={handleDelete}
+                          onTap={handleTap}
+                        />
+                      </motion.div>
                     ))}
-                  </div>
+                  </motion.div>
                 </SortableContext>
               </div>
             ))}
@@ -317,7 +336,10 @@ export default function AppsGrid() {
 
       {/* Add modal */}
       {showAddModal && (
-        <div
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           style={{
             position: "fixed",
             inset: 0,
@@ -329,8 +351,12 @@ export default function AppsGrid() {
           }}
           onClick={() => setShowAddModal(false)}
         >
-          <div
-            onClick={(e) => e.stopPropagation()}
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
             style={{
               width: "100%",
               maxWidth: 420,
@@ -383,8 +409,8 @@ export default function AppsGrid() {
                 ))}
               </div>
             )}
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
     </div>
   );
