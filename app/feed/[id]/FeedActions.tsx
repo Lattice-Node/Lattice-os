@@ -50,6 +50,33 @@ export function ShareButton({ id, title }: { id: string; title: string }) {
   );
 }
 
+export function XPostButton({ id, title, previewText }: { id: string; title: string; previewText: string }) {
+  const handleXPost = async () => {
+    const url = `https://www.lattice-protocol.com/feed/${id}`;
+    const trimmed = previewText.length > 80 ? previewText.slice(0, 80) + "..." : previewText;
+    const postText = `${title}\n\n${trimmed}\n\n${url}\n\nLattice で生成 @Lattice_Node`;
+    const xIntentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(postText)}`;
+    try {
+      const isNative = !!(window as any).Capacitor?.isNativePlatform?.();
+      if (isNative) {
+        const { Browser } = await import("@capacitor/browser");
+        await Browser.open({ url: xIntentUrl });
+      } else {
+        window.open(xIntentUrl, "_blank");
+      }
+    } catch {
+      window.open(xIntentUrl, "_blank");
+    }
+  };
+
+  return (
+    <button onClick={handleXPost} style={{ display: "flex", alignItems: "center", gap: 8, background: "#000", border: "1px solid var(--border)", color: "#fff", fontSize: 13, fontWeight: 600, padding: "8px 16px", borderRadius: 10, cursor: "pointer", fontFamily: "inherit" }}>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+      Xへ投稿
+    </button>
+  );
+}
+
 export function ReportButton({ feedItemId }: { feedItemId: string }) {
   const [showReport, setShowReport] = useState(false);
   const [reason, setReason] = useState("");

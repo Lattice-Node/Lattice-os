@@ -88,6 +88,7 @@ export default async function FeedDetailPage({ params }: { params: Promise<{ id:
         {/* Markdown content — rendered client-side */}
         <FeedDetailContent
           resultText={item.resultText}
+          previewText={item.previewText}
           feedItemId={item.id}
           title={displayTitle}
           likeCount={item.likeCount}

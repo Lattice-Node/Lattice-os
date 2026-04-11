@@ -5,10 +5,11 @@ import remarkGfm from "remark-gfm";
 import rehypeSanitize from "rehype-sanitize";
 import Link from "next/link";
 import { stripLeadingH1 } from "@/lib/feed/strip-leading-h1";
-import { LikeButton, ShareButton, ReportButton } from "./FeedActions";
+import { LikeButton, ShareButton, XPostButton, ReportButton } from "./FeedActions";
 
 type Props = {
   resultText: string;
+  previewText: string;
   feedItemId: string;
   title: string;
   likeCount: number;
@@ -16,7 +17,7 @@ type Props = {
   agent: { id: string; name: string; description: string; isPublic: boolean };
 };
 
-export function FeedDetailContent({ resultText, feedItemId, title, likeCount, viewCount, agent }: Props) {
+export function FeedDetailContent({ resultText, previewText, feedItemId, title, likeCount, viewCount, agent }: Props) {
   return (
     <>
       {/* Markdown body */}
@@ -39,8 +40,9 @@ export function FeedDetailContent({ resultText, feedItemId, title, likeCount, vi
       </div>
 
       {/* Action buttons */}
-      <div style={{ display: "flex", gap: 10, marginBottom: 24 }}>
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 24 }}>
         <ShareButton id={feedItemId} title={title} />
+        <XPostButton id={feedItemId} title={title} previewText={previewText} />
         <ReportButton feedItemId={feedItemId} />
       </div>
 
