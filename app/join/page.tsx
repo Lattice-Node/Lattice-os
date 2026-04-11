@@ -19,7 +19,7 @@ function JoinContent() {
   }, [code, router]);
 
   return (
-    <div style={{ minHeight: "100vh", background: "transparent", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+    <div style={{ minHeight: "100vh", background: "var(--bg)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
       <div style={{ textAlign: "center" }}>
         <p style={{ fontSize: 32, marginBottom: 8 }}>🎁</p>
         <p style={{ fontSize: 16, color: "var(--text-display)", fontWeight: 600, margin: "0 0 4px" }}>Lattice に招待されました</p>

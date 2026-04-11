@@ -157,7 +157,7 @@ function LoginContent() {
         alignItems: "center",
         justifyContent: "center",
         padding: "env(safe-area-inset-top, 0px) 24px env(safe-area-inset-bottom, 0px)",
-        background: "transparent",
+        background: "var(--bg)",
         transition: "background .25s",
         overflow: "hidden",
         overscrollBehavior: "none",

@@ -46,7 +46,7 @@ export default function InvitePage() {
   }
 
   return (
-    <main style={{ minHeight: "100%", paddingBottom: 20, background: "transparent", color: "var(--text-primary)" }}>
+    <main style={{ minHeight: "100%", paddingBottom: 20, background: "var(--bg)", color: "var(--text-primary)" }}>
       <div style={{ maxWidth: 420, margin: "0 auto", padding: "20px 20px 0" }}>
         <p style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, color: "var(--text-secondary)", letterSpacing: "0.1em", textTransform: "uppercase", margin: "0 0 8px" }}>INVITE</p>
         <h1 style={{ fontSize: 28, fontWeight: 700, color: "var(--text-display)", margin: "0 0 20px", letterSpacing: "-0.02em" }}>友達を招待</h1>

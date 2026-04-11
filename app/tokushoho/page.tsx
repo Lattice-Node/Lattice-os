@@ -6,7 +6,7 @@ export default function TokushohoPage() {
   const router = useRouter();
 
   return (
-    <main style={{ minHeight: "100vh", background: "transparent", color: "var(--text-primary)", paddingBottom: 80 }}>
+    <main style={{ minHeight: "100vh", background: "var(--bg)", color: "var(--text-primary)", paddingBottom: 80 }}>
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "calc(24px + env(safe-area-inset-top, 0px)) 20px 24px" }}>
         <button onClick={() => router.back()} style={{ background: "none", border: "none", color: "var(--text-secondary)", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", padding: "8px 0", marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 11L5 7L9 3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 export default function FeedbackPage() {
   const router = useRouter();
   return (
-    <main style={{ minHeight: "100%", paddingBottom: 20, background: "transparent", color: "var(--text-primary)" }}>
+    <main style={{ minHeight: "100%", paddingBottom: 20, background: "var(--bg)", color: "var(--text-primary)" }}>
       <div style={{ maxWidth: 420, margin: "0 auto", padding: "20px 20px 0" }}>
         <button onClick={() => router.back()} style={{ background: "none", border: "none", color: "var(--text-secondary)", fontSize: 14, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", padding: "8px 0", marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 11L5 7L9 3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
