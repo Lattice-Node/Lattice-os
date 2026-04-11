@@ -41,7 +41,7 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
   const [copied, setCopied] = useState(false);
   const [refApplied, setRefApplied] = useState(false);
   const [tab, setTab] = useState<"daily" | "start" | "feature">("daily");
-  const [usage, setUsage] = useState<{ monthlyRunsUsed: number; monthlyRunsCap: number } | null>(null);
+  const [usage, setUsage] = useState<{ monthlyRunsUsed: number; monthlyRunsCap: number; cancelled?: boolean; planExpiresAt?: string | null; nextResetAt?: string } | null>(null);
   // Tier 0: filter pricing menu entry when payment UI is disabled
   const [paymentVisible, setPaymentVisible] = useState(false);
   useEffect(() => { setPaymentVisible(isPaymentUiVisible()); }, []);
@@ -196,40 +196,55 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
         {(() => {
           const limits = getPlanLimits(plan);
           const planColor = plan === "pro" ? "#f59e0b" : plan === "starter" || plan === "personal" ? "#3b82f6" : "#64748b";
-          const planBg = plan === "pro" ? "rgba(245,158,11,0.08)" : plan === "starter" || plan === "personal" ? "rgba(59,130,246,0.08)" : "var(--surface)";
+          const planNameColor = plan === "pro" ? "#f59e0b" : plan === "starter" || plan === "personal" ? "#3b82f6" : "#fff";
+          const planBg = plan === "pro" ? "rgba(245,158,11,0.06)" : plan === "starter" || plan === "personal" ? "rgba(59,130,246,0.06)" : "var(--surface)";
           const agentCap = limits.agentCap;
           const isUnlimitedAgents = agentCap === -1;
           const runsUsed = usage?.monthlyRunsUsed ?? 0;
           const runsCap = usage?.monthlyRunsCap ?? limits.monthlyRunsCap;
           const isUnlimitedRuns = runsCap >= 99999;
           const planLabel = plan === "pro" ? "Pro" : plan === "starter" || plan === "personal" ? "Starter" : "Free";
+          const isCancelled = usage?.cancelled && usage.planExpiresAt;
+          const cancelDate = isCancelled ? (() => { const d = new Date(usage.planExpiresAt!); return `${d.getMonth() + 1}月${d.getDate()}日`; })() : null;
+          const resetDate = usage?.nextResetAt ? (() => { const d = new Date(usage.nextResetAt); return `${d.getMonth() + 1}月${d.getDate()}日にリセット`; })() : null;
           return (
-            <div style={{ background: planBg, border: `1px solid ${planColor}22`, borderRadius: 12, padding: 20, marginBottom: 20 }}>
-              <p style={{ fontSize: 26, fontWeight: 700, color: planColor, margin: "0 0 20px", letterSpacing: "-0.02em" }}>{planLabel}</p>
+            <div style={{ background: planBg, border: `1px solid ${planColor}18`, borderRadius: 12, padding: 16, marginBottom: 20 }}>
+              {/* Header row: plan name + optional cancel badge */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <p style={{ fontSize: 28, fontWeight: 700, color: planNameColor, margin: 0, letterSpacing: "-0.02em", fontFamily: "'Space Grotesk', sans-serif" }}>{planLabel}</p>
+                {isCancelled && (
+                  <span style={{ fontSize: 10, color: "var(--warning)", background: "rgba(212,168,67,0.12)", padding: "3px 8px", borderRadius: 6, fontFamily: "'Space Mono', monospace" }}>
+                    {cancelDate}まで
+                  </span>
+                )}
+              </div>
               {/* Agents */}
-              <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: "0 0 2px" }}>エージェント</p>
-              <p style={{ fontSize: 18, fontWeight: 500, color: "var(--text-display)", margin: "0 0 8px" }}>
-                {agentCount}{isUnlimitedAgents ? " / ∞" : ` / ${agentCap}`}
-              </p>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2 }}>
+                <span style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "'Space Mono', monospace", letterSpacing: "0.04em" }}>エージェント</span>
+                <span style={{ fontSize: 16, fontWeight: 500, color: "var(--text-display)", fontFamily: "'Space Mono', monospace" }}>
+                  {agentCount}{isUnlimitedAgents ? " / ∞" : ` / ${agentCap}`}
+                </span>
+              </div>
               {!isUnlimitedAgents && (
-                <div style={{ width: "100%", height: 5, background: "var(--border)", borderRadius: 3, overflow: "hidden", marginBottom: 16 }}>
-                  <div style={{ width: `${Math.min(100, (agentCount / Math.max(1, agentCap)) * 100)}%`, height: "100%", background: planColor, borderRadius: 3, transition: "width 0.3s" }} />
+                <div style={{ width: "100%", height: 6, background: "var(--border)", borderRadius: 3, overflow: "hidden", marginBottom: 12 }}>
+                  <div style={{ width: `${Math.min(100, (agentCount / Math.max(1, agentCap)) * 100)}%`, height: "100%", background: planColor, borderRadius: 3, transition: "width 0.3s ease" }} />
                 </div>
               )}
-              {isUnlimitedAgents && <div style={{ height: 16 }} />}
+              {isUnlimitedAgents && <div style={{ height: 12 }} />}
               {/* Monthly runs */}
-              <p style={{ fontSize: 11, color: "var(--text-secondary)", margin: "0 0 2px" }}>今月の実行</p>
-              {isUnlimitedRuns ? (
-                <p style={{ fontSize: 18, fontWeight: 500, color: "var(--text-display)", margin: "0 0 8px" }}>{runsUsed} / 無制限</p>
-              ) : (
-                <>
-                  <p style={{ fontSize: 18, fontWeight: 500, color: "var(--text-display)", margin: "0 0 8px" }}>
-                    {runsUsed} / {runsCap}
-                  </p>
-                  <div style={{ width: "100%", height: 5, background: "var(--border)", borderRadius: 3, overflow: "hidden" }}>
-                    <div style={{ width: `${Math.min(100, (runsUsed / Math.max(1, runsCap)) * 100)}%`, height: "100%", background: planColor, borderRadius: 3, transition: "width 0.3s" }} />
-                  </div>
-                </>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2 }}>
+                <span style={{ fontSize: 11, color: "var(--text-secondary)", fontFamily: "'Space Mono', monospace", letterSpacing: "0.04em" }}>今月の実行</span>
+                <span style={{ fontSize: 16, fontWeight: 500, color: "var(--text-display)", fontFamily: "'Space Mono', monospace" }}>
+                  {isUnlimitedRuns ? `${runsUsed} / 無制限` : `${runsUsed} / ${runsCap}`}
+                </span>
+              </div>
+              {!isUnlimitedRuns && (
+                <div style={{ width: "100%", height: 6, background: "var(--border)", borderRadius: 3, overflow: "hidden", marginBottom: 6 }}>
+                  <div style={{ width: `${Math.min(100, (runsUsed / Math.max(1, runsCap)) * 100)}%`, height: "100%", background: planColor, borderRadius: 3, transition: "width 0.3s ease" }} />
+                </div>
+              )}
+              {!isUnlimitedRuns && resetDate && (
+                <p style={{ fontSize: 10, color: "var(--text-secondary)", margin: "4px 0 0", fontFamily: "'Space Mono', monospace", opacity: 0.7 }}>{resetDate}</p>
               )}
             </div>
           );
