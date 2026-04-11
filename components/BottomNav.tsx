@@ -7,7 +7,10 @@ import { nativeFetch } from "@/lib/native-fetch";
 
 const tabs = [
   { href: "/home/", label: "ホーム", icon: (a: boolean) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={a ? "var(--nav-active)" : "var(--nav-inactive)"} strokeWidth="1.6"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V19a1 1 0 001 1h10a1 1 0 001-1V9.5"/></svg> },
-  { href: "/node/", label: "ノード", icon: (a: boolean) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={a ? "var(--nav-active)" : "var(--nav-inactive)"} strokeWidth="1.5"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5"/><line x1="12" y1="5" x2="12" y2="7.5"/><line x1="12" y1="16.5" x2="12" y2="19"/><line x1="5" y1="12" x2="7.5" y2="12"/><line x1="16.5" y1="12" x2="19" y2="12"/></svg> },
+  { href: "/apps/", label: "アプリ", icon: (a: boolean) => {
+    const c = a ? "var(--nav-active)" : "var(--nav-inactive)";
+    return <svg width="24" height="24" viewBox="0 0 24 24" fill="none">{[0,1,2,3].map(r=>[0,1,2,3].map(col=><circle key={`${r}-${col}`} cx={4.5+col*5} cy={4.5+r*5} r={1.8} fill={c}/>))}</svg>;
+  }},
   { href: "/agents/new/", label: "作成", isCenter: true, icon: (_a: boolean) => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M12 5v14M5 12h14"/></svg> },
   { href: "/inbox/", label: "受信箱", icon: (a: boolean) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={a ? "var(--nav-active)" : "var(--nav-inactive)"} strokeWidth="1.5"><path d="M4 6h16M4 12h16M4 18h10"/></svg> },
   { href: "/settings/", label: "設定", icon: (a: boolean) => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={a ? "var(--nav-active)" : "var(--nav-inactive)"} strokeWidth="1.5"><circle cx="12" cy="8.5" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg> },
