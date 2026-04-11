@@ -170,6 +170,15 @@ html, body {
 .app-delete-btn { position:absolute;top:-6px;left:-6px;width:22px;height:22px;border-radius:50%;background:#fff;color:#333;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.3);line-height:1;padding:0; }
 .app-delete-btn:active { transform:scale(0.9); }
 
+/* Multi-page swipe */
+.apps-pages-container { position:relative;width:100%; }
+.apps-pages-scroller { display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;scrollbar-width:none; }
+.apps-pages-scroller::-webkit-scrollbar { display:none; }
+.apps-page { flex:0 0 100%;scroll-snap-align:start;padding:0 20px;box-sizing:border-box; }
+.page-indicator { display:flex;justify-content:center;gap:8px;padding:14px 0 4px;pointer-events:none; }
+.page-indicator .dot { width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.25);transition:all .3s ease; }
+.page-indicator .dot.active { background:rgba(255,255,255,0.85);width:8px;height:8px; }
+
 /* ── Input ── */
 .input-area { background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;width:100%;color:var(--text-primary);font-size:14px;font-family:inherit;resize:none;outline:none;min-height:100px;transition:border-color .2s; }
 .input-area:focus { border-color:var(--text-secondary); }

@@ -109,8 +109,28 @@ export default function AppsGrid() {
   const [editMode, setEditMode] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scrollerRef = useRef<HTMLDivElement>(null);
+
+  const APPS_PER_PAGE = 16;
+  const pages: AppItem[][] = [];
+  for (let i = 0; i < apps.length; i += APPS_PER_PAGE) {
+    pages.push(apps.slice(i, i + APPS_PER_PAGE));
+  }
+  if (pages.length === 0) pages.push([]);
+
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+    const onScroll = () => {
+      const page = Math.round(scroller.scrollLeft / scroller.clientWidth);
+      setCurrentPage(page);
+    };
+    scroller.addEventListener("scroll", onScroll, { passive: true });
+    return () => scroller.removeEventListener("scroll", onScroll);
+  }, [apps.length]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -225,19 +245,34 @@ export default function AppsGrid() {
       onPointerCancel={handleLongPressEnd}
     >
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={apps.map((a) => a.id)} strategy={rectSortingStrategy}>
-          <div className="apps-grid">
-            {apps.map((app) => (
-              <SortableApp
-                key={app.id}
-                app={app}
-                editMode={editMode}
-                onDelete={handleDelete}
-                onTap={handleTap}
-              />
+        <div className="apps-pages-container">
+          <div className="apps-pages-scroller" ref={scrollerRef}>
+            {pages.map((pageApps, pageIdx) => (
+              <div key={pageIdx} className="apps-page">
+                <SortableContext items={pageApps.map((a) => a.id)} strategy={rectSortingStrategy}>
+                  <div className="apps-grid" style={{ padding: 0 }}>
+                    {pageApps.map((app) => (
+                      <SortableApp
+                        key={app.id}
+                        app={app}
+                        editMode={editMode}
+                        onDelete={handleDelete}
+                        onTap={handleTap}
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+              </div>
             ))}
           </div>
-        </SortableContext>
+          {pages.length > 1 && (
+            <div className="page-indicator">
+              {pages.map((_, i) => (
+                <span key={i} className={`dot ${currentPage === i ? "active" : ""}`} />
+              ))}
+            </div>
+          )}
+        </div>
       </DndContext>
 
       {/* Edit mode controls */}
