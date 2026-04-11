@@ -259,9 +259,9 @@ export default function AgentDetailPage() {
         </div>
         <button onClick={handleTogglePublic} style={{
           padding: "6px 14px", borderRadius: 8,
-          border: agent.isPublic ? "1px solid rgba(108,113,232,0.3)" : "1px solid var(--border)",
-          background: agent.isPublic ? "transparent" : "var(--btn-bg)",
-          color: agent.isPublic ? "var(--btn-bg)" : "#fff",
+          border: agent.isPublic ? "1px solid rgba(108,113,232,0.3)" : "none",
+          background: agent.isPublic ? "transparent" : "var(--accent)",
+          color: agent.isPublic ? "var(--text-secondary)" : "#fff",
           fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", flexShrink: 0, marginLeft: 12,
         }}>
           {agent.isPublic ? "\u975E\u516C\u958B\u306B\u3059\u308B" : "\u516C\u958B\u3059\u308B"}
@@ -416,14 +416,15 @@ export default function AgentDetailPage() {
         onClick={handleDelete}
         style={{
           width: "100%",
-          padding: "10px",
-          borderRadius: 8,
-          fontSize: 13,
-          border: "1px solid #2a1a1a",
+          padding: "12px",
+          borderRadius: 10,
+          fontSize: 14,
+          fontWeight: 600,
+          border: "1px solid rgba(239,68,68,0.4)",
           background: "transparent",
-          color: "#664444",
+          color: "#ef4444",
           cursor: "pointer",
-          marginTop: 16,
+          marginTop: 24,
           fontFamily: "inherit",
         }}
       >
