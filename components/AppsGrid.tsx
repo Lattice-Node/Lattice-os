@@ -358,13 +358,18 @@ export default function AppsGrid() {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
             style={{
-              width: "100%",
+              position: "fixed",
+              left: 0,
+              right: 0,
+              bottom: "calc(49px + env(safe-area-inset-bottom, 0px))",
               maxWidth: 420,
+              margin: "0 auto",
               background: "var(--surface)",
-              borderRadius: "16px 16px 0 0",
-              padding: "20px 20px calc(20px + env(safe-area-inset-bottom, 0px))",
+              borderRadius: "20px 20px 0 0",
+              padding: "20px 20px 24px",
               maxHeight: "60vh",
               overflowY: "auto",
+              boxShadow: "0 -8px 24px rgba(0,0,0,0.4)",
             }}
           >
             <p
