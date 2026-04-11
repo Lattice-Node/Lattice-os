@@ -166,7 +166,8 @@
       "Bash(git commit -m 'feat\\(routes\\): placeholder pages for /history and /feedback + apps registry update:*)",
       "Bash(git commit -m 'refactor: remove login streak feature \\(tone mismatch\\):*)",
       "Bash(git commit -m 'fix: apps page visual bugs \\(× clip, modal hide behind tab bar\\):*)",
-      "Bash(git commit -m 'feat\\(legal\\): add Tokushoho page and legal links:*)"
+      "Bash(git commit -m 'feat\\(legal\\): add Tokushoho page and legal links:*)",
+      "Bash(git commit -m 'fix\\(bg\\): apply theme to entire viewport, make pages transparent:*)"
     ]
   }
 }

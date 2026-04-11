@@ -344,7 +344,7 @@ const handleLineGenerate = async () => {
   // Credit purchase view
   if (showCredit && paymentVisible) {
     return (
-      <main style={{ minHeight: "100vh", backgroundColor: "var(--bg)", color: "var(--text-primary)", paddingBottom: 100 }}>
+      <main style={{ minHeight: "100vh", backgroundColor: "transparent", color: "var(--text-primary)", paddingBottom: 100 }}>
         <div style={{ maxWidth: 420, margin: "0 auto", padding: "48px 20px 24px" }}>
           <button onClick={() => setShowCredit(false)} style={{ background: "none", border: "none", color: "var(--text-secondary)", fontSize: 15, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", padding: "8px 0", marginBottom: 20, display: "flex", alignItems: "center", gap: 6 }}>
             戻る
@@ -379,7 +379,7 @@ const handleLineGenerate = async () => {
 
   if (showPlans && paymentVisible) {
     return (
-      <main style={{ minHeight: "100vh", backgroundColor: "var(--bg)", color: "var(--text-primary)", paddingBottom: 100 }}>
+      <main style={{ minHeight: "100vh", backgroundColor: "transparent", color: "var(--text-primary)", paddingBottom: 100 }}>
         <div style={{ maxWidth: 420, margin: "0 auto", padding: "48px 20px 24px" }}>
           <button onClick={() => setShowPlans(false)} style={{ background: "none", border: "none", color: "var(--text-secondary)", fontSize: 15, fontWeight: 500, cursor: "pointer", fontFamily: "inherit", padding: "8px 0", marginBottom: 20, display: "flex", alignItems: "center", gap: 6 }}>
             戻る
@@ -525,7 +525,7 @@ const handleLineGenerate = async () => {
 
   // Main settings view
   return (
-    <main style={{ minHeight: "100vh", backgroundColor: "var(--bg)", color: "var(--text-primary)", paddingBottom: 80 }}>
+    <main style={{ minHeight: "100vh", backgroundColor: "transparent", color: "var(--text-primary)", paddingBottom: 80 }}>
       <div style={{ maxWidth: 420, margin: "0 auto", padding: "48px 20px 24px" }}>
         <p style={sectionLabel}>設定</p>
 

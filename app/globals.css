@@ -101,13 +101,14 @@ html, body {
   transition: background .25s, color .25s;
   min-height: 100vh; min-height: 100dvh;
   padding-top: env(safe-area-inset-top, 0px);
+  background-attachment: fixed;
 }
 
 .app-shell { padding-bottom: calc(49px + env(safe-area-inset-bottom, 0px)); }
 
 /* ── Bottom Nav ── */
 /* Bottom tab bar — matches iOS UITabBar: 49pt interactive content + safe-area background */
-.btm-nav { position:fixed;bottom:0;left:0;right:0;z-index:100;display:flex;align-items:stretch;background:var(--nav-bg);border-top:1px solid var(--nav-border);padding-bottom:env(safe-area-inset-bottom, 0px);transition:background .25s,border-color .25s; }
+.btm-nav { position:fixed;bottom:0;left:0;right:0;z-index:100;display:flex;align-items:stretch;background:rgba(10,10,15,0.85);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.06);padding-bottom:env(safe-area-inset-bottom, 0px);transition:background .25s; }
 .btm-nav-label { font-size:10px;font-family:"Space Mono",monospace;letter-spacing:.02em; }
 .btm-nav button:active { opacity:.6; }
 
@@ -229,7 +230,7 @@ html, body {
 .animate-in:nth-child(4){animation-delay:150ms} .animate-in:nth-child(5){animation-delay:200ms} .animate-in:nth-child(6){animation-delay:250ms}
 
 /* ── Create Page ── */
-.create-page { min-height:100vh;background:var(--bg);color:var(--text-primary);padding-top:56px; }
+.create-page { min-height:100vh;background:transparent;color:var(--text-primary);padding-top:56px; }
 .create-container { max-width:480px;margin:0 auto;padding:32px 24px 120px; }
 .create-back { font-size:12px;color:var(--text-secondary);text-decoration:none;display:inline-flex;align-items:center;gap:4px;margin-bottom:16px; }
 .create-header { margin-bottom:24px; }

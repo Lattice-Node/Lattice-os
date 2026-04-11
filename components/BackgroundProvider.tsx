@@ -23,7 +23,9 @@ export default function BackgroundProvider() {
         if (!bg) bg = "#0a0a0a";
 
         document.documentElement.style.background = bg;
+        document.documentElement.style.backgroundAttachment = "fixed";
         document.body.style.background = bg;
+        document.body.style.backgroundAttachment = "fixed";
         setApplied(true);
       })
       .catch(() => {});

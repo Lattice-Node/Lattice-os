@@ -8,7 +8,7 @@ export default function AppsPage() {
       style={{
         minHeight: "100%",
         paddingBottom: 20,
-        background: "var(--bg)",
+        background: "transparent",
         color: "var(--text-primary)",
       }}
     >

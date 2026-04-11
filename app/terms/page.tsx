@@ -9,7 +9,7 @@ export default function TermsPage() {
     <main
       style={{
         minHeight: "100vh",
-        background: "var(--bg)",
+        background: "transparent",
         color: "var(--text-primary)",
         paddingBottom: 80,
       }}
