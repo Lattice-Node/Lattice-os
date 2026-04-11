@@ -79,6 +79,8 @@ export default function HomePage() {
         agentCount={typeof data?.agentCount === "number" ? data.agentCount : 0}
         isLoggedIn={!!data?.isLoggedIn}
         nextExecution={data?.nextExecution ?? null}
+        streak={data?.streak ?? null}
+        newAchievement={data?.newAchievement ?? null}
       />
     );
   } catch (e) {
