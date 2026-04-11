@@ -34,8 +34,10 @@ export const APPS_REGISTRY: AppDefinition[] = [
   { id: "tasks",    name: "タスク",       icon: ICONS.check,    route: "/home/#tasks", color: "#10b981", color1: "#10b981", color2: "#047857" },
   { id: "store",    name: "ストア",       icon: ICONS.store,    route: "/store/",     color: "#f59e0b", color1: "#f59e0b", color2: "#d97706" },
   { id: "inbox",    name: "受信箱",       icon: ICONS.inbox,    route: "/inbox/",     color: "#6366f1", color1: "#6366f1", color2: "#4338ca" },
-  { id: "history",  name: "履歴",         icon: ICONS.history,  route: "/inbox/",     color: "#64748b", color1: "#64748b", color2: "#334155" },
+  { id: "history",  name: "履歴",         icon: ICONS.history,  route: "/history/",   color: "#64748b", color1: "#64748b", color2: "#334155" },
   { id: "plan",     name: "プラン",       icon: ICONS.card,     route: "/settings/",  color: "#ec4899", color1: "#ec4899", color2: "#be185d" },
+  { id: "invite",   name: "招待",         icon: ICONS.userPlus, route: "/invite/",    color: "#06b6d4", color1: "#06b6d4", color2: "#0e7490" },
+  { id: "feedback", name: "フィードバック", icon: ICONS.message,  route: "/feedback/",  color: "#f97316", color1: "#f97316", color2: "#c2410c" },
   { id: "settings", name: "設定",         icon: ICONS.settings, route: "/settings/",  color: "#94a3b8", color1: "#94a3b8", color2: "#475569" },
 ];
 
