@@ -145,7 +145,8 @@
       "Bash(git commit -m 'fix\\(iap\\): revert to static imports for RevenueCat SDK \\(dynamic import was causing hang\\):*)",
       "Bash(git commit -m 'feat\\(ui\\): replace agent card with plan status card \\(progress bars + plan colors\\):*)",
       "Bash(git commit -m 'style\\(ui\\): refine plan status card \\(tighter padding, white free text, conditional badge\\):*)",
-      "Bash(git commit -m 'feat\\(db\\): add UserAppLayout model:*)"
+      "Bash(git commit -m 'feat\\(db\\): add UserAppLayout model:*)",
+      "Bash(git commit -m 'feat\\(apps\\): add app registry + /api/apps GET/PUT endpoints:*)"
     ]
   }
 }
