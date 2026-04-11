@@ -15,7 +15,8 @@ type MyAgent = {
 type MyPost = {
   id: string;
   agentName: string;
-  resultText: string;
+  title: string;
+  previewText: string;
   likeCount: number;
   viewCount: number;
   createdAt: string;
@@ -122,7 +123,7 @@ export default function MyFeedPage() {
                   </button>
                 </div>
                 <p style={{ fontSize: 13, color: "var(--text-primary)", lineHeight: 1.6, whiteSpace: "pre-wrap", wordBreak: "break-word", marginBottom: 8, display: "-webkit-box", WebkitLineClamp: 4, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                  {item.resultText}
+                  {item.previewText || item.agentName}
                 </p>
                 <div style={{ display: "flex", gap: 16, fontSize: 11, color: "var(--text-secondary)", fontFamily: "'Space Mono', monospace" }}>
                   <span style={{ display: "flex", alignItems: "center", gap: 4 }}>

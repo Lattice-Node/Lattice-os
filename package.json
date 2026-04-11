@@ -35,6 +35,8 @@
     "@prisma/client": "^5.22.0",
     "@revenuecat/purchases-capacitor": "^12.3.2",
     "@stripe/stripe-js": "^8.10.0",
+    "@tailwindcss/typography": "^0.5.19",
+    "date-fns": "^4.1.0",
     "firebase": "^12.11.0",
     "firebase-admin": "^13.7.0",
     "framer-motion": "^12.38.0",
@@ -46,6 +48,9 @@
     "prisma": "^5.22.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-markdown": "^10.1.0",
+    "rehype-sanitize": "^6.0.0",
+    "remark-gfm": "^4.0.1",
     "resend": "^6.9.4",
     "stripe": "^20.4.1",
     "xlsx": "^0.18.5"
