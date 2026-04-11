@@ -29,6 +29,13 @@ export default function FeedItemCard({ item, onLikeToggle }: { item: FeedItem; o
   const [reportReason, setReportReason] = useState("");
   const [reportSubmitting, setReportSubmitting] = useState(false);
   const [reported, setReported] = useState(false);
+  const [pressed, setPressed] = useState(false);
+
+  const handlePressStart = () => {
+    setPressed(true);
+    trigger("light");
+  };
+  const handlePressEnd = () => setPressed(false);
 
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -62,7 +69,14 @@ export default function FeedItemCard({ item, onLikeToggle }: { item: FeedItem; o
 
   return (
     <>
-      <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, padding: 16, transition: "border-color .15s", cursor: "pointer" }}>
+      <div
+        onMouseDown={handlePressStart}
+        onMouseUp={handlePressEnd}
+        onMouseLeave={handlePressEnd}
+        onTouchStart={handlePressStart}
+        onTouchEnd={handlePressEnd}
+        style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, padding: 16, transition: "transform .1s, border-color .15s", transform: pressed ? "scale(0.97)" : "scale(1)", cursor: "pointer" }}
+      >
         {/* Header: avatar + name + time */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
