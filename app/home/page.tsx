@@ -78,6 +78,7 @@ export default function HomePage() {
         plan={data?.plan ?? "free"}
         agentCount={typeof data?.agentCount === "number" ? data.agentCount : 0}
         isLoggedIn={!!data?.isLoggedIn}
+        nextExecution={data?.nextExecution ?? null}
       />
     );
   } catch (e) {

@@ -7,7 +7,7 @@ import { isPaymentUiVisible } from "@/lib/monetization";
 import { getPlanLimits } from "@/lib/plan-limits";
 
 interface Task { id: string; label: string; credits: number; type: string; category: string; completed: boolean; claimable: boolean; count?: number; unclaimed?: number; }
-interface Props { name: string; avatarUrl: string | null; credits: number; plan: string; agentCount: number; isLoggedIn: boolean; }
+interface Props { name: string; avatarUrl: string | null; credits: number; plan: string; agentCount: number; isLoggedIn: boolean; nextExecution?: { agentName: string; scheduledAt: string } | null; }
 
 const MENU = [
   { href: "/node/", label: "ノード", icon: () => <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--text-primary)" strokeWidth="1.2"><circle cx="10" cy="10" r="6"/><circle cx="10" cy="10" r="2"/><line x1="10" y1="4" x2="10" y2="6"/><line x1="10" y1="14" x2="10" y2="16"/><line x1="4" y1="10" x2="6" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/></svg> },
@@ -26,7 +26,7 @@ function Av({ url, name, size = 36 }: { url: string | null; name: string; size?:
   return <div style={{ width: size, height: size, borderRadius: "50%", background: "var(--btn-bg)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--btn-text)", fontSize: size * 0.4, fontWeight: 600 }}>{initial}</div>;
 }
 
-export default function HomeClient({ name, avatarUrl, credits: initCr, plan, agentCount, isLoggedIn }: Props) {
+export default function HomeClient({ name, avatarUrl, credits: initCr, plan, agentCount, isLoggedIn, nextExecution }: Props) {
   const [daily, setDaily] = useState<Task[]>([]);
   const [start, setStart] = useState<Task[]>([]);
   const [feature, setFeature] = useState<Task[]>([]);
@@ -41,6 +41,14 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
   const [copied, setCopied] = useState(false);
   const [refApplied, setRefApplied] = useState(false);
   const [tab, setTab] = useState<"daily" | "start" | "feature">("daily");
+  const [now, setNow] = useState(Date.now());
+
+  // Live countdown for next execution
+  useEffect(() => {
+    if (!nextExecution) return;
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, [nextExecution]);
   const [usage, setUsage] = useState<{ monthlyRunsUsed: number; monthlyRunsCap: number; cancelled?: boolean; planExpiresAt?: string | null; nextResetAt?: string } | null>(null);
   // Tier 0: filter pricing menu entry when payment UI is disabled
   const [paymentVisible, setPaymentVisible] = useState(false);
@@ -180,16 +188,6 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
           </div>
         )}
 
-        {/* メニューグリッド */}
-        <p style={{ ...S.label, margin: "0 0 8px" }}>メニュー</p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 20 }}>
-          {visibleMenu.map(m => (
-            <div key={m.href} onClick={() => nav(m.href)} style={{ textAlign: "center", cursor: "pointer" }}>
-              <div style={{ width: 44, height: 44, borderRadius: 10, background: "var(--surface)", border: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 4px", transition: "background .2s, border-color .2s" }}>{m.icon()}</div>
-              <span style={{ fontSize: 9, color: "var(--text-secondary)" }}>{m.label}</span>
-            </div>
-          ))}
-        </div>
 
         {isLoggedIn && (<>
         {/* Plan status card */}
@@ -250,6 +248,26 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
           );
         })()}
 
+        {/* Next execution countdown */}
+        {nextExecution && (
+          <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: 16, marginBottom: 20 }}>
+            <p style={{ ...S.label, margin: "0 0 8px" }}>次の実行</p>
+            <p style={{ fontSize: 15, fontWeight: 600, color: "var(--text-display)", margin: "0 0 6px" }}>{nextExecution.agentName}</p>
+            <p style={{ ...S.mono, fontSize: 22, fontWeight: 700, color: "var(--btn-bg)", margin: 0, letterSpacing: "0.02em" }}>
+              {(() => {
+                const diff = new Date(nextExecution.scheduledAt).getTime() - now;
+                if (diff <= 0) return "実行中...";
+                const h = Math.floor(diff / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+                if (h > 0) return `${h}時間 ${m}分 ${s}秒`;
+                if (m > 0) return `${m}分 ${s}秒`;
+                return `${s}秒`;
+              })()}
+            </p>
+          </div>
+        )}
+
         {/* タスク */}
         <div id="tasks-section">
           <p style={{ ...S.label, margin: "0 0 8px" }}>タスク</p>
@@ -296,25 +314,11 @@ export default function HomeClient({ name, avatarUrl, credits: initCr, plan, age
           </div>
         </div>
 
-        {/* 招待 section hidden in Phase 1 (will return as LP system in Phase 2) */}
-
-        {/* ロードマップ */}
-        <div style={{ marginTop: 24 }}>
-          <p style={{ ...S.label, margin: "0 0 8px" }}>今後の予定</p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            {[
-              { label: "フィードバック機能", status: "まもなく" },
-              { label: "日本特化テンプレート追加", status: "まもなく" },
-              { label: "SNS機能", status: "開発中" },
-              { label: "クレジット売買", status: "開発中" },
-              { label: "Lattice Protocol v0", status: "開発中" },
-              { label: "Lattice Token (LTC)", status: "将来" },
-            ].map(item => (
-              <div key={item.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderRadius: 8, background: "var(--surface)", border: "1px solid var(--border)" }}>
-                <span style={{ fontSize: 12, color: "var(--text-primary)" }}>{item.label}</span>
-                <span style={{ ...S.mono, fontSize: 9, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{item.status}</span>
-              </div>
-            ))}
+        {/* お知らせ */}
+        <div style={{ marginTop: 8 }}>
+          <p style={{ ...S.label, margin: "0 0 8px" }}>お知らせ</p>
+          <div style={{ padding: "14px 16px", borderRadius: 10, background: "var(--surface)", border: "1px solid var(--border)" }}>
+            <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: 0, textAlign: "center" }}>新しいお知らせはありません</p>
           </div>
         </div>
         </>)}

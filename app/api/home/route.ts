@@ -27,6 +27,13 @@ export async function GET(req: Request) {
 
     const agentCount = await prisma.userAgent.count({ where: { userId: user.id } });
 
+    // Next scheduled execution
+    const nextAgent = await prisma.userAgent.findFirst({
+      where: { userId: user.id, active: true, nextRunAt: { gt: new Date() } },
+      orderBy: { nextRunAt: "asc" },
+      select: { name: true, nextRunAt: true },
+    }).catch(() => null);
+
     return jsonWithCors(req, {
       isLoggedIn: true,
       userId: user.id,
@@ -35,6 +42,7 @@ export async function GET(req: Request) {
       credits: user.credits ?? 0,
       plan: user.role === "admin" ? "business" : (user.plan || "free"),
       agentCount,
+      nextExecution: nextAgent ? { agentName: nextAgent.name, scheduledAt: nextAgent.nextRunAt!.toISOString() } : null,
     });
   } catch (e) {
     console.error("[api/home] failed:", e);
