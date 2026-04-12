@@ -16,6 +16,7 @@ const toExclude = [
   { live: "middleware.ts", backup: ".capacitor-backup/middleware.ts" },
   { live: "app/admin", backup: ".capacitor-backup/app/admin" },
   { live: "app/sitemap.ts", backup: ".capacitor-backup/app/sitemap.ts" },
+  { live: "app/feed/[id]", backup: ".capacitor-backup/app/feed/__id__" },
 ];
 
 function moveAside() {
