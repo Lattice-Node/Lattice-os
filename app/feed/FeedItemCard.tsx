@@ -75,6 +75,7 @@ export default function FeedItemCard({ item, onLikeToggle }: { item: FeedItem; o
         onMouseLeave={handlePressEnd}
         onTouchStart={handlePressStart}
         onTouchEnd={handlePressEnd}
+        onTouchCancel={handlePressEnd}
         style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 14, padding: 16, transition: "transform .1s, border-color .15s", transform: pressed ? "scale(0.97)" : "scale(1)", cursor: "pointer" }}
       >
         {/* Header: avatar + name + time */}

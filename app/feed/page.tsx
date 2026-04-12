@@ -77,7 +77,7 @@ export default function FeedPage() {
           )}
 
           {items.map((item) => (
-            <Link key={item.id} href={`/feed/${item.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+            <Link key={item.id} href={`/feed/${item.id}`} prefetch={false} style={{ textDecoration: "none", color: "inherit" }}>
               <FeedItemCard
                 item={item}
                 onLikeToggle={(newState) => handleLikeToggle(item.id, newState)}

@@ -57,7 +57,7 @@ export function FeedDetailContent({ resultText, previewText, feedItemId, title, 
           <p style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.6, margin: "0 0 16px" }}>{agent.description}</p>
         )}
         {/* TODO: Link to template creation flow when available */}
-        <Link href={`/agents/${agent.id}`} style={{ display: "inline-block", padding: "10px 20px", background: "var(--btn-bg)", color: "var(--btn-text)", borderRadius: 10, fontSize: 13, fontWeight: 600, textDecoration: "none", fontFamily: "inherit" }}>
+        <Link href={`/agents/${agent.id}`} prefetch={false} style={{ display: "inline-block", padding: "10px 20px", background: "var(--btn-bg)", color: "var(--btn-text)", borderRadius: 10, fontSize: 13, fontWeight: 600, textDecoration: "none", fontFamily: "inherit" }}>
           このエージェントを見る
         </Link>
       </div>

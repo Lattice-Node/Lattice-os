@@ -58,7 +58,7 @@ export default async function FeedDetailPage({ params }: { params: Promise<{ id:
     <main style={{ minHeight: "100%", paddingBottom: 40, background: "var(--bg)", color: "var(--text-primary)" }}>
       <div style={{ maxWidth: 680, margin: "0 auto", padding: "0 20px" }}>
         {/* Back */}
-        <Link href="/feed/" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--text-secondary)", fontSize: 14, fontWeight: 500, textDecoration: "none", padding: "12px 0", marginBottom: 8 }}>
+        <Link href="/feed/" prefetch={false} style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--text-secondary)", fontSize: 14, fontWeight: 500, textDecoration: "none", padding: "12px 0", marginBottom: 8 }}>
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 11L5 7L9 3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
           フィード
         </Link>
